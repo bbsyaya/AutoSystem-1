@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.constant.HttpApi;
+import com.shuangyou.material.util.ShareUtils;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
@@ -71,6 +72,10 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                 }
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
+                if (ShareUtils.onLoadListener!=null){
+                    ShareUtils.onLoadListener.onFailuer("错误码:"+resp.errCode);
+                }
+
                 finish();
                 break;
 

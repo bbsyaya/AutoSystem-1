@@ -14,4 +14,5 @@ public class HttpIdentifier {
     public static final int GROUP_GET_CONTENT_TIME = 15;//获取时间
     public static final int FIND_CONTENT_BY_ID = 16;//根据 id 查询素材
     public static final int REGISTER = 17;//注册
+    public static final int LOG = 18;//日志
 }

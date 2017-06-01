@@ -37,5 +37,18 @@ public interface GroupControlUrl {
             , @Field("registrationId") String registrationId);
 
 
+    /**
+     * 日志接口
+     */
+    @FormUrlEncoded
+    @POST("log/save")
+    Call<ResponseBody> save(@Field("type") String type
+            , @Field("companyPhone") String companyPhone
+            , @Field("content") String content
+            , @Field("companyId") String companyId
+            , @Field("flag") String flag);
+
+
+
 
 }

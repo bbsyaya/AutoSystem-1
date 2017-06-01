@@ -66,7 +66,6 @@ public class JpushReceiver extends BroadcastReceiver{
                 }
                 if (type.equals("1")){//转发图文的
                     Log.e(TAG, "loadData: 转发图文的到了" );
-
 //                    we
                     LogTool.d("loadData: 转发图文的到了" );
                     sendForPhotoText(content, picUrl);

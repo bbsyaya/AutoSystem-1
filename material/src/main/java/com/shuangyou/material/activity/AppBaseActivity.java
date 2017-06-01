@@ -43,7 +43,7 @@ public abstract class AppBaseActivity extends BaseActivity {
         ButterKnife.bind(this);
         //设置ToolBar222
 //        initToolBar();222
-        //初始化View
+        //初始化View222
         initViews();
         loadData();
         cyIds  = "1";

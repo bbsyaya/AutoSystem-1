@@ -13,6 +13,8 @@ import com.shuangyou.material.R;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.network.GroupControlUrl;
 
+import org.json.JSONObject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.jpush.android.api.JPushInterface;
@@ -63,17 +65,41 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
         switch (identifier) {
             case HttpIdentifier.REGISTER:
 
-                SPUtil.putAndApply(this, IS_LOGIN, true);
-                SPUtil.putAndApply(this, COMPANY_ID, id);
-                startActivity(GetTimeActivity.class, null);
-                finish();
+                try {
+                    JSONObject jsonObject = new JSONObject(strReuslt);
+                    if (jsonObject.getString("result").equals("0000")){
+                        showLongToast("注册成功");
+                        String content = imei+"  注册成功";
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2",imei,content,id,"2"),HttpIdentifier.LOG);
+                        SPUtil.putAndApply(this, IS_LOGIN, true);
+                        SPUtil.putAndApply(this, COMPANY_ID, id);
+                        startActivity(GetTimeActivity.class, null);
+                        finish();
+                    }else{
+                        showLongToast("注册失败");
+                        String content = imei+"  注册失败--返回-"+jsonObject.getString("result");
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2",imei,content,id,"1"),HttpIdentifier.LOG);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                break;
+            case HttpIdentifier.LOG:
+                Log.e(TAG, "log: "+strReuslt );
+                break;
+            case ERROR:
+                String content2 = imei+"  注册失败";
+                showToast("服务器异常,请检查网络!");
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2",imei,content2,id,"1"),HttpIdentifier.LOG);
+
                 break;
         }
     }
 
     @OnClick(R.id.btn_submit)
     public void onViewClicked() {
-
 
         id = etId.getText().toString().trim();
         if (TextUtils.isNull(id)) {
