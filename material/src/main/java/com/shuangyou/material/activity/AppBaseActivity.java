@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -42,8 +41,8 @@ public abstract class AppBaseActivity extends BaseActivity {
         AppManger.getInstance().addActivity(this);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
-        //设置ToolBar
-//        initToolBar();
+        //设置ToolBar222
+//        initToolBar();222
         //初始化View
         initViews();
         loadData();
