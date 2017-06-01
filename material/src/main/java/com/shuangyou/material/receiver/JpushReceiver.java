@@ -30,11 +30,12 @@ import cn.jpush.android.api.JPushInterface;
  * Created by Vampire on 2017/5/31.
  */
 
-public class JpushReceiver extends BroadcastReceiver{
+public class JpushReceiver extends BroadcastReceiver {
     private static final String TAG = "JpushReceiver";
     public static OnReceiveTimeListener onReceiveTimeListener;
     private Context mContext;
     public List<File> filePictures = new ArrayList<>();
+
     public static void setOnReceiveTimeListener(OnReceiveTimeListener onReceiveTimeListener) {
         JpushReceiver.onReceiveTimeListener = onReceiveTimeListener;
     }
@@ -43,7 +44,7 @@ public class JpushReceiver extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
         this.mContext = context;
         Bundle bundle = intent.getExtras();
-        Log.e(TAG, "onReceive: 有推送" );
+        Log.e(TAG, "onReceive: 有推送");
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
 
 
@@ -51,17 +52,10 @@ public class JpushReceiver extends BroadcastReceiver{
             Log.d(TAG, "接受到推送下来的自定义消息");
             String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
             String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
-            Log.e(TAG, "onReceive: message"+message );
-            Log.e(TAG, "onReceive: extra"+extras );
-            LogTool.d("onReceive: extra47----"+extras);
-            boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
-            Log.e(TAG, "onReceive: "+flag );
-            if (!flag){
-                LogTool.d("辅助功能未开启receiver59");
-                Toast.makeText(mContext, "辅助功能未开启!", Toast.LENGTH_SHORT).show();
-                ShareUtils.onLoadListener.onFailuer("辅助功能未开启!");
-                return;
-            }
+            Log.e(TAG, "onReceive: message" + message);
+            Log.e(TAG, "onReceive: extra" + extras);
+            LogTool.d("onReceive: extra47----" + extras);
+
 
             try {
                 JSONObject object = new JSONObject(extras);
@@ -70,22 +64,34 @@ public class JpushReceiver extends BroadcastReceiver{
                 String url = object.getString("url");
                 String type = object.getString("type");
                 String picUrl = object.getString("picUrl");
-                if (onReceiveTimeListener!=null) {
-                    onReceiveTimeListener.onReceiveTime("类型:"+type+"\n"+ DateUtils.formatDate(System.currentTimeMillis()));
+                if (onReceiveTimeListener != null) {
+                    onReceiveTimeListener.onReceiveTime("类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                 }
 
-                if (type.equals("1")){//转发图文的
-                    Log.e(TAG, "loadData: 转发图文的到了" );
+                boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
+                Log.e(TAG, "onReceive: " + flag);
+                if (!flag) {
+                    LogTool.d("辅助功能未开启receiver59");
+                    Toast.makeText(mContext, "辅助功能未开启!", Toast.LENGTH_SHORT).show();
+                    if (ShareUtils.onLoadListener != null) {
+                        ShareUtils.onLoadListener.onFailuer("辅助功能未开启!");
+                    }
+                    return;
+                }
+
+                if (type.equals("1")) {//转发图文的
+                    Log.e(TAG, "loadData: 转发图文的到了");
 //                    we
-                    LogTool.d("loadData: 转发图文的到了" );
+                    LogTool.d("loadData: 转发图文的到了");
                     sendForPhotoText(content, picUrl);
-                }else{//转发连接的
-                    Log.e(TAG, "loadData: 转发链接的到了" );
-                    LogTool.d("loadData: 转发链接的到了" );
-                    if (picUrl.indexOf(",")>0) {
+                } else {//转发连接的
+                    Log.e(TAG, "loadData: 转发链接的到了");
+                    LogTool.d("loadData: 转发链接的到了");
+                    if (picUrl.indexOf(",") > 0) {
                         String[] pictures = picUrl.split(",");
                         picUrl = pictures[0];
                     }
+
                     ShareUtils.sendToFriends(mContext,
                             url,
                             content,
@@ -97,16 +103,17 @@ public class JpushReceiver extends BroadcastReceiver{
                 e.printStackTrace();
             }
 
-        } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())){
+        } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
             Log.d(TAG, "推送到的是通知");
             String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
             String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
-            Log.e(TAG, "onReceive: message"+message );
-            Log.e(TAG, "onReceive: extra"+extras );
+            Log.e(TAG, "onReceive: message" + message);
+            Log.e(TAG, "onReceive: extra" + extras);
 
         }
 
     }
+
     private void sendForPhotoText(final String content, final String picUrl) {
         new Thread(new Runnable() {
             @Override
@@ -119,7 +126,7 @@ public class JpushReceiver extends BroadcastReceiver{
                             b.length);
                     FileUtils.saveFile(mContext, System.currentTimeMillis() + ".png", bmp);
                 }
-                LogTool.d("获取的 content110:"+content);
+                LogTool.d("获取的 content110:" + content);
                 File folder = new File(SavePath.SAVE_PIC_PATH);
                 addToList(folder);
                 ShareUtils.shareMultipleToMoments(mContext, content, filePictures);
@@ -139,7 +146,6 @@ public class JpushReceiver extends BroadcastReceiver{
             }
         }
     }
-
 
 
 }

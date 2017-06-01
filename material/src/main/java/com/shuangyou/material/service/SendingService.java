@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -22,8 +21,6 @@ import org.litepal.crud.DataSupport;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.media.CamcorderProfile.get;
 
 /**
  * Created by Vampire on 2017/5/31.
@@ -42,7 +39,14 @@ public class SendingService extends Service {
     @Override
     public int onStartCommand(Intent intent,int flags, int startId) {
         Log.e(TAG, "SendingService:到服务里了" );
-        loadData();
+//        loadData();
+
+        ShareUtils.sendToFriends(mContext,
+                "http://product.pconline.com.cn/itbk/software/chrome/1206/2831200.html",
+                "ceshi",
+                "ceshi",
+                "http://www.downxia.com/uploadfiles/2016/0125/20160125033750715.jpg");
+
         return super.onStartCommand(intent, flags, startId);
     }
 

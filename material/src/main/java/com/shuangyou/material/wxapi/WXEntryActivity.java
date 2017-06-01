@@ -22,6 +22,7 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
  */
 
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
+    private static final String TAG = "WXEntryActivity";
     IWXAPI api;
 
     private void handleIntent(Intent intent) {
@@ -37,7 +38,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
     @Override
     public void onReq(BaseReq baseReq) {
-
+        Log.e(TAG, "onReq: " + baseReq);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         // TODO Auto-generated method stub
 
         Bundle bundle = new Bundle();
-        Log.e("errCode 42",resp.errCode+"");
-        LogTool.d("errCode 49"+resp.errCode);
+        Log.e("errCode 42", resp.errCode + "");
+        LogTool.d("errCode 49" + resp.errCode);
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
                 // 分享收藏的回调方法
@@ -54,7 +55,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
 //				Intent intent = new Intent(this, MainActivity.class);
 //				startActivity(intent);
-                     LogTool.d("链接的代码到这里就说明转发成功了");
+                    LogTool.d("链接的代码到这里就说明转发成功了");
                     Toast.makeText(this, " 转发成功!", Toast.LENGTH_SHORT).show();
                     finish();
 
@@ -72,8 +73,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                 }
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
-                if (ShareUtils.onLoadListener!=null){
-                    ShareUtils.onLoadListener.onFailuer("错误码:"+resp.errCode);
+                if (ShareUtils.onLoadListener != null) {
+                    ShareUtils.onLoadListener.onFailuer("错误码:" + resp.errCode);
                 }
 
                 finish();
@@ -84,6 +85,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         }
 
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

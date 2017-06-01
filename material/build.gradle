@@ -9,11 +9,11 @@ android {
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 20170601
-        versionName "1.1.4"
+        versionName "1.1.6"
 
 
     }
-    //签名配置
+    //签名配置c
     signingConfigs {
         debugConfig {
             keyAlias "androiddebugkey"

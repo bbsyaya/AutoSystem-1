@@ -1,14 +1,9 @@
 package com.kidney_hospital.base.update;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-import com.kidney_hospital.base.R;
 import com.kidney_hospital.base.util.server.OkHttpUtils;
 
 import org.json.JSONException;
@@ -21,8 +16,6 @@ import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static android.R.attr.version;
 
 /**
  * 检测更新的工具类
@@ -89,6 +82,10 @@ public class AppUpdateUtil {
 
 
     }
+
+
+
+
 
 
 }

@@ -52,7 +52,7 @@ public class SupportUtil {
     //新的朋友页面
     private final String FMesssageConversationUI = "com.tencent.mm.plugin.subapp.ui.friend.FMessageConversationUI";
     //分享页面
-    private final String snsUploadUi = "com.tencent.mm.plugin.sns.ui.SnsUploadUI";
+    private  String snsUploadUi = "com.tencent.mm.plugin.sns.ui.SnsUploadUI";
     //选取谁可以看
     private final String snsLabelUi = "com.tencent.mm.plugin.sns.ui.SnsLabelUI";
 
@@ -112,6 +112,7 @@ public class SupportUtil {
     }
     private void Ver658() {
         sendRequestBtnId = "com.tencent.mm:id/gl";
+        snsUploadUi = "com.tencent.mm.plugin.sns.ui.En_c4f742e5";
     }
 
     private void Ver654() {

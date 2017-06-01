@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.Toast;
@@ -12,8 +13,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.constant.HttpApi;
+import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.shuangyou.material.R;
 import com.shuangyou.material.interfaces.OnLoadListener;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
@@ -22,6 +24,7 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -163,12 +166,60 @@ public class ShareUtils {
             @Override
             public void onLoadFailed(Exception e, Drawable errorDrawable) {
                 super.onLoadFailed(e, errorDrawable);
-                LogTool.d("图片加载错误,链接类型的转发失败---erroe");
+                LogTool.d("图片加载错误,链接类型的转发失败---error");
+                Bitmap thumbBmp = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_logo);
+                msg.thumbData = DownPIcUtils.bmpToByteArray(thumbBmp, true);
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = buildTransaction("webpage");
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                api.sendReq(req);
                 if (onLoadListener != null) {
                     onLoadListener.onFailuer("图片加载错误");
                 }
                 Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+
+    public static void shareToWxCircle(final Context context, String httpUrl, String title, String content, String imageUrl){
+        Bitmap bitmap = null;
+        try {
+            LogTool.d("图片:" + imageUrl);
+            bitmap = BitmapUtil.getBitmap(imageUrl);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            if (onLoadListener != null) {
+                onLoadListener.onFailuer("图片加载错误--"+e.toString());
+            }
+            LogTool.d(e.toString());
+        }
+        byte[] bytes1 = BitmapUtil.Bitmap2Bytes(bitmap);
+        shareToWX(context,bytes1, content, title, httpUrl);
+    }
+
+    public static void shareToWX(Context context,byte[] bytes, String content, String title, String url) {
+        LogTool.d("149");
+        final IWXAPI api = WXAPIFactory.createWXAPI(context, HttpApi.WX_APP_ID, true);
+        api.registerApp(HttpApi.WX_APP_ID);
+        WXWebpageObject wxWebpageObject = new WXWebpageObject();
+        wxWebpageObject.webpageUrl = url;
+        WXMediaMessage msg = new WXMediaMessage(wxWebpageObject);
+        msg.description = content;
+        msg.title = title;
+        msg.thumbData = bytes;
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = buildTransaction("webpage");
+        req.message = msg;
+        req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        api.sendReq(req);
+        if (onLoadListener != null) {
+            onLoadListener.onSuccess();
+        }
+        LogTool.d("SEND_REQ");
     }
 }

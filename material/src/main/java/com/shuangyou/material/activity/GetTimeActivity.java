@@ -115,24 +115,38 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     @Override
     public void onSuccess() {
         //转发成功的回调
-        String content = imei + "  转发成功";
-        tvError.setText("转发成功");
-        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "2"), HttpIdentifier.LOG);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String content = imei + "  转发成功";
+                tvError.setText("转发成功");
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "2"), HttpIdentifier.LOG);
+
+            }
+        });
 
     }
 
     @Override
-    public void onFailuer( String error) {
-        //转发失败的回调
-        String content = imei + "  转发失败--"+error;
-        tvError.setText("  转发失败--"+error);
-        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "1"), HttpIdentifier.LOG);
+    public void onFailuer(final String error) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //转发失败的回调
+                String content = imei + "  转发失败--"+error;
+                tvError.setText("  转发失败--"+error);
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "1"), HttpIdentifier.LOG);
+
+            }
+        });
 
     }
 
 
     @OnClick(R.id.tv_version)
     public void onViewClicked() {
+        showLongToast("正在更新,请看通知栏,不要多次点击!");
         //点击更新
         startService(new Intent(this, CheckUpdateService.class));
     }

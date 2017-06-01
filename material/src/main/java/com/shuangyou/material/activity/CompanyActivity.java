@@ -8,6 +8,7 @@ import android.widget.EditText;
 import com.kidney_hospital.base.constant.HttpIdentifier;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
+import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
 import com.shuangyou.material.R;
 import com.shuangyou.material.interfaces.KeyValue;
@@ -47,10 +48,10 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
         if (imei==null){
             imei = android.os.Build.SERIAL;
         }
-        if (isLogin) {
-            startActivity(GetTimeActivity.class, null);
-            finish();
-        }
+//        if (isLogin) {
+//            startActivity(GetTimeActivity.class, null);
+//            finish();
+//        }
     }
 
     @Override
@@ -62,6 +63,7 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
     public void onResponse(int identifier, String strReuslt) {
         super.onResponse(identifier, strReuslt);
         Log.e(TAG, "onResponse: " + strReuslt);
+        LogTool.d("注册的 json"+strReuslt);
         switch (identifier) {
             case HttpIdentifier.REGISTER:
 
@@ -76,6 +78,10 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                         startActivity(GetTimeActivity.class, null);
                         finish();
                     }else{
+                        if (jsonObject.getString("result").equals("1000")){
+                            showToast("企业不存在!");
+                            return;
+                        }
                         showLongToast("注册失败");
                         String content = imei+"  注册失败--返回-"+jsonObject.getString("result");
                         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2",imei,content,id,"1"),HttpIdentifier.LOG);
