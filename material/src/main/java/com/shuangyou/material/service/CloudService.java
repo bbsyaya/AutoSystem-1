@@ -44,6 +44,11 @@ public class CloudService extends AccessibilityService {
             String atyName = event.getClassName().toString();
             Log.e(TAG, "activity  ------------ " + atyName);
             // TODO: 2017/5/20  分享365
+
+            if (!supportUtil.getSnsUploadUi().equals(atyName)){
+                LogTool.d("微信版本不兼容"+supportUtil.getSnsUploadUi());
+                Log.e(TAG, "onAccessibilityEvent: 微信版本不兼容!" );
+            }
 //            if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配
             DaysShare.getInstence().share(supportUtil, mService, atyName);
 //            }

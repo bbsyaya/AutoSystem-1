@@ -163,7 +163,7 @@ public class ShareUtils {
             @Override
             public void onLoadFailed(Exception e, Drawable errorDrawable) {
                 super.onLoadFailed(e, errorDrawable);
-                LogTool.d("图片加载错误,链接类型的转发失败---");
+                LogTool.d("图片加载错误,链接类型的转发失败---erroe");
                 if (onLoadListener != null) {
                     onLoadListener.onFailuer("图片加载错误");
                 }

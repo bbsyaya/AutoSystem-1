@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.util.DateUtils;
@@ -15,6 +16,7 @@ import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.ShareUtils;
+import com.shuangyou.material.util.WorkManager;
 
 import org.json.JSONObject;
 
@@ -52,7 +54,14 @@ public class JpushReceiver extends BroadcastReceiver{
             Log.e(TAG, "onReceive: message"+message );
             Log.e(TAG, "onReceive: extra"+extras );
             LogTool.d("onReceive: extra47----"+extras);
-
+            boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
+            Log.e(TAG, "onReceive: "+flag );
+            if (!flag){
+                LogTool.d("辅助功能未开启receiver59");
+                Toast.makeText(mContext, "辅助功能未开启!", Toast.LENGTH_SHORT).show();
+                ShareUtils.onLoadListener.onFailuer("辅助功能未开启!");
+                return;
+            }
 
             try {
                 JSONObject object = new JSONObject(extras);
@@ -62,8 +71,9 @@ public class JpushReceiver extends BroadcastReceiver{
                 String type = object.getString("type");
                 String picUrl = object.getString("picUrl");
                 if (onReceiveTimeListener!=null) {
-                    onReceiveTimeListener.onReceiveTime("转发类型是:"+type+"\n 转发时间是:"+ DateUtils.formatDate(System.currentTimeMillis()));
+                    onReceiveTimeListener.onReceiveTime("类型:"+type+"\n"+ DateUtils.formatDate(System.currentTimeMillis()));
                 }
+
                 if (type.equals("1")){//转发图文的
                     Log.e(TAG, "loadData: 转发图文的到了" );
 //                    we

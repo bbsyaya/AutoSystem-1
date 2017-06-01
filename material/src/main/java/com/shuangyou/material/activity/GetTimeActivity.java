@@ -45,6 +45,8 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     TextView tvCompany;
     @BindView(R.id.tv_device)
     TextView tvDevice;
+    @BindView(R.id.tv_error)
+    TextView tvError;
     private String imei;
     private String companyId;
 
@@ -81,8 +83,8 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 LogTool.d("极光返回码------>"+i);
                 if (i!=0){
                     String content = "极光集成失败,错误码为:"+i;
+                    tvError.setText(content);
                     doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "1"), HttpIdentifier.LOG);
-
                 }
             }
         });
@@ -114,6 +116,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     public void onSuccess() {
         //转发成功的回调
         String content = imei + "  转发成功";
+        tvError.setText("转发成功");
         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "2"), HttpIdentifier.LOG);
 
     }
@@ -122,6 +125,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     public void onFailuer( String error) {
         //转发失败的回调
         String content = imei + "  转发失败--"+error;
+        tvError.setText("  转发失败--"+error);
         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "1"), HttpIdentifier.LOG);
 
     }

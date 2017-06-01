@@ -95,7 +95,7 @@ public class DateUtils {
      * @return
      */
     public static String formatDate(long timeStamp) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         String date = sdf.format(timeStamp);
         return date;
     }
