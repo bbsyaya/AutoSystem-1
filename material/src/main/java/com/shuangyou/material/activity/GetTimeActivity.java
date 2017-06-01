@@ -146,7 +146,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
     @OnClick(R.id.tv_version)
     public void onViewClicked() {
-        showLongToast("正在更新,请看通知栏,不要多次点击!");
+//        showLongToast("正在更新,请看通知栏,不要多次点击!");
         //点击更新
         startService(new Intent(this, CheckUpdateService.class));
     }

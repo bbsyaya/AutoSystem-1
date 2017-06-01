@@ -59,7 +59,7 @@ public class CheckUpdateService extends Service {
             @Override
             public void isUpdate(String  result) {
                 Log.e(TAG, "isUpdate: ");
-                Toast.makeText(mContext, "正在更新,请看通知栏,不要多次点击!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "正在更新,请看通知栏,不要多次点击!", Toast.LENGTH_LONG).show();
 
             }
 
