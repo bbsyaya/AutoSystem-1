@@ -1,0 +1,51 @@
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+    defaultConfig {
+        applicationId "com.vampire.shareforwechat"
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+    }
+    //签名配置
+    signingConfigs {
+        debugConfig {
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storeFile file("/Users/kaifa1111/AndroidProject/AutoSystem/debug.keystore")//改成你们自己的地址
+            storePassword "android"
+        }
+        releaseConfig {
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storeFile file("/Users/kaifa1111/AndroidProject/AutoSystem/debug.keystore")//改成你们自己的地址
+            storePassword "android"
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debugConfig
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            signingConfig signingConfigs.releaseConfig
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    testCompile 'junit:junit:4.12'
+    compile project(':base')
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'org.litepal.android:core:1.3.2'
+    compile files('libs/libammsdk.jar')
+}

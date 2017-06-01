@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">自动转发素材</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="transition_photo">transition_animation_news_photos</string>
+</resources>

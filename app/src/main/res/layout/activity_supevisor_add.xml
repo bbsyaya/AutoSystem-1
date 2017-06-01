@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="新增提醒" />
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="50dp"
+            android:src="@mipmap/ic_supevisor_add_add"
+            android:id="@+id/iv_supevior_add" />
+
+        <ImageView
+            android:id="@+id/iv_supevior_remove"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@mipmap/ic_supevisor_remove"
+            android:layout_alignTop="@+id/iv_supevior_add"
+            android:layout_alignRight="@+id/iv_supevior_add"
+            android:layout_alignEnd="@+id/iv_supevior_add"
+            android:visibility="gone"/>
+    </RelativeLayout>
+    <com.vampire.shareforwechat.supervisor.CustomTextInputLayout
+        android:textColorHint="#ffffff"
+        android:id="@+id/toDoCustomTextInput"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        >
+        <EditText
+            android:id="@+id/et_remark"
+            android:hint="备注"
+            android:lines="2"
+            android:inputType="textAutoCorrect|textCapSentences"
+            android:maxLines="3"
+            android:textColor="#000000"
+            android:gravity="start|bottom"
+            android:layout_marginRight="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.vampire.shareforwechat.supervisor.CustomTextInputLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:layout_marginLeft="36dp"
+        android:layout_marginRight="36dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp">
+
+
+        <EditText
+            android:id="@+id/et_date"
+            android:editable="false"
+            android:gravity="center"
+            android:textIsSelectable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_weight="1.5"
+            android:text="今天"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="\@"
+            android:padding="4dp"
+            android:textColor="?attr/colorAccent"
+            android:gravity="center"
+            android:layout_weight=".2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_time"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:textIsSelectable="false"
+            android:editable="false"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/shp_supevisor_button"
+        android:gravity="center"
+        android:text="保存"
+        android:layout_marginLeft="36dp"
+        android:layout_marginRight="36dp"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/font_big" />
+
+</LinearLayout>

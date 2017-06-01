@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value = "RemindStore"></dbname>
+    <version value = "1"></version>
+    <list>
+        <mapping class = "com.vampire.shareforwechat.model.alarm.RemindEntity"></mapping>
+        <mapping class = "com.vampire.shareforwechat.supervisor.SupevisorEntity"></mapping>
+    </list>
+</litepal>
