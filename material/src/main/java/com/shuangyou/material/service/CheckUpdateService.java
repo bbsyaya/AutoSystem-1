@@ -52,21 +52,27 @@ public class CheckUpdateService extends Service {
         updateUtil.checkUpdate(new UpdateCallBack() {
             @Override
             public void onError() {
+//                Looper.prepare();
                 Toast.makeText(mContext, "服务器错误!", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "onError: ");
+//                Log.e(TAG, "onError: ");
+//                Looper.loop();
             }
 
             @Override
             public void isUpdate(String  result) {
+//                Looper.prepare();
                 Log.e(TAG, "isUpdate: ");
-                Toast.makeText(mContext, "正在更新,请看通知栏,不要多次点击!", Toast.LENGTH_LONG).show();
+//                Toast.makeText(mContext, "正在更新,请看通知栏,不要多次点击!", Toast.LENGTH_LONG).show();
+//                Looper.loop();
 
             }
 
             @Override
             public void isNoUpdate() {
+//                Looper.prepare();
                 Log.e(TAG, "isNoUpdate: ");
-                Toast.makeText(mContext, "没有最新版本!", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, "没有最新版本!", Toast.LENGTH_SHORT).show();
+//                Looper.loop();
             }
         });
     }

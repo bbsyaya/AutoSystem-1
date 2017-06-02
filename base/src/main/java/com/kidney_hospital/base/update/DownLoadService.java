@@ -65,9 +65,13 @@ public class DownLoadService extends Service {
 
         Toast.makeText(mContext, "正在下载最新apk...", Toast.LENGTH_SHORT).show();
 //        Log.i("DownloadService", "intent=" + intent.toString() + " ;           flags= " + flags + " ;    startId" + startId);
-        if (intent.hasExtra("url")) {
-            apkUrl = (String) intent.getExtras().get("url");
-            Log.e(TAG, "onStartCommand apkUrl: " + apkUrl);
+        try {
+            if (intent.hasExtra("url")) {
+                apkUrl = (String) intent.getExtras().get("url");
+                Log.e(TAG, "onStartCommand apkUrl: " + apkUrl);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         progress = 0;
         setUpNotification();

@@ -2,7 +2,6 @@ package com.shuangyou.material.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 import com.kidney_hospital.base.constant.HttpIdentifier;
 import com.kidney_hospital.base.util.AppUtils;
 import com.kidney_hospital.base.util.SPUtil;
+import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
 import com.shuangyou.material.R;
@@ -47,7 +47,10 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     TextView tvDevice;
     @BindView(R.id.tv_error)
     TextView tvError;
-    private String imei;
+    private String imei="";
+    private String sn="";
+    private String single= "";
+
     private String companyId;
 
     @Override
@@ -70,13 +73,22 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         TelephonyManager telephonyManager = (TelephonyManager) this
                 .getSystemService(Context.TELEPHONY_SERVICE);
         imei = telephonyManager.getDeviceId();
-        if (imei == null) {
-            imei = Build.SERIAL;
+        sn = android.os.Build.SERIAL;
+        if (TextUtils.isNull(imei)) {
+            single = sn;
+        } else {
+            if (imei.length() > 6) {
+                imei = imei.substring(imei.length() - 5, imei.length());
+                single = imei + sn;
+            }else{
+                single =sn;
+            }
         }
-        tvDevice.setText("机器码:" + imei);
+        Log.e(TAG, "initJpush single: "+single );
+        tvDevice.setText("imei:" + imei+"\nsn:"+sn);
         Set<String> set = new HashSet<>();
-        set.add(imei);//手机的机器码
-        JPushInterface.setAliasAndTags(this, imei, set, new TagAliasCallback() {
+        set.add(single);//手机的机器码
+        JPushInterface.setAliasAndTags(this, single, set, new TagAliasCallback() {
             @Override
             public void gotResult(int i, String s, Set<String> set) {
                 Log.e(TAG, "code==" + i);
@@ -84,7 +96,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 if (i!=0){
                     String content = "极光集成失败,错误码为:"+i;
                     tvError.setText(content);
-                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "1"), HttpIdentifier.LOG);
+                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", single, content, companyId, "1"), HttpIdentifier.LOG);
                 }
             }
         });
@@ -119,9 +131,9 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String content = imei + "  转发成功";
+                String content = single + "  转发成功";
                 tvError.setText("转发成功");
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "2"), HttpIdentifier.LOG);
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", single, content, companyId, "2"), HttpIdentifier.LOG);
 
             }
         });
@@ -134,9 +146,9 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
             @Override
             public void run() {
                 //转发失败的回调
-                String content = imei + "  转发失败--"+error;
+                String content = single + "  转发失败--"+error;
                 tvError.setText("  转发失败--"+error);
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", imei, content, companyId, "1"), HttpIdentifier.LOG);
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", single, content, companyId, "1"), HttpIdentifier.LOG);
 
             }
         });
@@ -146,7 +158,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
     @OnClick(R.id.tv_version)
     public void onViewClicked() {
-//        showLongToast("正在更新,请看通知栏,不要多次点击!");
+        showLongToast("请看通知栏,不要多次点击!如果有新版本的话,会有显示");
         //点击更新
         startService(new Intent(this, CheckUpdateService.class));
     }

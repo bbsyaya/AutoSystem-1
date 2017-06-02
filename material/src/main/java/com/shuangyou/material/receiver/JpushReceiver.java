@@ -10,13 +10,20 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kidney_hospital.base.config.SavePath;
+import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.util.DateUtils;
 import com.kidney_hospital.base.util.FileUtils;
+import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.ShareUtils;
 import com.shuangyou.material.util.WorkManager;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import org.json.JSONObject;
 
@@ -25,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
+
+import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
 
 /**
  * Created by Vampire on 2017/5/31.
@@ -91,7 +100,7 @@ public class JpushReceiver extends BroadcastReceiver {
                         String[] pictures = picUrl.split(",");
                         picUrl = pictures[0];
                     }
-
+//                    sendForUrl(context, content, url, picUrl);
                     ShareUtils.sendToFriends(mContext,
                             url,
                             content,
@@ -114,11 +123,36 @@ public class JpushReceiver extends BroadcastReceiver {
 
     }
 
+    private void sendForUrl(Context context, String content, String url, String picUrl) {
+        byte[] b = DownPIcUtils.getHtmlByteArray(picUrl);
+
+        IWXAPI api = WXAPIFactory.createWXAPI(context, HttpApi.WX_APP_ID, true);
+        api.registerApp(HttpApi.WX_APP_ID);
+        WXWebpageObject webpage = new WXWebpageObject();
+        webpage.webpageUrl = url;
+        WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title = content;
+        msg.description = content;
+        msg.thumbData = b;
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = buildTransaction("webpage");
+        req.message = msg;
+        req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        api.sendReq(req);
+    }
+
     private void sendForPhotoText(final String content, final String picUrl) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 FileUtils.delFolder(SavePath.savePath);
+                if (TextUtils.isNull(picUrl)){
+                    LogTool.d("素材图片为空");
+                    if (ShareUtils.onLoadListener!=null){
+                        ShareUtils.onLoadListener.onFailuer("素材图片是空的!");
+                    }
+                    return;
+                }
                 String[] pictures = picUrl.split(",");
                 for (String picture : pictures) {
                     byte[] b = DownPIcUtils.getHtmlByteArray(picture);

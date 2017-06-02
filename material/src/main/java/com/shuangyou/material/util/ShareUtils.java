@@ -148,7 +148,7 @@ public class ShareUtils {
         final WXMediaMessage msg = new WXMediaMessage(webpage);
         msg.title = content;
         msg.description = title;
-        Glide.with(context).load(imageUrl).asBitmap().into(new SimpleTarget<Bitmap>() {
+        Glide.with(context).load(imageUrl).asBitmap().into(new SimpleTarget<Bitmap>() {//后期可以加上延时的,那边网太慢
             @Override
             public void onResourceReady(Bitmap bmp, GlideAnimation<? super Bitmap> glideAnimation) {
                 Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 30, 30, true);
@@ -175,9 +175,9 @@ public class ShareUtils {
                 req.scene = SendMessageToWX.Req.WXSceneTimeline;
                 api.sendReq(req);
                 if (onLoadListener != null) {
-                    onLoadListener.onFailuer("图片加载错误");
+                    onLoadListener.onFailuer("图片加载错误,以logo为图片发送");
                 }
-                Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_LONG).show();
             }
         });
     }

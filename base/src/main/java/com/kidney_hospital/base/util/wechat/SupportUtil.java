@@ -149,6 +149,8 @@ public class SupportUtil {
         quiteGroupBtnId = "android:id/title";
         makeSureQuiteId = "com.tencent.mm:id/abz";
         launcherPagerId = "com.tencent.mm:id/blx";
+        snsUploadUi = "com.tencent.mm.plugin.sns.ui.En_c4f742e5";
+
     }
 
     public String getSearchItemId() {

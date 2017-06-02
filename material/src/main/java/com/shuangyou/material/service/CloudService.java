@@ -32,7 +32,7 @@ public class CloudService extends AccessibilityService {
         mContext = this;
         mService = this;
         String version = getVersion(mContext);
-        Log.d(TAG, "微信版本 : " + version);
+        Log.e(TAG, "微信版本 : " + version);
         LogTool.d("微信版本" + version);
         supportUtil = new SupportUtil(version);
     }
@@ -45,15 +45,12 @@ public class CloudService extends AccessibilityService {
             Log.e(TAG, "activity  ------------ " + atyName);
             // TODO: 2017/5/20  分享365
 
-            if (!supportUtil.getSnsUploadUi().equals(atyName)) {
-//                LogTool.d("微信版本不兼容"+supportUtil.getSnsUploadUi());
-                Log.e(TAG, "onAccessibilityEvent: 微信版本不兼容!");
-            }
-//            if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配
+            if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配
                 Log.e(TAG, "onAccessibilityEvent: 我来了" );
-                DaysShare.getInstence().share(supportUtil, mService, atyName);
-//            }
 
+
+                DaysShare.getInstence().share(supportUtil, mService, atyName);
+            }
 
         }
 

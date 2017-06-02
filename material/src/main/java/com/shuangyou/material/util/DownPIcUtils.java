@@ -27,7 +27,7 @@ import java.net.URLConnection;
  */
 public class DownPIcUtils {
 
-	private static final String TAG = "SDK_Sample.Util";
+	private static final String TAG = "DownPIcUtils";
 
 	public static byte[] bmpToByteArray(final Bitmap bmp,
 			final boolean needRecycle) {
@@ -55,8 +55,15 @@ public class DownPIcUtils {
 			URLConnection connection = htmlUrl.openConnection();
 			HttpURLConnection httpConnection = (HttpURLConnection) connection;
 			int responseCode = httpConnection.getResponseCode();
+			Log.e(TAG, "getHtmlByteArray: "+responseCode );
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				inStream = httpConnection.getInputStream();
+			}else{
+				//图片加载错误
+				if (ShareUtils.onLoadListener!=null){
+					ShareUtils.onLoadListener.onFailuer("图片加载错误!");
+				}
+
 			}
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

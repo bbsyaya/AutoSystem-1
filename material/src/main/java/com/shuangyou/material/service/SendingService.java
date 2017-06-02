@@ -10,17 +10,25 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.kidney_hospital.base.config.SavePath;
+import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.util.FileUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.shuangyou.material.model.TimeBean;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.ShareUtils;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
 
 /**
  * Created by Vampire on 2017/5/31.
@@ -49,7 +57,23 @@ public class SendingService extends Service {
 
         return super.onStartCommand(intent, flags, startId);
     }
+    private void sendForUrl(Context context, String content, String url, String picUrl) {
+        byte[] b = DownPIcUtils.getHtmlByteArray(picUrl);
 
+        IWXAPI api = WXAPIFactory.createWXAPI(context, HttpApi.WX_APP_ID, true);
+        api.registerApp(HttpApi.WX_APP_ID);
+        WXWebpageObject webpage = new WXWebpageObject();
+        webpage.webpageUrl = url;
+        WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title = content;
+        msg.description = content;
+        msg.thumbData = b;
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = buildTransaction("webpage");
+        req.message = msg;
+        req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        api.sendReq(req);
+    }
     private void loadData() {
         List<TimeBean> timeBeanList = DataSupport.findAll(TimeBean.class);
         String type = timeBeanList.get(0).getType();

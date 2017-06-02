@@ -2,8 +2,6 @@ package com.kidney_hospital.base.util.wechat;
 
 import android.accessibilityservice.AccessibilityService;
 
-import com.kidney_hospital.base.util.exceptioncatch.LogTool;
-
 
 /**
  * Created by Vampire on 2017/5/20.
@@ -18,7 +16,7 @@ public class DaysShare {
     }
 
     public void share(SupportUtil supportUtil, AccessibilityService service, String className) {
-        LogTool.d("share21按钮的 id"+supportUtil.getSendRequestBtnId());
+//        LogTool.d("share21按钮的 id"+supportUtil.getSendRequestBtnId());
         PerformClickUtils.findViewIdAndClick(service, supportUtil.getSendRequestBtnId());
 
     }

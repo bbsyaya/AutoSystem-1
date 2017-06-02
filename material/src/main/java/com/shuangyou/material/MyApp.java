@@ -15,7 +15,7 @@ public class MyApp extends BaseApp {
     public void onCreate() {
         super.onCreate();
 //        startService(new Intent(this,  GetTimeService.class));
-//        startService(new Intent(this,  CheckUpdateService.class));
+//        startService(new Intent(this,  SendingService.class));
         JPushInterface.init(this);
         JPushInterface.setDebugMode(true);
 

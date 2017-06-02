@@ -60,6 +60,7 @@ public class AppUpdateUtil {
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     if (jsonObject.getString("result").equals("2000")) {
+                        callBack.isUpdate(result);
                         String db = jsonObject.getString("db");
                         JSONObject jo = new JSONObject(db);
                         String downloadURL = jo.getString("downloadURL");
@@ -67,7 +68,7 @@ public class AppUpdateUtil {
                         Intent intent = new Intent(mContext, DownLoadService.class);
                         intent.putExtra("url", downloadURL);
                         mContext.startService(intent);
-                        callBack.isUpdate(result);
+
                     } else {
                         callBack.isNoUpdate();
                     }
