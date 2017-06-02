@@ -1,16 +1,16 @@
 package com.shuangyou.material.activity;
 
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.kidney_hospital.base.constant.HttpIdentifier;
 import com.kidney_hospital.base.util.AppUtils;
 import com.kidney_hospital.base.util.SPUtil;
-import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
 import com.shuangyou.material.R;
@@ -22,6 +22,9 @@ import com.shuangyou.material.receiver.JpushReceiver;
 import com.shuangyou.material.service.CheckUpdateService;
 import com.shuangyou.material.util.ShareUtils;
 import com.shuangyou.material.util.WorkManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,11 +50,12 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     TextView tvDevice;
     @BindView(R.id.tv_error)
     TextView tvError;
-    private String imei="";
-    private String sn="";
-    private String single= "";
+    private String imei = "";
+    private String sn = "";
+//    private String single= "";
 
     private String companyId;
+    private String userId;
 
     @Override
     protected void loadData() {
@@ -60,6 +64,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
     @Override
     protected void initViews() {
+        userId = (String) SPUtil.get(this, USER_ID, "");
         initJpush();
         JpushReceiver.setOnReceiveTimeListener(this);
         ShareUtils.setOnLoadListener(this);
@@ -70,33 +75,33 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     }
 
     private void initJpush() {
-        TelephonyManager telephonyManager = (TelephonyManager) this
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        imei = telephonyManager.getDeviceId();
-        sn = android.os.Build.SERIAL;
-        if (TextUtils.isNull(imei)) {
-            single = sn;
-        } else {
-            if (imei.length() > 6) {
-                imei = imei.substring(imei.length() - 5, imei.length());
-                single = imei + sn;
-            }else{
-                single =sn;
-            }
-        }
-        Log.e(TAG, "initJpush single: "+single );
-        tvDevice.setText("imei:" + imei+"\nsn:"+sn);
+//        TelephonyManager telephonyManager = (TelephonyManager) this
+//                .getSystemService(Context.TELEPHONY_SERVICE);
+//        imei = telephonyManager.getDeviceId();
+//        sn = Build.SERIAL;
+//        if (TextUtils.isNull(imei)) {
+//            single = sn;
+//        } else {
+//            if (imei.length() > 6) {
+//                imei = imei.substring(imei.length() - 5, imei.length());
+//                single = imei + sn;
+//            }else{
+//                single =sn;
+//            }
+//        }
+        Log.e(TAG, "initJpush single: " + userId);
+        tvDevice.setText("标识码:" + userId);
         Set<String> set = new HashSet<>();
-        set.add(single);//手机的机器码
-        JPushInterface.setAliasAndTags(this, single, set, new TagAliasCallback() {
+        set.add(userId);//手机的机器码
+        JPushInterface.setAliasAndTags(this, userId, set, new TagAliasCallback() {
             @Override
             public void gotResult(int i, String s, Set<String> set) {
                 Log.e(TAG, "code==" + i);
-                LogTool.d("极光返回码------>"+i);
-                if (i!=0){
-                    String content = "极光集成失败,错误码为:"+i;
+                LogTool.d("极光返回码------>" + i);
+                if (i != 0) {
+                    String content = "极光集成失败,错误码为:" + i;
                     tvError.setText(content);
-                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", single, content, companyId, "1"), HttpIdentifier.LOG);
+                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", userId, content, companyId, "1"), HttpIdentifier.LOG);
                 }
             }
         });
@@ -131,9 +136,9 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String content = single + "  转发成功";
+                String content = userId + "  转发成功";
                 tvError.setText("转发成功");
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", single, content, companyId, "2"), HttpIdentifier.LOG);
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", userId, content, companyId, "2"), HttpIdentifier.LOG);
 
             }
         });
@@ -146,20 +151,56 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
             @Override
             public void run() {
                 //转发失败的回调
-                String content = single + "  转发失败--"+error;
-                tvError.setText("  转发失败--"+error);
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", single, content, companyId, "1"), HttpIdentifier.LOG);
+                String content = userId + "  转发失败--" + error;
+                tvError.setText("  转发失败--" + error);
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", userId, content, companyId, "1"), HttpIdentifier.LOG);
 
             }
         });
 
     }
 
+    @Override
+    public void onResponse(int identifier, String strReuslt) {
+        super.onResponse(identifier, strReuslt);
+        Log.e(TAG, "onResponse: "+strReuslt );
+        switch (identifier) {
+            case HttpIdentifier.UNINSTALL:
+                try {
+                    JSONObject object = new JSONObject(strReuslt);
+                    if (object.getString("result").equals("0000")){
+                        showToast("成功!你可以卸载软件了!");
+                    }else{
+                        showToast("服务器异常");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
 
-    @OnClick(R.id.tv_version)
-    public void onViewClicked() {
-        showLongToast("请看通知栏,不要多次点击!如果有新版本的话,会有显示");
-        //点击更新
-        startService(new Intent(this, CheckUpdateService.class));
+    @OnClick({R.id.tv_version, R.id.tv_uninstall})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.tv_version:
+                showLongToast("请看通知栏,不要多次点击!如果有新版本的话,会有显示");
+                //点击更新
+                startService(new Intent(this, CheckUpdateService.class));
+                break;
+            case R.id.tv_uninstall:
+                new AlertDialog.Builder(this)
+                        .setTitle("确定要卸载吗?")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                showProgress();
+                                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).delCompanyuser(userId, companyId), HttpIdentifier.UNINSTALL);
+                            }
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
+                break;
+        }
     }
 }

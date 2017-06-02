@@ -49,6 +49,15 @@ public interface GroupControlUrl {
             , @Field("flag") String flag);
 
 
+    /**
+     * 卸载接口
+     */
+    @FormUrlEncoded
+    @POST("companyuser/delCompanyuser")
+    Call<ResponseBody> delCompanyuser(@Field("companyPhone") String companyPhone
+            , @Field("companyId") String companyId);
+
+
 
 
 }

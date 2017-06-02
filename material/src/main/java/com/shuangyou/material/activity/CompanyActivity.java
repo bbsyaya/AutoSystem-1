@@ -16,6 +16,8 @@ import com.shuangyou.material.network.GroupControlUrl;
 
 import org.json.JSONObject;
 
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.jpush.android.api.JPushInterface;
@@ -32,8 +34,11 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
     private String imei = "";
     private String sn = "";
     private String id;
-    private String single = "";
+//    private String single = "";
 
+
+
+    private String userId;
     @Override
     protected void loadData() {
 
@@ -42,23 +47,34 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
     @Override
     protected void initViews() {
 
-
         boolean isLogin = (boolean) SPUtil.get(this, IS_LOGIN, false);
         TelephonyManager telephonyManager = (TelephonyManager) this
                 .getSystemService(Context.TELEPHONY_SERVICE);
+        String phoneNum = telephonyManager.getLine1Number();
+        Log.e(TAG, "initViews phoneNum: "+phoneNum );
         imei = telephonyManager.getDeviceId();
         sn = android.os.Build.SERIAL;
-        if (TextUtils.isNull(imei)) {
-            single = sn;
-        } else {
-            if (imei.length() > 6) {
-                imei = imei.substring(imei.length() - 5, imei.length());
-                single = imei + sn;
-            }else{
-                single =sn;
+//        if (TextUtils.isNull(imei)) {
+//            single = sn;
+//        } else {
+//            if (imei.length() > 6) {
+//                imei = imei.substring(imei.length() - 5, imei.length());
+//                single = imei + sn;
+//            }else{
+//                single =sn;
+//            }
+//        }
+        if (!isLogin) {
+            if (TextUtils.isNull(sn)){
+                sn = System.currentTimeMillis()+"";
             }
+            userId = sn+ new Random().nextInt(1000)+1;
+            SPUtil.putAndApply(this, USER_ID, userId);
+        }else{
+            userId = (String) SPUtil.get(this,USER_ID,"");
         }
-        Log.e(TAG, "initViews single: " + single);
+        Log.e(TAG, "initViews single: " + userId);
+
 //        if (isLogin) {
 //            startActivity(GetTimeActivity.class, null);
 //            finish();
@@ -82,8 +98,8 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                     JSONObject jsonObject = new JSONObject(strReuslt);
                     if (jsonObject.getString("result").equals("0000")) {
                         showLongToast("注册成功");
-                        String content = single + "  注册成功";
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", single, content, id, "2"), HttpIdentifier.LOG);
+                        String content = userId + "  注册成功";
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "2"), HttpIdentifier.LOG);
                         SPUtil.putAndApply(this, IS_LOGIN, true);
                         SPUtil.putAndApply(this, COMPANY_ID, id);
                         startActivity(GetTimeActivity.class, null);
@@ -94,8 +110,8 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                             return;
                         }
                         showLongToast("注册失败");
-                        String content = single + "  注册失败--返回-" + jsonObject.getString("result");
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", single, content, id, "1"), HttpIdentifier.LOG);
+                        String content = userId + "  注册失败--返回-" + jsonObject.getString("result");
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "1"), HttpIdentifier.LOG);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -107,10 +123,9 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                 Log.e(TAG, "log: " + strReuslt);
                 break;
             case ERROR:
-                String content2 = single + "  注册失败--没有网";// 6.3新添加的--
+                String content2 = userId + "  注册失败--没有网";// 6.3新添加的--
                 showToast("服务器异常,请检查网络!");
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", single, content2, id, "1"), HttpIdentifier.LOG);
-
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content2, id, "1"), HttpIdentifier.LOG);
                 break;
         }
     }
@@ -128,9 +143,13 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
             showToast("没获取到推送 id");
             return;
         }
+        if (TextUtils.isNull(userId)){
+            showToast("没获取到标识符");
+            return;
+        }
         showProgress();
         Log.e(TAG, "onViewClicked: " + resultId);
-        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).register(single, id, resultId), HttpIdentifier.REGISTER);
+        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).register(userId, id, resultId), HttpIdentifier.REGISTER);
 
 
     }

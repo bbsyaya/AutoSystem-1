@@ -9,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 20170603
-        versionName "1.1.10"
+        versionName "1.1.13"
 
 
     }

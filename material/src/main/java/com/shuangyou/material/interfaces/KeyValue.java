@@ -6,4 +6,5 @@ package com.shuangyou.material.interfaces;
 
 public interface KeyValue {
     String COMPANY_ID ="company_id";
+    String USER_ID = "user_id";
 }

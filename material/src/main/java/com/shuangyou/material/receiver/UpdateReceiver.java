@@ -4,10 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.kidney_hospital.base.util.AppManger;
-import com.shuangyou.material.activity.CompanyActivity;
 
 
 
@@ -26,6 +22,13 @@ public class UpdateReceiver extends BroadcastReceiver {
 //            intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //            context.startActivity(intent2);
 
+        }
+
+
+        if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
+            Log.e(TAG, "onReceive: 删除了" );
+            //DatabaseHelper dbhelper = new DatabaseHelper();
+            //dbhelper.executeSql("delete from xxx");
         }
     }
 }

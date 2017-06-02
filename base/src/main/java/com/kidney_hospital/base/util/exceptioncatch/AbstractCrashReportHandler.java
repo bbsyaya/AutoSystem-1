@@ -26,7 +26,7 @@ public class AbstractCrashReportHandler implements CrashListener {
     }
 
     protected File getLogDir(Context context) {
-        return new File("/storage/emulated/0/Download/", "crash.log");
+        return new File("/storage/emulated/0/Download/", System.currentTimeMillis()+"_crashlog.txt");
     }
 
     @Override
