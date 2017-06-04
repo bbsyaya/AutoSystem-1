@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kidney_hospital.base.util.FileUtils.saveFile;
 import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
 
 /**
@@ -39,26 +40,40 @@ public class SendingService extends Service {
     private static final String TAG = "SendingService";
     private Context mContext;
     public List<File> filePictures = new ArrayList<>();
+    public static String sendContent = "";
+
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = this;
     }
-    @Override
-    public int onStartCommand(Intent intent,int flags, int startId) {
-        Log.e(TAG, "SendingService:到服务里了" );
-//        loadData();
 
-        ShareUtils.sendToFriends(mContext,
-                "http://product.pconline.com.cn/itbk/software/chrome/1206/2831200.html",
-                "ceshi",
-                "ceshi",
-                "http://www.downxia.com/uploadfiles/2016/0125/20160125033750715.jpg");
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e(TAG, "SendingService:到服务里了");
+//        loadData();
+        sendContent = "我成功了!";
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String picture = "http://www.downxia.com/uploadfiles/2016/0125/20160125033750715.jpg";
+                byte[] b = DownPIcUtils.getHtmlByteArray(picture);
+
+            }
+        }).start();
+
+
+//        ShareUtils.sendToFriends(mContext,
+//                "http://product.pconline.com.cn/itbk/software/chrome/1206/2831200.html",
+//                "ceshi",
+//                "ceshi",
+//                "http://www.downxia.com/uploadfiles/2016/0125/20160125033750715.jpg");
 
         return super.onStartCommand(intent, flags, startId);
     }
-    private void sendForUrl(Context context, String content, String url, String picUrl) {
-        byte[] b = DownPIcUtils.getHtmlByteArray(picUrl);
+
+    public static void sendForUrl(byte[] b, Context context, String content, String url) {
 
         IWXAPI api = WXAPIFactory.createWXAPI(context, HttpApi.WX_APP_ID, true);
         api.registerApp(HttpApi.WX_APP_ID);
@@ -74,6 +89,7 @@ public class SendingService extends Service {
         req.scene = SendMessageToWX.Req.WXSceneTimeline;
         api.sendReq(req);
     }
+
     private void loadData() {
         List<TimeBean> timeBeanList = DataSupport.findAll(TimeBean.class);
         String type = timeBeanList.get(0).getType();
@@ -82,15 +98,15 @@ public class SendingService extends Service {
         String url = timeBeanList.get(0).getUrl();
         String picUrl = timeBeanList.get(0).getPicUrl();
 
-        LogTool.d("SendingService---------"+type+"\n"+title+"\n"+content+"\n"+url+"\n"+picUrl+"\n");
-        if (type.equals("1")){//转发图文的
-            Log.e(TAG, "loadData: 转发图文的到了" );
-            LogTool.d("loadData: 转发图文的到了" );
+        LogTool.d("SendingService---------" + type + "\n" + title + "\n" + content + "\n" + url + "\n" + picUrl + "\n");
+        if (type.equals("1")) {//转发图文的
+            Log.e(TAG, "loadData: 转发图文的到了");
+            LogTool.d("loadData: 转发图文的到了");
             sendForPhotoText(content, picUrl);
-        }else{//转发连接的
-            Log.e(TAG, "loadData: 转发链接的到了" );
-            LogTool.d("loadData: 转发链接的到了" );
-            if (picUrl.indexOf(",")>0) {
+        } else {//转发连接的
+            Log.e(TAG, "loadData: 转发链接的到了");
+            LogTool.d("loadData: 转发链接的到了");
+            if (picUrl.indexOf(",") > 0) {
                 String[] pictures = picUrl.split(",");
                 picUrl = pictures[0];
             }
@@ -112,9 +128,9 @@ public class SendingService extends Service {
                     byte[] b = DownPIcUtils.getHtmlByteArray(picture);
                     Bitmap bmp = BitmapFactory.decodeByteArray(b, 0,
                             b.length);
-                    FileUtils.saveFile(mContext, System.currentTimeMillis() + ".png", bmp);
+                    saveFile(mContext, System.currentTimeMillis() + ".png", bmp);
                 }
-                LogTool.d("获取的 content110:"+content);
+                LogTool.d("获取的 content110:" + content);
                 File folder = new File(SavePath.SAVE_PIC_PATH);
                 addToList(folder);
                 ShareUtils.shareMultipleToMoments(mContext, content, filePictures);
@@ -134,6 +150,7 @@ public class SendingService extends Service {
             }
         }
     }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

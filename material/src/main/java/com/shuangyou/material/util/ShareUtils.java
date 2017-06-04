@@ -15,8 +15,9 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.wechat.LoadResultUtil;
 import com.shuangyou.material.R;
-import com.shuangyou.material.interfaces.OnLoadListener;
+import com.shuangyou.material.receiver.JpushReceiver;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kidney_hospital.base.util.wechat.LoadResultUtil.onLoadListener;
 import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
 
 
@@ -37,11 +39,7 @@ import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
 
 public class ShareUtils {
     private static final String TAG = "ShareUtils";
-    public static OnLoadListener onLoadListener;
 
-    public static void setOnLoadListener(OnLoadListener onLoadListener) {
-        ShareUtils.onLoadListener = onLoadListener;
-    }
 
     /**
      * 分享到微信（不是朋友圈）
@@ -96,9 +94,7 @@ public class ShareUtils {
             }
             return false;
         }
-        if (onLoadListener != null) {
-            onLoadListener.onSuccess();
-        }
+
         return true;
     }
 
@@ -139,7 +135,7 @@ public class ShareUtils {
 //    /**
 //     * 分享到朋友圈
 //     */
-    public static void sendToFriends(final Context context, String httpUrl, String title, String content, String imageUrl) {
+    public static  void sendToFriends(final Context context, String httpUrl, String title, String content, String imageUrl) {
 
         final IWXAPI api = WXAPIFactory.createWXAPI(context, HttpApi.WX_APP_ID, true);
         api.registerApp(HttpApi.WX_APP_ID);
@@ -158,9 +154,16 @@ public class ShareUtils {
                 req.message = msg;
                 req.scene = SendMessageToWX.Req.WXSceneTimeline;
                 api.sendReq(req);
+
                 if (onLoadListener != null) {
-                    onLoadListener.onSuccess();
+                    if (JpushReceiver.sFrequency.equals("2")) {
+                        LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功");
+                    }else{
+                        LoadResultUtil.onLoadListener.onSuccess("一次性成功");
+                    }
                 }
+
+                return;
             }
 
             @Override
@@ -175,11 +178,17 @@ public class ShareUtils {
                 req.scene = SendMessageToWX.Req.WXSceneTimeline;
                 api.sendReq(req);
                 if (onLoadListener != null) {
-                    onLoadListener.onFailuer("图片加载错误,以logo为图片发送");
+                    if (JpushReceiver.sFrequency.equals("2")) {
+                        LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功,但是图片加载错误,以logo为图片发送");
+                    }else{
+                        LoadResultUtil.onLoadListener.onSuccess("一次性成功,但是图片加载错误,以logo为图片发送");
+                    }
                 }
                 Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_LONG).show();
+
             }
         });
+
     }
 
 
@@ -217,9 +226,9 @@ public class ShareUtils {
         req.message = msg;
         req.scene = SendMessageToWX.Req.WXSceneTimeline;
         api.sendReq(req);
-        if (onLoadListener != null) {
-            onLoadListener.onSuccess();
-        }
+//        if (onLoadListener != null) {
+//            onLoadListener.onSuccess();
+//        }
         LogTool.d("SEND_REQ");
     }
 }

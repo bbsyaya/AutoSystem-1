@@ -5,10 +5,12 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.EditText;
 
+import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.constant.HttpIdentifier;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
 import com.shuangyou.material.R;
 import com.shuangyou.material.interfaces.KeyValue;
@@ -16,6 +18,7 @@ import com.shuangyou.material.network.GroupControlUrl;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -50,35 +53,29 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
         boolean isLogin = (boolean) SPUtil.get(this, IS_LOGIN, false);
         TelephonyManager telephonyManager = (TelephonyManager) this
                 .getSystemService(Context.TELEPHONY_SERVICE);
-        String phoneNum = telephonyManager.getLine1Number();
-        Log.e(TAG, "initViews phoneNum: "+phoneNum );
         imei = telephonyManager.getDeviceId();
         sn = android.os.Build.SERIAL;
-//        if (TextUtils.isNull(imei)) {
-//            single = sn;
-//        } else {
-//            if (imei.length() > 6) {
-//                imei = imei.substring(imei.length() - 5, imei.length());
-//                single = imei + sn;
-//            }else{
-//                single =sn;
-//            }
-//        }
-        if (!isLogin) {
+        File file = new File(SavePath.SAVE_USER_ID);
+        if (file.exists()){
+            //存在的话,直接获得 userId
+           userId =  WriteFileUtil.readFileByBufferReader(SavePath.SAVE_USER_ID);
+            Log.e(TAG, "initViews73: "+userId );
+        }else{
             if (TextUtils.isNull(sn)){
                 sn = System.currentTimeMillis()+"";
             }
-            userId = sn+ new Random().nextInt(1000)+1;
-            SPUtil.putAndApply(this, USER_ID, userId);
-        }else{
-            userId = (String) SPUtil.get(this,USER_ID,"");
+            userId = sn+(new Random().nextInt(10000)+1);
+            WriteFileUtil.wrieFileUserIdByBufferedWriter(userId,SavePath.SAVE_USER_ID);
+            Log.e(TAG, "initViews80: "+userId );
         }
-        Log.e(TAG, "initViews single: " + userId);
 
-//        if (isLogin) {
-//            startActivity(GetTimeActivity.class, null);
-//            finish();
-//        }
+
+
+
+        if (isLogin) {
+            startActivity(GetTimeActivity.class, null);
+            finish();
+        }
     }
 
     @Override
@@ -123,9 +120,9 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                 Log.e(TAG, "log: " + strReuslt);
                 break;
             case ERROR:
-                String content2 = userId + "  注册失败--没有网";// 6.3新添加的--
-                showToast("服务器异常,请检查网络!");
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content2, id, "1"), HttpIdentifier.LOG);
+                String content2 = userId + "  注册失败--网速慢";// 6.3新添加的--
+                showToast("连接超时,请检查网络!");
+//                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content2, id, "1"), HttpIdentifier.LOG);
                 break;
         }
     }
@@ -140,13 +137,14 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
         }
         String resultId = JPushInterface.getRegistrationID(this);
         if (TextUtils.isNull(resultId)) {
-            showToast("没获取到推送 id");
+            showToast("没获取到推送id");
             return;
         }
         if (TextUtils.isNull(userId)){
             showToast("没获取到标识符");
             return;
         }
+        LogTool.d("CompanyActivity---"+userId);
         showProgress();
         Log.e(TAG, "onViewClicked: " + resultId);
         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).register(userId, id, resultId), HttpIdentifier.REGISTER);

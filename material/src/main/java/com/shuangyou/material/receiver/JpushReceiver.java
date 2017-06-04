@@ -13,12 +13,14 @@ import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.util.DateUtils;
 import com.kidney_hospital.base.util.FileUtils;
+import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.wechat.LoadResultUtil;
+import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.ShareUtils;
-import com.shuangyou.material.util.WorkManager;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
@@ -33,17 +35,21 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 
+import static com.kidney_hospital.base.util.wechat.LoadResultUtil.onLoadListener;
 import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
 
 /**
  * Created by Vampire on 2017/5/31.
  */
 
-public class JpushReceiver extends BroadcastReceiver {
+public class JpushReceiver extends BroadcastReceiver implements KeyValue {
     private static final String TAG = "JpushReceiver";
     public static OnReceiveTimeListener onReceiveTimeListener;
     private Context mContext;
     public List<File> filePictures = new ArrayList<>();
+    public static String sContent = "";
+    private String frequency = "";
+    public static String sFrequency = "";
 
     public static void setOnReceiveTimeListener(OnReceiveTimeListener onReceiveTimeListener) {
         JpushReceiver.onReceiveTimeListener = onReceiveTimeListener;
@@ -73,20 +79,64 @@ public class JpushReceiver extends BroadcastReceiver {
                 String url = object.getString("url");
                 String type = object.getString("type");
                 String picUrl = object.getString("picUrl");
+                String sendCompanyContentId = object.getString("sendCompanyContentId");
+                String frequency = object.getString("frequency");
+                sFrequency = frequency;
+                String sp_sendCompanyContentId = (String) SPUtil.get(mContext, SEND_COMPANY_CONTENT_ID, "");
+                if (sendCompanyContentId.equals(sp_sendCompanyContentId)) {
+                    //素材重了
+                    Toast.makeText(mContext, "同一素材不可转发两次!", Toast.LENGTH_SHORT).show();
+                    if (onLoadListener != null) {
+                        onLoadListener.onFailuer("收到了两次推送,把第二次推送拦截了");
+                    }
+                    return;
+                }
+                if (TextUtils.isNull(sendCompanyContentId)){
+                    if (onLoadListener != null) {
+                        onLoadListener.onFailuer("sendCompanyContentId为空");
+                    }
+                    return;
+                }
+                if (TextUtils.isNull(frequency)){
+                    if (onLoadListener != null) {
+                        onLoadListener.onFailuer("frequency为空");
+                    }
+                    return;
+                }
+
+                SPUtil.putAndApply(mContext, SEND_COMPANY_CONTENT_ID, sendCompanyContentId);
+
+                if (TextUtils.isNull(title)) {
+                    if (onLoadListener != null) {
+                        onLoadListener.onFailuer("title为空");
+                    }
+                    return;
+                }
+                if (TextUtils.isNull(content)) {
+                    if (onLoadListener != null) {
+                        onLoadListener.onFailuer("content为空");
+                    }
+                    return;
+                }
+                if (!type.equals("1")) {
+                    if (TextUtils.isNull(url)) {
+                        if (onLoadListener != null) {
+                            onLoadListener.onFailuer("url为空");
+                        }
+                        return;
+                    }
+                }
+                if (TextUtils.isNull(picUrl)) {
+                    if (onLoadListener != null) {
+                        onLoadListener.onFailuer("picUrl为空");
+                    }
+                    return;
+                }
+
                 if (onReceiveTimeListener != null) {
                     onReceiveTimeListener.onReceiveTime("类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                 }
 
-                boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
-                Log.e(TAG, "onReceive: " + flag);
-                if (!flag) {
-                    LogTool.d("辅助功能未开启receiver59");
-                    Toast.makeText(mContext, "辅助功能未开启!", Toast.LENGTH_SHORT).show();
-                    if (ShareUtils.onLoadListener != null) {
-                        ShareUtils.onLoadListener.onFailuer("辅助功能未开启!");
-                    }
-                    return;
-                }
 
                 if (type.equals("1")) {//转发图文的
                     Log.e(TAG, "loadData: 转发图文的到了");
@@ -100,13 +150,28 @@ public class JpushReceiver extends BroadcastReceiver {
                         String[] pictures = picUrl.split(",");
                         picUrl = pictures[0];
                     }
-//                    sendForUrl(context, content, url, picUrl);
+                    sContent = content;
+
+
+//                    seForUrl(context, title, url, picUrl);
                     ShareUtils.sendToFriends(mContext,
                             url,
-                            content,
-                            content,
+                            title,
+                            title,
                             picUrl);
                 }
+
+
+//                boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
+//                Log.e(TAG, "onReceive: " + flag);
+//                if (!flag) {
+//                    LogTool.d("辅助功能未开启receiver59");
+//                    Toast.makeText(mContext, "辅助功能未开启!", Toast.LENGTH_SHORT).show();
+//                    if (onLoadListener != null) {
+//                        onLoadListener.onFailuer("辅助功能未开启!");
+//                    }
+//                    return;
+//                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -146,10 +211,10 @@ public class JpushReceiver extends BroadcastReceiver {
             @Override
             public void run() {
                 FileUtils.delFolder(SavePath.savePath);
-                if (TextUtils.isNull(picUrl)){
+                if (TextUtils.isNull(picUrl)) {
                     LogTool.d("素材图片为空");
-                    if (ShareUtils.onLoadListener!=null){
-                        ShareUtils.onLoadListener.onFailuer("素材图片是空的!");
+                    if (onLoadListener != null) {
+                        onLoadListener.onFailuer("素材图片是空的!");
                     }
                     return;
                 }
@@ -163,8 +228,16 @@ public class JpushReceiver extends BroadcastReceiver {
                 LogTool.d("获取的 content110:" + content);
                 File folder = new File(SavePath.SAVE_PIC_PATH);
                 addToList(folder);
-                ShareUtils.shareMultipleToMoments(mContext, content, filePictures);
-
+                boolean isSend = ShareUtils.shareMultipleToMoments(mContext, content, filePictures);
+                if (isSend) {
+                    if (LoadResultUtil.onLoadListener != null) {
+                        if (frequency.equals("2")) {
+                            LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功");
+                        } else {
+                            LoadResultUtil.onLoadListener.onSuccess("一次性成功");
+                        }
+                    }
+                }
 
             }
         }).start();

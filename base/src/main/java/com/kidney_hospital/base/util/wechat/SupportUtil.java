@@ -72,7 +72,7 @@ public class SupportUtil {
     private String searchEditId;
     private String noSuchTextId;
     private String checkItemIvId;
-
+    private String etContentId;
 
     public String getCreateGroup() {
         return createGroup;
@@ -95,6 +95,7 @@ public class SupportUtil {
         FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/ah1";
         FMesssageConversationUI_LV_ID = "com.tencent.mm:id/ahc";
         launcherNewFriendId = "com.tencent.mm:id/kr";
+        etContentId = "com.tencent.mm:id/bo0";
 
     }
     private void Ver6325() {
@@ -113,6 +114,9 @@ public class SupportUtil {
     private void Ver658() {
         sendRequestBtnId = "com.tencent.mm:id/gl";
         snsUploadUi = "com.tencent.mm.plugin.sns.ui.En_c4f742e5";
+        launcherPagerId = "com.tencent.mm:id/asa";
+        launcherNewFriendId = "com.tencent.mm:id/ax4";
+        etContentId = "com.tencent.mm:id/cst";
     }
 
     private void Ver654() {
@@ -134,6 +138,7 @@ public class SupportUtil {
         noSuchTextId = "com.tencent.mm:id/ez";
         checkItemIvId = "com.tencent.mm:id/cl1";
         searchItemId = "com.tencent.mm:id/axr";
+        etContentId = "com.tencent.mm:id/cn4";
     }
 
     private void Ver657() {
@@ -150,7 +155,15 @@ public class SupportUtil {
         makeSureQuiteId = "com.tencent.mm:id/abz";
         launcherPagerId = "com.tencent.mm:id/blx";
         snsUploadUi = "com.tencent.mm.plugin.sns.ui.En_c4f742e5";
+        launcherNewFriendId = "com.tencent.mm:id/avn";//新的朋友那个
+        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/avz"; //添加好友按钮
+        FMesssageConversationUI_LV_ID = "com.tencent.mm:id/aw5"; //通讯录 ListView
+        etContentId = "com.tencent.mm:id/cpe";
 
+    }
+
+    public String getEtContentId() {
+        return etContentId;
     }
 
     public String getSearchItemId() {

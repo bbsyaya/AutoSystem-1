@@ -268,6 +268,12 @@ public class PerformClickUtils {
             return null;
         }
         List<AccessibilityNodeInfo> wightList = accessibilityNodeInfo.findAccessibilityNodeInfosByViewId(wightId);
+        if (wightList==null||wightId==null){
+            //微信不兼容
+            Log.e(TAG, "getText: 微信不兼容" );
+
+            return "";
+        }
         if (!wightId.isEmpty()) {
             for (AccessibilityNodeInfo wight : wightList) {
                 if (wight != null && wight.getText().toString() != null && !wight.getText().toString().isEmpty()) {

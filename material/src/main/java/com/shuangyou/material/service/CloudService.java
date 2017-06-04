@@ -9,9 +9,13 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
+import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.wechat.DaysShare;
+import com.kidney_hospital.base.util.wechat.LoadResultUtil;
+import com.kidney_hospital.base.util.wechat.PerformClickUtils;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
+import com.shuangyou.material.receiver.JpushReceiver;
 
 import java.util.List;
 
@@ -45,11 +49,24 @@ public class CloudService extends AccessibilityService {
             Log.e(TAG, "activity  ------------ " + atyName);
             // TODO: 2017/5/20  分享365
 
-            if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配
-                Log.e(TAG, "onAccessibilityEvent: 我来了" );
 
+            if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配(已做好四个版本的)
+                Log.e(TAG, "onAccessibilityEvent: 我来了");
+                String etContent = PerformClickUtils.getText(mService, supportUtil.getEtContentId());
+                Log.e(TAG, "onAccessibilityEvent52: "+etContent );
+                if (TextUtils.isNull(supportUtil.getEtContentId())){
+                    if (LoadResultUtil.onLoadListener!=null){
+                        LoadResultUtil.onLoadListener.onFailuer("微信不兼容");
+                    }
+                    return;
+                }
+                if (etContent.equals("这一刻的想法...")) {
+                    PerformClickUtils.setText(mService, supportUtil.getEtContentId(), JpushReceiver.sContent);
+                }
 
                 DaysShare.getInstence().share(supportUtil, mService, atyName);
+
+
             }
 
         }

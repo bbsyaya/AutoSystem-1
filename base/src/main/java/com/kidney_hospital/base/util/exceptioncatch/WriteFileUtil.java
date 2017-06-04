@@ -69,22 +69,22 @@ public class WriteFileUtil {
     }
 
     //使用BufferReader读取文件
-    public static void readFileByBufferReader() {
+    public static String readFileByBufferReader(String path) {
         try {
-            File file = new File(Environment.getExternalStorageDirectory(),
-                    getDefaultFilePath());
+            File file = new File(path);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String readline = "";
             StringBuffer sb = new StringBuffer();
             while ((readline = br.readLine()) != null) {
                 System.out.println("readline:" + readline);
-                sb.append(readline);
+                return readline;
             }
             br.close();
-            System.out.println("读取成功：" + sb.toString());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return "";
     }
 
     public static File wrieFileByFileOutputStream(String info, String fileName) {
@@ -104,9 +104,14 @@ public class WriteFileUtil {
 
     public static void wrieFileByBufferedWriter(String info, String fileName) {
         try {
-            File file = new File("storage/emulated/0/Download/" + fileName + ".txt");
+//            File file = new File("storage/emulated/0/Download/auto/" + fileName + ".txt");
+            File file = new File("storage/emulated/0/Download/auto_log/");
+            if (!file.exists()){
+                file.mkdirs();
+            }
+            File fullFile = new File("storage/emulated/0/Download/auto_log/" + fileName + ".txt");
             //第二个参数意义是说是否以append方式添加内容
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fullFile, true));
             bw.write(info);
             bw.flush();
             Log.d(TAG, "写入成功");
@@ -115,4 +120,22 @@ public class WriteFileUtil {
             Log.d(TAG, "e:" + e);
         }
     }
+
+
+    public static void wrieFileUserIdByBufferedWriter(String info, String fileName) {
+        try {
+            File fullFile = new File(fileName);
+            //第二个参数意义是说是否以append方式添加内容
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fullFile, true));
+            bw.write(info);
+            bw.flush();
+            Log.d(TAG, "写入成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "e:" + e);
+        }
+    }
+
+
+
 }

@@ -161,7 +161,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.GetTimeActivity" />
         <!--<activity android:name=".activity.GroupSendingActivity" />-->
         <!--<activity android:name=".activity.GroupControlActivity" />-->
@@ -181,11 +180,8 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/auto_add" />
         </service>
-        <service android:name=".service.GroupSendingService" />
-        <service android:name=".service.ControlService" />
         <service android:name=".service.CheckUpdateService" />
         <service android:name="com.kidney_hospital.base.update.DownLoadService"/>
-        <service android:name=".service.GetTimeService" />
         <service android:name=".service.SendingService" />
 
         <receiver android:name=".receiver.UpdateReceiver">

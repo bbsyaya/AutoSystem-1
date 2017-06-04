@@ -18,7 +18,7 @@ import java.util.List;
  * Created by Vampire on 2017/5/27.
  */
 
-public class AutoService extends AccessibilityService{
+public class AutoService extends AccessibilityService {
     private static final String TAG = "AutoService";
     private Context mContext;
     private AccessibilityService mService;
@@ -40,9 +40,10 @@ public class AutoService extends AccessibilityService{
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
             String atyName = event.getClassName().toString();
             Log.e(TAG, "activity  ------------ " + atyName);
-            // TODO: 2017/5/20  分享365
-            AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
-            addLinkMan.startAdd(supportUtil, mService, atyName);
+
+                // TODO: 2017/5/20  分享365
+                AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
+                addLinkMan.startAdd(supportUtil, mService, atyName);
         }
 
     }
@@ -51,6 +52,7 @@ public class AutoService extends AccessibilityService{
     public void onInterrupt() {
 
     }
+
     /**
      * 获取微信的版本号
      *

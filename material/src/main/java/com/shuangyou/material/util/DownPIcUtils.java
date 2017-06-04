@@ -5,6 +5,8 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.kidney_hospital.base.util.wechat.LoadResultUtil;
+
 import junit.framework.Assert;
 
 import java.io.ByteArrayOutputStream;
@@ -60,8 +62,8 @@ public class DownPIcUtils {
 				inStream = httpConnection.getInputStream();
 			}else{
 				//图片加载错误
-				if (ShareUtils.onLoadListener!=null){
-					ShareUtils.onLoadListener.onFailuer("图片加载错误!");
+				if (LoadResultUtil.onLoadListener!=null){
+					LoadResultUtil.onLoadListener.onFailuer("图片加载错误!");
 				}
 
 			}
