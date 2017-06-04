@@ -92,8 +92,8 @@ public class SupportUtil {
     private void Ver6313() {
         sendRequestBtnId = "com.tencent.mm:id/cds";
         launcherPagerId = "com.tencent.mm:id/ig";
-        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/ah1";
-        FMesssageConversationUI_LV_ID = "com.tencent.mm:id/ahc";
+        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/ah1";//添加按钮
+        FMesssageConversationUI_LV_ID = "com.tencent.mm:id/ahc";//通讯录 listview
         launcherNewFriendId = "com.tencent.mm:id/kr";
         etContentId = "com.tencent.mm:id/bo0";
 
@@ -117,6 +117,9 @@ public class SupportUtil {
         launcherPagerId = "com.tencent.mm:id/asa";
         launcherNewFriendId = "com.tencent.mm:id/ax4";
         etContentId = "com.tencent.mm:id/cst";
+
+        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/axi";//添加按钮
+        FMesssageConversationUI_LV_ID = "com.tencent.mm:id/axl";//通讯录 listview
     }
 
     private void Ver654() {

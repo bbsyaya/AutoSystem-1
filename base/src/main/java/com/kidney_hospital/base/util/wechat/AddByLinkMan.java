@@ -39,11 +39,7 @@ public class AddByLinkMan {
         if (atyName.equals(supportUtil.getLauncherUI())) {
             Log.e(TAG, "startAdd: 已经到这里了40" );
             launcherInfo(supportUtil, mService);
-        }
-//        else if (atyName.equals("??")){//对方没有验证的时候,就是好友直接加上了
-//
-//        }
-        else if (atyName.equals(supportUtil.getFMesssageConversationUI())
+        } else if (atyName.equals(supportUtil.getFMesssageConversationUI())
                 ||atyName.equals("android.widget.ListView")){
             Log.e(TAG, "startAdd: 已经到这里了43" );
             addFriend(supportUtil, mService);

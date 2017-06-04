@@ -84,11 +84,11 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 sFrequency = frequency;
                 String sp_sendCompanyContentId = (String) SPUtil.get(mContext, SEND_COMPANY_CONTENT_ID, "");
                 if (sendCompanyContentId.equals(sp_sendCompanyContentId)) {
-                    //素材重了
+                    //素材重了  也有可能第二次推送把第一次推送失败的激活了
                     Toast.makeText(mContext, "同一素材不可转发两次!", Toast.LENGTH_SHORT).show();
-                    if (onLoadListener != null) {
-                        onLoadListener.onFailuer("收到了两次推送,把第二次推送拦截了");
-                    }
+//                    if (onLoadListener != null) {
+//                        onLoadListener.onFailuer("收到了两次推送,把第二次推送拦截了");
+//                    }
                     return;
                 }
                 if (TextUtils.isNull(sendCompanyContentId)){
