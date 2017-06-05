@@ -46,7 +46,8 @@ public interface GroupControlUrl {
             , @Field("companyPhone") String companyPhone
             , @Field("content") String content
             , @Field("companyId") String companyId
-            , @Field("flag") String flag);
+            , @Field("flag") String flag
+            , @Field("sendCompanyContentId") String sendCompanyContentId);
 
 
     /**
@@ -58,6 +59,14 @@ public interface GroupControlUrl {
             , @Field("companyId") String companyId);
 
 
-
+    /**
+     * 登录接口
+     */
+    @FormUrlEncoded
+    @POST("companyuser/logIn")
+    Call<ResponseBody> login(@Field("companyPhone") String companyPhone
+            , @Field("companyId") String companyId
+            , @Field("passWord") String passWord
+            , @Field("registrationId") String registrationId);
 
 }

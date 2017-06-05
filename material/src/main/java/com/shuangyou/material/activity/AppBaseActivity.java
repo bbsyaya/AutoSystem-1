@@ -41,9 +41,9 @@ public abstract class AppBaseActivity extends BaseActivity {
         AppManger.getInstance().addActivity(this);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
-        //设置ToolBar222
-//        initToolBar();222
-        //初始化View222
+        //设置ToolBar
+//        initToolBar();
+        //初始化View
         initViews();
         loadData();
         cyIds  = "1";

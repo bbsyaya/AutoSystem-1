@@ -19,5 +19,6 @@ public class LoadResultUtil {
     public interface OnLoadListener {
         void onSuccess(String error);
         void onFailuer(String error);
+        void onUpdate(String str);
     }
 }

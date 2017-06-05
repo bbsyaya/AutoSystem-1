@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.constant.HttpIdentifier;
+import com.kidney_hospital.base.util.PhoneInfo;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
@@ -30,14 +31,13 @@ import cn.jpush.android.api.JPushInterface;
  */
 
 public class CompanyActivity extends AppBaseActivity implements KeyValue {
-    public static final String IS_LOGIN = "is_login";
+
     private static final String TAG = "CompanyActivity";
     @BindView(R.id.et_id)
     EditText etId;
     private String imei = "";
     private String sn = "";
     private String id;
-//    private String single = "";
 
 
 
@@ -49,6 +49,11 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
 
     @Override
     protected void initViews() {
+
+        PhoneInfo phoneInfo = new PhoneInfo(this);
+        String phoneNumber = phoneInfo.getNativePhoneNumber();
+        Log.e(TAG, "phoneNumber: "+phoneNumber );
+
 
         boolean isLogin = (boolean) SPUtil.get(this, IS_LOGIN, false);
         TelephonyManager telephonyManager = (TelephonyManager) this
@@ -96,7 +101,7 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                     if (jsonObject.getString("result").equals("0000")) {
                         showLongToast("注册成功");
                         String content = userId + "  注册成功";
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "2"), HttpIdentifier.LOG);
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "2",null), HttpIdentifier.LOG);
                         SPUtil.putAndApply(this, IS_LOGIN, true);
                         SPUtil.putAndApply(this, COMPANY_ID, id);
                         startActivity(GetTimeActivity.class, null);
@@ -108,7 +113,7 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                         }
                         showLongToast("注册失败");
                         String content = userId + "  注册失败--返回-" + jsonObject.getString("result");
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "1"), HttpIdentifier.LOG);
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "1",null), HttpIdentifier.LOG);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

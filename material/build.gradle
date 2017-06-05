@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply from: 'tinkerpatch.gradle'
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
@@ -9,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 20170604
-        versionName "1.1.15"
+        versionName "1.1.16"
 
 
     }

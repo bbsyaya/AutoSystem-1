@@ -154,7 +154,7 @@
 
 
 
-        <activity android:name=".activity.CompanyActivity">
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

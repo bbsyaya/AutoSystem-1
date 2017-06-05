@@ -48,7 +48,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
     private Context mContext;
     public List<File> filePictures = new ArrayList<>();
     public static String sContent = "";
-    private String frequency = "";
+//    private String frequency = "";
     public static String sFrequency = "";
 
     public static void setOnReceiveTimeListener(OnReceiveTimeListener onReceiveTimeListener) {
@@ -140,7 +140,6 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
 
                 if (type.equals("1")) {//转发图文的
                     Log.e(TAG, "loadData: 转发图文的到了");
-//                    we
                     LogTool.d("loadData: 转发图文的到了");
                     sendForPhotoText(content, picUrl);
                 } else {//转发连接的
@@ -231,9 +230,9 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 boolean isSend = ShareUtils.shareMultipleToMoments(mContext, content, filePictures);
                 if (isSend) {
                     if (LoadResultUtil.onLoadListener != null) {
-                        if (frequency.equals("2")) {
-                            LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功");
-                        } else {
+                            if (sFrequency.equals("2")) {
+                                LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功");
+                            } else {
                             LoadResultUtil.onLoadListener.onSuccess("一次性成功");
                         }
                     }

@@ -9,50 +9,52 @@
         android:layout_centerInParent="true"
         android:text="等待就绪..."
         android:textSize="25sp"/>
-    <TextView
-        android:id="@+id/tv_company"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="企业码是:"
-        android:textSize="20sp"/>
-    <TextView
-        android:id="@+id/tv_device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:text="机器码是:"
-        android:textSize="20sp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_company"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="企业码是:"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/tv_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="微信号是:"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/tv_registration_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="推送ID是:"
+            android:textSize="20sp"/>
+        <Button
+            android:id="@+id/tv_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="退出登录"
+            android:textSize="20sp"/>
+        <Button
+            android:id="@+id/tv_is_open"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="辅助功能未开启,点击开启"
+            android:textSize="20sp"/>
+    </LinearLayout>
 
-        android:layout_below="@+id/tv_company"/>
-    <TextView
-        android:id="@+id/tv_registration_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:text="推送ID是:"
-        android:textSize="20sp"
-        android:layout_below="@+id/tv_device"/>
-    <Button
-        android:id="@+id/tv_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:text="退出登录"
-        android:textSize="20sp"
-        android:layout_below="@+id/tv_registration_id"/>
-    <Button
-        android:id="@+id/tv_is_open"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:text="辅助功能未开启,点击开启"
-        android:textSize="20sp"
-        android:layout_below="@+id/tv_logout"/>
     <TextView
         android:id="@+id/tv_version"
         android:layout_width="wrap_content"

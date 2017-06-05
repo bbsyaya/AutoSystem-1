@@ -25,6 +25,7 @@ import com.shuangyou.material.network.GroupControlUrl;
 import com.shuangyou.material.receiver.JpushReceiver;
 import com.shuangyou.material.service.CheckUpdateService;
 import com.shuangyou.material.util.WorkManager;
+import com.tinkerpatch.sdk.TinkerPatch;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,8 +37,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
-
-import static com.shuangyou.material.activity.CompanyActivity.IS_LOGIN;
 
 /**
  * Created by Vampire on 2017/5/31.
@@ -59,12 +58,9 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     Button tvIsOpen;
     @BindView(R.id.tv_registration_id)
     TextView tvRegistrationId;
-    private String imei = "";
-    private String sn = "";
-//    private String single= "";
 
     private String companyId;
-    private String userId;
+    private String wxId;//微信号
 
     @Override
     protected void loadData() {
@@ -73,37 +69,39 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
     @Override
     protected void initViews() {
-        userId = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_USER_ID);
+        int patchVersion = TinkerPatch.with().getPatchVersion();//补丁号
+        Log.e(TAG, "initViews 73:"+patchVersion );
+        wxId = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_ID);
         initJpush();
         JpushReceiver.setOnReceiveTimeListener(this);
         LoadResultUtil.setOnLoadListener(this);
         String registrationId = JPushInterface.getRegistrationID(this);
-        if (TextUtils.isNull(registrationId)){
+        if (TextUtils.isNull(registrationId)) {
             tvRegistrationId.setText("推送注册Id获取失败");
-        }else {
+        } else {
             tvRegistrationId.setText("推送注册Id:" + registrationId);
         }
-        tvVersion.setText("版本名: " + AppUtils.getVersionCode(this));
+        tvVersion.setText("版本名: " + AppUtils.getVersionCode(this)+"_"+patchVersion);
 
         companyId = (String) SPUtil.get(this, COMPANY_ID, "1");
         tvCompany.setText("企业码:" + companyId);
     }
 
     private void initJpush() {
-        Log.e(TAG, "initJpush single: " + userId);
-        tvDevice.setText("别名:" + userId);
+        Log.e(TAG, "initJpush single: " + wxId);
+        tvDevice.setText("微信号:" + wxId);
         Set<String> set = new HashSet<>();
-        set.add(userId);//手机的机器码
-        JPushInterface.setAliasAndTags(this, userId, set, new TagAliasCallback() {
+        set.add(wxId);//手机的机器码
+        JPushInterface.setAliasAndTags(this, wxId, set, new TagAliasCallback() {
             @Override
             public void gotResult(int i, String s, Set<String> set) {
                 Log.e(TAG, "code==" + i);
                 LogTool.d("极光返回码------>" + i);
                 if (i != 0) {
                     String content = "极光集成失败,错误码为:" + i;
-                    tvError.setText(content+"\n请杀死软件后重新打开,多试几次!");
-                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", userId, content, companyId, "1"), HttpIdentifier.LOG);
-                } else{
+                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE,null), HttpIdentifier.LOG);
+                } else {
                     tvResult.setText("极光集成成功,等待推送...");
                 }
             }
@@ -122,7 +120,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         if (!flag) {
             tvIsOpen.setText("辅助功能未开启,点击开启!");
 
-        }else{
+        } else {
             tvIsOpen.setText("辅助功能已开启!");
         }
     }
@@ -139,9 +137,10 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String content = userId + "  转发成功--"+error;
-                tvError.setText("转发成功--"+error);
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", userId, content, companyId, "2"), HttpIdentifier.LOG);
+                String content = wxId + "  转发成功--" + error;
+                tvError.setText("转发成功--" + error);
+                String sp_sendCompanyContentId = (String) SPUtil.get(GetTimeActivity.this, SEND_COMPANY_CONTENT_ID, "");
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS,sp_sendCompanyContentId), HttpIdentifier.LOG);
 
             }
         });
@@ -154,13 +153,30 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
             @Override
             public void run() {
                 //转发失败的回调
-                String content = userId + "  转发失败--" + error;
+                String content = wxId + "  转发失败--" + error;
                 tvError.setText("  转发失败--" + error);
-                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("4", userId, content, companyId, "1"), HttpIdentifier.LOG);
+                String sp_sendCompanyContentId = (String) SPUtil.get(GetTimeActivity.this, SEND_COMPANY_CONTENT_ID, "");
+                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE,sp_sendCompanyContentId), HttpIdentifier.LOG);
 
             }
         });
 
+    }
+
+    @Override
+    public void onUpdate(String str) {
+        Log.e(TAG, "onUpdate: "+str );
+        LogTool.d("onUpdate----->"+str);
+        new AlertDialog.Builder(this)
+                .setTitle("补丁已经下载完毕!")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     @Override
@@ -183,14 +199,15 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         }
     }
 
-    @OnClick({ R.id.tv_is_open,R.id.tv_version, R.id.tv_logout})
+    @OnClick({R.id.tv_is_open, R.id.tv_version, R.id.tv_logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_is_open:
+//                TinkerPatch.with().fetchPatchUpdate(true);
                 //打开辅助功能
-            Intent service = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            service.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(service);
+                Intent service = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                service.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(service);
                 break;
             case R.id.tv_version:
                 showLongToast("请看通知栏,不要多次点击!如果有新版本的话,会有显示");
@@ -203,10 +220,8 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-//                                showProgress();
-//                                doHttp(RetrofitUtils.createApi(GroupControlUrl.class).delCompanyuser(userId, companyId), HttpIdentifier.UNINSTALL);
                                 SPUtil.putAndApply(GetTimeActivity.this, IS_LOGIN, false);
-                                startActivity(CompanyActivity.class,null);
+                                startActivity(LoginActivity.class, null);
                                 finish();
                             }
                         })

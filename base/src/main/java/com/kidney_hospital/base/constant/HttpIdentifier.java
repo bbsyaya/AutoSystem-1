@@ -16,4 +16,5 @@ public class HttpIdentifier {
     public static final int REGISTER = 17;//注册
     public static final int LOG = 18;//日志
     public static final int UNINSTALL = 19;//卸载
+    public static final int LOGIN = 20;//登录
 }
