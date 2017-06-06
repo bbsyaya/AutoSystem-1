@@ -5,5 +5,6 @@ package com.rabbit.fans.interfaces;
  */
 
 public interface KeyValue {
+    String IS_LOGIN = "is_login";
     String COMPANY_ID ="company_id";
 }

@@ -71,7 +71,7 @@ public class WorkManager {
                 }
             }
         } else {
-            turnToService();
+//            turnToService();
             Log.v(TAG, "***ACCESSIBILITY IS DISABLED***");
         }
         return false;

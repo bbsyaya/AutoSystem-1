@@ -2,7 +2,10 @@ package com.rabbit.fans.network;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -10,6 +13,8 @@ import retrofit2.http.Query;
  */
 
 public interface PhoneUrl {
+
+
     /**
      * 获取号码
      */
@@ -21,4 +26,13 @@ public interface PhoneUrl {
      */
     @GET("phoneJson/getTimeList")
     Call<ResponseBody> getTimeList(@Query("companyId") String companyId);
+    /**
+     * 登录接口
+     */
+    @FormUrlEncoded
+    @POST("companyuser/logIn")
+    Call<ResponseBody> login(@Field("companyPhone") String companyPhone
+            , @Field("companyId") String companyId
+            , @Field("passWord") String passWord
+            , @Field("registrationId") String registrationId);
 }

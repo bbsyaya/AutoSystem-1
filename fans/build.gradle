@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
-
+apply from: 'tinkerpatch.gradle'
 
 android {
     compileSdkVersion 24
@@ -53,4 +53,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'org.litepal.android:core:1.3.2'
+    compile project(':jpush')
 }

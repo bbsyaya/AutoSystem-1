@@ -1,4 +1,4 @@
-package com.shuangyou.material.activity;
+package com.rabbit.fans.activity;
 
 import android.util.Log;
 import android.widget.EditText;
@@ -9,9 +9,9 @@ import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
-import com.shuangyou.material.R;
-import com.shuangyou.material.interfaces.KeyValue;
-import com.shuangyou.material.network.GroupControlUrl;
+import com.rabbit.fans.R;
+import com.rabbit.fans.interfaces.KeyValue;
+import com.rabbit.fans.network.PhoneUrl;
 
 import org.json.JSONObject;
 
@@ -22,8 +22,7 @@ import butterknife.OnClick;
 import cn.jpush.android.api.JPushInterface;
 
 /**
- * 登录
- * Created by Vampire on 2017/6/5.
+ * Created by Vampire on 2017/6/6.
  */
 
 public class LoginActivity extends AppBaseActivity implements KeyValue{
@@ -36,6 +35,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
     EditText etPsw;
     String wxId;
     String companyId;
+
     @Override
     protected void loadData() {
 
@@ -47,19 +47,19 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
         String local_wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
         etAccount.setText(local_wxId);
         etPsw.setText(local_wxPsw);
-
         boolean isLogin = (boolean) SPUtil.get(this, IS_LOGIN, false);
         if (isLogin) {
-            startActivity(GetTimeActivity.class, null);
+            startActivity(MainActivity.class, null);
             finish();
         }
+
+//        LoadResultUtil.setOnLoadListener(this);
     }
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_login;
     }
-
     @Override
     public void onResponse(int identifier, String strReuslt) {
         super.onResponse(identifier, strReuslt);
@@ -72,16 +72,16 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
                     if (result.equals("0000")){
                         showToast("登录成功");
                         String content = wxId+ "  注册成功";
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_SUCCESS,null), HttpIdentifier.LOG);
+//                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_SUCCESS,null), HttpIdentifier.LOG);
                         SPUtil.putAndApply(this, IS_LOGIN, true);
                         SPUtil.putAndApply(this, COMPANY_ID, companyId);
-                        startActivity(GetTimeActivity.class, null);
+                        startActivity(MainActivity.class, null);
                         finish();
                     }else{
                         showToast(jsonObject.getString("retMessage"));
                         if (result.equals("9999")||result.equals("10000")){
                             String content = wxId + "  注册失败--返回-" + result;
-                            doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_FAILURE,null), HttpIdentifier.LOG);
+//                            doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_FAILURE,null), HttpIdentifier.LOG);
                         }
                     }
                 } catch (Exception e) {
@@ -96,6 +96,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
 
     @OnClick(R.id.btn_submit)
     public void onViewClicked() {
+//        TinkerPatch.with().fetchPatchUpdate(true);
 
         companyId = etCompanyId.getText().toString().trim();
         wxId = etAccount.getText().toString().trim();
@@ -128,7 +129,15 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
         WriteFileUtil.wrieFileUserIdByBufferedWriter(wxId, SavePath.SAVE_WX_ID);
         WriteFileUtil.wrieFileUserIdByBufferedWriter(wxPsw,SavePath.SAVE_WX_PSW);
 
-        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw,registrationID), HttpIdentifier. LOGIN);
-
+        doHttp(RetrofitUtils.createApi(PhoneUrl.class).login(wxId, companyId, wxPsw,registrationID), HttpIdentifier. LOGIN);
     }
+
+
+//    @Override
+//    public void onUpdate(String str) {
+//        Intent intent = new Intent(this,LoginActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
+//        android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
+//    }
 }

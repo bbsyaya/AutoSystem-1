@@ -6,7 +6,7 @@ import java.util.regex.Pattern
  * TODO: 请按自己的需求修改为适应自己工程的参数
  */
 def bakPath = file("${buildDir}/bakApk/")
-def baseInfo = "material-1.1.16-0605-17-37-13"
+def baseInfo = "fans-1.1.1-0606-14-42-15"
 def variantName = "debug"
 
 /**
@@ -19,7 +19,7 @@ tinkerpatchSupport {
         tinkerEnable = true
         reflectApplication = true
     }else {//现在一直用的这个条件!!!!!!!!
-        tinkerEnable =  true
+        tinkerEnable =  false
         reflectApplication = true
     }
     /**
@@ -30,10 +30,10 @@ tinkerpatchSupport {
 
     autoBackupApkPath = "${bakPath}"
 
-    appKey = "d9d39ef613351a82"
+    appKey = "edbfaff296308038"
 
     /** 注意: 若发布新的全量包, appVersion一定要更新 **/
-    appVersion = "1.1.16"
+    appVersion = "1.1.1"
 
     def pathPrefix = "${bakPath}/${baseInfo}/${variantName}/"
     def name = "${project.name}-${variantName}"

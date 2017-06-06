@@ -1,11 +1,12 @@
 package com.shuangyou.material;
 
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.kidney_hospital.base.BaseApp;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
-import com.kidney_hospital.base.util.wechat.LoadResultUtil;
+import com.shuangyou.material.activity.LoginActivity;
 import com.tencent.tinker.lib.service.PatchResult;
 import com.tencent.tinker.loader.app.ApplicationLike;
 import com.tinkerpatch.sdk.TinkerPatch;
@@ -48,14 +49,15 @@ public class MyApp extends BaseApp {
                     .setPatchResultCallback(new ResultCallBack() {
                         @Override
                         public void onPatchResult(PatchResult patchResult) {
-//                            final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                            startActivity(intent);
                             Log.e("MyApp37", patchResult.toString());
                             LogTool.d("update55---->"+patchResult.toString());
-                            if (LoadResultUtil.onLoadListener!=null){
-                                LoadResultUtil.onLoadListener.onUpdate(patchResult.toString());
-                            }
+                            //杀死软件,重新打开
+                            Intent intent = new Intent(BaseApp.getContext(), LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
+
+
                         }
                     })
                     //设置收到后台回退要求时,锁屏清除补丁
