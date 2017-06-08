@@ -101,7 +101,7 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                     if (jsonObject.getString("result").equals("0000")) {
                         showLongToast("注册成功");
                         String content = userId + "  注册成功";
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "2",null), HttpIdentifier.LOG);
+//                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "2",null), HttpIdentifier.LOG);
                         SPUtil.putAndApply(this, IS_LOGIN, true);
                         SPUtil.putAndApply(this, COMPANY_ID, id);
                         startActivity(GetTimeActivity.class, null);
@@ -113,7 +113,7 @@ public class CompanyActivity extends AppBaseActivity implements KeyValue {
                         }
                         showLongToast("注册失败");
                         String content = userId + "  注册失败--返回-" + jsonObject.getString("result");
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "1",null), HttpIdentifier.LOG);
+//                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save("2", userId, content, id, "1",null), HttpIdentifier.LOG);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

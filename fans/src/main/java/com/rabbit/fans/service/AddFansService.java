@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -27,8 +26,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.kidney_hospital.base.util.wechat.PerformClickUtils.sleep;
 
 /**
  * Created by Vampire on 2017/5/27.
@@ -80,8 +77,8 @@ public class AddFansService extends Service implements KeyValue{
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                sleep(1000*30);
-                loadData();
+//                sleep(1000*30);
+//                loadData();
             }
         });
     }

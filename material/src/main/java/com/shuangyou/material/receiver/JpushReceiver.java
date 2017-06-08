@@ -16,7 +16,6 @@ import com.kidney_hospital.base.util.FileUtils;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
-import com.kidney_hospital.base.util.wechat.LoadResultUtil;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.util.DownPIcUtils;
@@ -35,8 +34,8 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 
-import static com.kidney_hospital.base.util.wechat.LoadResultUtil.onLoadListener;
 import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
+import static com.shuangyou.material.util.LoadResultUtil.onLoadListener;
 
 /**
  * Created by Vampire on 2017/5/31.
@@ -70,7 +69,9 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             Log.e(TAG, "onReceive: message" + message);
             Log.e(TAG, "onReceive: extra" + extras);
             LogTool.d("onReceive: extra47----" + extras);
-
+//            if (true){
+//                return;
+//            }
 
             try {
                 JSONObject object = new JSONObject(extras);
@@ -86,9 +87,6 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 if (sendCompanyContentId.equals(sp_sendCompanyContentId)) {
                     //素材重了  也有可能第二次推送把第一次推送失败的激活了
                     Toast.makeText(mContext, "同一素材不可转发两次!", Toast.LENGTH_SHORT).show();
-//                    if (onLoadListener != null) {
-//                        onLoadListener.onFailuer("收到了两次推送,把第二次推送拦截了");
-//                    }
                     return;
                 }
                 if (TextUtils.isNull(sendCompanyContentId)){
@@ -229,11 +227,11 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 addToList(folder);
                 boolean isSend = ShareUtils.shareMultipleToMoments(mContext, content, filePictures);
                 if (isSend) {
-                    if (LoadResultUtil.onLoadListener != null) {
+                    if (onLoadListener != null) {
                             if (sFrequency.equals("2")) {
-                                LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功");
+                                onLoadListener.onSuccess("第二次推送才成功",LOG_FLAG_SUCCESS_TWICE);
                             } else {
-                            LoadResultUtil.onLoadListener.onSuccess("一次性成功");
+                            onLoadListener.onSuccess("一次性成功",LOG_FLAG_SUCCESS_ONCE);
                         }
                     }
                 }

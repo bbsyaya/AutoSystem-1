@@ -35,4 +35,24 @@ public interface PhoneUrl {
             , @Field("companyId") String companyId
             , @Field("passWord") String passWord
             , @Field("registrationId") String registrationId);
+    /**
+     * 手动请求
+     */
+    @GET("content/getLatelyDaohao")
+    Call<ResponseBody> getLatelyDaohao(@Query("companyId") String companyId
+            , @Query("companyPhone") String companyPhone);
+
+    /**
+     * 日志接口
+     */
+    @FormUrlEncoded
+    @POST("log/save")
+    Call<ResponseBody> save(@Field("type") String type
+            , @Field("companyPhone") String companyPhone
+            , @Field("content") String content
+            , @Field("companyId") String companyId
+            , @Field("flag") String flag
+            , @Field("sendId") String sendId
+            , @Field("kind") String kind);
+
 }

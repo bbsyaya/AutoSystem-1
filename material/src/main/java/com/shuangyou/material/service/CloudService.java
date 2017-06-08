@@ -12,10 +12,10 @@ import android.view.accessibility.AccessibilityEvent;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.wechat.DaysShare;
-import com.kidney_hospital.base.util.wechat.LoadResultUtil;
 import com.kidney_hospital.base.util.wechat.PerformClickUtils;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
 import com.shuangyou.material.receiver.JpushReceiver;
+import com.shuangyou.material.util.LoadResultUtil;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.kidney_hospital.base.util.wechat;
+package com.shuangyou.material.util;
 
 /**
  * Created by Vampire on 2017/6/3.
@@ -17,7 +17,7 @@ public class LoadResultUtil {
      */
 
     public interface OnLoadListener {
-        void onSuccess(String error);
+        void onSuccess(String error,String flag);
         void onFailuer(String error);
         void onUpdate(String str);
     }

@@ -72,7 +72,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
                     if (result.equals("0000")){
                         showToast("登录成功");
                         String content = wxId+ "  注册成功";
-//                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_SUCCESS,null), HttpIdentifier.LOG);
+                        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId,  LOG_FLAG_SUCCESS_ONCE,"null",LOG_KIND_IMPORT), HttpIdentifier.LOG);
                         SPUtil.putAndApply(this, IS_LOGIN, true);
                         SPUtil.putAndApply(this, COMPANY_ID, companyId);
                         startActivity(MainActivity.class, null);
@@ -81,7 +81,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
                         showToast(jsonObject.getString("retMessage"));
                         if (result.equals("9999")||result.equals("10000")){
                             String content = wxId + "  注册失败--返回-" + result;
-//                            doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_FAILURE,null), HttpIdentifier.LOG);
+                            doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_FAILURE,"null",LOG_KIND_IMPORT), HttpIdentifier.LOG);
                         }
                     }
                 } catch (Exception e) {
@@ -128,7 +128,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
         }
         WriteFileUtil.wrieFileUserIdByBufferedWriter(wxId, SavePath.SAVE_WX_ID);
         WriteFileUtil.wrieFileUserIdByBufferedWriter(wxPsw,SavePath.SAVE_WX_PSW);
-
+        showProgress();
         doHttp(RetrofitUtils.createApi(PhoneUrl.class).login(wxId, companyId, wxPsw,registrationID), HttpIdentifier. LOGIN);
     }
 

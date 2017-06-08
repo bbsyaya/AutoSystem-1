@@ -96,7 +96,7 @@ public abstract class AppBaseActivity extends BaseActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            showToast(e.getMessage());
+            showToast("服务器异常");
         }
         return DefaultConfig.HTTP_FALLBACK_RESPONSE;
     }

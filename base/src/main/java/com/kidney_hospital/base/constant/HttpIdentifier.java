@@ -17,4 +17,6 @@ public class HttpIdentifier {
     public static final int LOG = 18;//日志
     public static final int UNINSTALL = 19;//卸载
     public static final int LOGIN = 20;//登录
+    public static final int GET_PHONE_NUM = 21;//获取号码
+    public static final int HAND = 22;//手动
 }

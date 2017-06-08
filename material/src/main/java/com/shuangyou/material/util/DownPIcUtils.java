@@ -5,8 +5,6 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.kidney_hospital.base.util.wechat.LoadResultUtil;
-
 import junit.framework.Assert;
 
 import java.io.ByteArrayOutputStream;

@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
-import com.kidney_hospital.base.util.wechat.LoadResultUtil;
+import com.shuangyou.material.util.LoadResultUtil;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;

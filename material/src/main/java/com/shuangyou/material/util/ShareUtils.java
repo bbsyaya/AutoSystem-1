@@ -15,8 +15,8 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
-import com.kidney_hospital.base.util.wechat.LoadResultUtil;
 import com.shuangyou.material.R;
+import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.receiver.JpushReceiver;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
@@ -29,15 +29,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.kidney_hospital.base.util.wechat.LoadResultUtil.onLoadListener;
 import static com.shuangyou.material.util.DownPIcUtils.buildTransaction;
+import static com.shuangyou.material.util.LoadResultUtil.onLoadListener;
 
 
 /**
  * Created by 焕焕 on 2017/5/15.
  */
 
-public class ShareUtils {
+public class ShareUtils implements KeyValue{
     private static final String TAG = "ShareUtils";
 
 
@@ -157,9 +157,9 @@ public class ShareUtils {
 
                 if (onLoadListener != null) {
                     if (JpushReceiver.sFrequency.equals("2")) {
-                        LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功");
+                        onLoadListener.onSuccess("第二次推送才成功",LOG_FLAG_SUCCESS_TWICE);
                     }else{
-                        LoadResultUtil.onLoadListener.onSuccess("一次性成功");
+                        onLoadListener.onSuccess("一次性成功",LOG_FLAG_SUCCESS_ONCE);
                     }
                 }
 
@@ -179,9 +179,9 @@ public class ShareUtils {
                 api.sendReq(req);
                 if (onLoadListener != null) {
                     if (JpushReceiver.sFrequency.equals("2")) {
-                        LoadResultUtil.onLoadListener.onSuccess("第二次推送才成功,但是图片加载错误,以logo为图片发送");
+                        onLoadListener.onSuccess("第二次推送才成功,但是图片加载错误,以logo为图片发送",LOG_FLAG_SUCCESS_TWICE_BAD);
                     }else{
-                        LoadResultUtil.onLoadListener.onSuccess("一次性成功,但是图片加载错误,以logo为图片发送");
+                        onLoadListener.onSuccess("一次性成功,但是图片加载错误,以logo为图片发送",LOG_FLAG_SUCCESS_ONCE_BAD);
                     }
                 }
                 Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_LONG).show();
@@ -191,6 +191,58 @@ public class ShareUtils {
 
     }
 
+    //
+//
+//    /**
+//     *  手动分享到朋友圈
+//     */
+    public static  void sendToFriendsByHand(final Context context, String httpUrl, String title, String content, String imageUrl) {
+
+        final IWXAPI api = WXAPIFactory.createWXAPI(context, HttpApi.WX_APP_ID, true);
+        api.registerApp(HttpApi.WX_APP_ID);
+        WXWebpageObject webpage = new WXWebpageObject();
+        webpage.webpageUrl = httpUrl;
+        final WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title = content;
+        msg.description = title;
+        Glide.with(context).load(imageUrl).asBitmap().into(new SimpleTarget<Bitmap>() {//后期可以加上延时的,那边网太慢
+            @Override
+            public void onResourceReady(Bitmap bmp, GlideAnimation<? super Bitmap> glideAnimation) {
+                Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 30, 30, true);
+                msg.thumbData = DownPIcUtils.bmpToByteArray(thumbBmp, true);
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = buildTransaction("webpage");
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                api.sendReq(req);
+
+                if (onLoadListener != null) {
+                        onLoadListener.onSuccess("手动转发成功", LOG_FLAG_SUCCESS_HAND);
+                }
+
+                return;
+            }
+
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                super.onLoadFailed(e, errorDrawable);
+                LogTool.d("图片加载错误,链接类型的转发失败---error");
+                Bitmap thumbBmp = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_logo);
+                msg.thumbData = DownPIcUtils.bmpToByteArray(thumbBmp, true);
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = buildTransaction("webpage");
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                api.sendReq(req);
+                if (onLoadListener != null) {
+                        onLoadListener.onSuccess("手动转发成功,但是图片加载错误,以logo形式转发", LOG_FLAG_FAILURE_HAND);
+                }
+                Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+    }
 
 
     public static void shareToWxCircle(final Context context, String httpUrl, String title, String content, String imageUrl){

@@ -24,7 +24,7 @@ public interface GroupControlUrl {
      * 根据类型查询接口
      */
     @GET("content/findContentById")
-    Call<ResponseBody> findContentById(@Query("id")  String id);
+    Call<ResponseBody> findContentById(@Query("id") String id);
 
 
     /**
@@ -47,8 +47,16 @@ public interface GroupControlUrl {
             , @Field("content") String content
             , @Field("companyId") String companyId
             , @Field("flag") String flag
-            , @Field("sendCompanyContentId") String sendCompanyContentId);
+            , @Field("sendId") String sendId
+            , @Field("kind") String kind);
 
+
+    /**
+     * 手动转发
+     */
+    @GET("content/getLatelyArticle")
+    Call<ResponseBody> getLatelyArticle(@Query("companyId") String companyId
+            , @Query("companyPhone") String companyPhone);
 
     /**
      * 卸载接口

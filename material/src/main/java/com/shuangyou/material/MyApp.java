@@ -40,9 +40,9 @@ public class MyApp extends BaseApp {
                     .reflectPatchLibrary()
                     .setPatchRollbackOnScreenOff(true)
                     .setPatchRestartOnSrceenOff(true)
-                    .setFetchPatchIntervalByHours(3)
+                    .setFetchPatchIntervalByHours(2)
                     //设置访问后台动态配置的时间间隔,默认为3个小时
-                    .setFetchDynamicConfigIntervalByHours(3)
+                    .setFetchDynamicConfigIntervalByHours(2)
                     //我们可以通过ResultCallBack设置对合成后的回调
                     //例如弹框什么
                     //注意，setPatchResultCallback 的回调是运行在 intentService 的线程中
