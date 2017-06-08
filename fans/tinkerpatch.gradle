@@ -19,7 +19,7 @@ tinkerpatchSupport {
         tinkerEnable = true
         reflectApplication = true
     }else {//现在一直用的这个条件!!!!!!!!
-        tinkerEnable =  false
+        tinkerEnable =  true
         reflectApplication = true
     }
     /**

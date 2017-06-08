@@ -66,20 +66,9 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     private String companyId;
     private String wxId;//微信号
     private ProgressDialog progDialog = null;// 进度条
-
+    private String frequency = "";
     @Override
     protected void loadData() {
-//        startService(new Intent(this, GetNumAlarmService.class));
-
-//        Timer timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                String[] shell = new String[]{"am start -n com.tencent.mm/com.tencent.mm.ui.LauncherUI"};
-//                int i = ShellUtils.execCommand(shell, true).result;
-//
-//            }
-//        }, 1000*10);//先是10秒之后打开微信
 
     }
 
@@ -143,19 +132,29 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
             tvIsOpen.setText("辅助功能未开启,点击开启!");
+            tvIsOpen.setTextColor(0xffFF4081);
 
         } else {
             tvIsOpen.setText("辅助功能已开启!");
+            tvIsOpen.setTextColor(0xff000000);
         }
     }
 
     @Override
     public void onSuccess(String type, String frequency) {
         Log.e(TAG, "onSuccess: " + type + "," + frequency);
+        this.frequency = frequency;
         if (type.equals("1")) {
             showProgressDialog();
             doHttp(RetrofitUtils.createApi(PhoneUrl.class).myList(companyId), HttpIdentifier.GET_PHONE_NUM);
         }
+        if (type.equals("-2")){
+            String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this,SEND_IMPORT_PHONE_ID,"");
+            String content = "收到第二次推送,但是第一次已经导入成功了!";
+            doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_TWICE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+
+        }
+
     }
 
     @Override
@@ -190,6 +189,21 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                 showToast("导入完成!");
                                 progDialog.dismiss();
 
+                                if (frequency.equals("1")) {
+                                    String content = "一次性成功";
+                                    tvError.setText(content);
+                                    String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
+                                    doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+                                } else {
+                                    String content = "二推成功";
+                                    tvError.setText(content);
+                                    String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
+                                    doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_TWICE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+                                }
+
+
+
+
                                 Timer timer = new Timer();
                                 timer.schedule(new TimerTask() {
                                     @Override
@@ -198,7 +212,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                         int i = ShellUtils.execCommand(shell, true).result;
 
                                     }
-                                }, 1000 * 2);//先是10秒之后打开微信
+                                }, 1000 * 10);//先是10秒之后打开微信
 
                             }
                         });
@@ -233,7 +247,8 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                         }
                         SPUtil.putAndApply(MainActivity.this, SEND_IMPORT_PHONE_ID, sendImportPhoneId);
                         tvResult.setText("手动导号类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
-
+                        tvError.setText("手动成功");
+                        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, "手动成功", companyId, LOG_FLAG_SUCCESS_HAND, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
                         if (type.equals("1")) {
                             showProgressDialog();
                             doHttp(RetrofitUtils.createApi(PhoneUrl.class).myList(companyId), HttpIdentifier.GET_PHONE_NUM);
@@ -241,10 +256,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
 
                     } else if (object.getString("result").equals("3001")) {
-                        showToast("没有需要转发的素材!");
+                        showToast("没有号段");
+                        tvError.setText("没有号段!");
+
                     } else {
                         String content = wxId + "  手动导号失败--返回" + object.getString("result");
-                        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
+                        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE_HAND, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
 
                     }
 
@@ -284,6 +301,10 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     @Override
     public void onUpdate(String str) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
 
     }
 
@@ -302,7 +323,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                 startActivity(service);
                 break;
             case R.id.tv_version:
-                showToast("补丁后台下载,不要连续点击,请稍等片刻...");
+                showLongToast("补丁后台下载,不要连续点击,请稍等片刻...");
                 TinkerPatch.with().fetchPatchUpdate(true);
                 break;
             case R.id.tv_logout:

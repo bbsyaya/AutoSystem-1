@@ -19,6 +19,7 @@ import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.util.DownPIcUtils;
+import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
@@ -82,11 +83,26 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 String picUrl = object.getString("picUrl");
                 String sendCompanyContentId = object.getString("sendCompanyContentId");
                 String frequency = object.getString("frequency");
+                if (frequency.equals("0")){
+                    Toast.makeText(mContext, "账号在其他设备登录!", Toast.LENGTH_SHORT).show();
+                    SPUtil.putAndApply(mContext, IS_LOGIN, false);
+                    if (LoadResultUtil.onLoadListener!=null){
+                        LoadResultUtil.onLoadListener.onUpdate("");
+                    }
+
+                    return;
+                }
+
+
                 sFrequency = frequency;
                 String sp_sendCompanyContentId = (String) SPUtil.get(mContext, SEND_COMPANY_CONTENT_ID, "");
                 if (sendCompanyContentId.equals(sp_sendCompanyContentId)) {
                     //素材重了  也有可能第二次推送把第一次推送失败的激活了
                     Toast.makeText(mContext, "同一素材不可转发两次!", Toast.LENGTH_SHORT).show();
+
+                    if (LoadResultUtil.onLoadListener!=null){
+                        LoadResultUtil.onLoadListener.onSuccess("收到第二次推送,但是第一次已经收到了!",LOG_FLAG_SUCCESS_TWICE);
+                    }
                     return;
                 }
                 if (TextUtils.isNull(sendCompanyContentId)){

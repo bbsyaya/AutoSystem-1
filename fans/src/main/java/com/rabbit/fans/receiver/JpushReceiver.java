@@ -47,9 +47,21 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 JSONObject object = new JSONObject(extras);
                 String sendImportPhoneId = object.getString("sendImportPhoneId");
                 String frequency = object.getString("frequency");
+                if (frequency.equals("0")){
+                    Toast.makeText(mContext, "账号在其他设备登录!", Toast.LENGTH_SHORT).show();
+                    SPUtil.putAndApply(mContext, IS_LOGIN, false);
+                    if (LoadResultUtil.onLoadListener!=null){
+                        LoadResultUtil.onLoadListener.onUpdate("");
+                    }
+
+                    return;
+                }
                 String type = object.getString("type");//现在只考虑类型为1的情况
                 String sp_sendImportPhoneId = (String) SPUtil.get(mContext,SEND_IMPORT_PHONE_ID,"");
                 if (sendImportPhoneId.equals(sp_sendImportPhoneId)) {
+                    if (LoadResultUtil.onLoadListener!=null){
+                        LoadResultUtil.onLoadListener.onSuccess("-2","-1");
+                    }
                     //素材重了  也有可能第二次推送把第一次推送失败的激活了
                     Toast.makeText(mContext, "同一号段不可导入两次!", Toast.LENGTH_SHORT).show();
                     return;

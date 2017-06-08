@@ -46,6 +46,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:text="辅助功能未开启,点击开启"
+            android:textColor="@color/colorAccent"
             android:textSize="20sp"/>
         <Button
             android:id="@+id/tv_hand"

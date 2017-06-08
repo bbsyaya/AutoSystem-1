@@ -128,7 +128,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
         WriteFileUtil.wrieFileUserIdByBufferedWriter(wxId, SavePath.SAVE_WX_ID);
         WriteFileUtil.wrieFileUserIdByBufferedWriter(wxPsw,SavePath.SAVE_WX_PSW);
         showProgress();
-        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw,registrationID), HttpIdentifier. LOGIN);
+        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw,registrationID,LOG_KIND_MATERIAL), HttpIdentifier. LOGIN);
 
     }
 }

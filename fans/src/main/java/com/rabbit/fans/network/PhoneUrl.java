@@ -34,7 +34,8 @@ public interface PhoneUrl {
     Call<ResponseBody> login(@Field("companyPhone") String companyPhone
             , @Field("companyId") String companyId
             , @Field("passWord") String passWord
-            , @Field("registrationId") String registrationId);
+            , @Field("registrationId") String registrationId
+            , @Field("kind") String kind);
     /**
      * 手动请求
      */

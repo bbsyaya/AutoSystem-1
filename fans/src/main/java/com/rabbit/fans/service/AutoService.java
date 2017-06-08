@@ -41,9 +41,8 @@ public class AutoService extends AccessibilityService {
             String atyName = event.getClassName().toString();
             Log.e(TAG, "activity  ------------ " + atyName);
 
-                // TODO: 2017/5/20  分享365
-                AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
-                addLinkMan.startAdd(supportUtil, mService, atyName);
+            AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
+            addLinkMan.startAdd(supportUtil, mService, atyName);
         }
 
     }

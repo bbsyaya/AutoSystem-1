@@ -138,9 +138,11 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
             tvIsOpen.setText("辅助功能未开启,点击开启!");
+            tvIsOpen.setTextColor(0xffFF4081);
 
         } else {
             tvIsOpen.setText("辅助功能已开启!");
+            tvIsOpen.setTextColor(0xff000000);
         }
     }
 
@@ -156,7 +158,11 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                progDialog.dismiss();
+                try {
+                    progDialog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 String content = wxId + "  转发成功--" + error;
                 tvError.setText("转发成功--" + error);
                 String sp_sendCompanyContentId = (String) SPUtil.get(GetTimeActivity.this, SEND_COMPANY_CONTENT_ID, "");
@@ -174,7 +180,12 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                progDialog.dismiss();
+                try {
+                    progDialog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 //转发失败的回调
                 String content = wxId + "  转发失败--" + error;
                 tvError.setText("  转发失败--" + error);
@@ -215,7 +226,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                         String picUrl = object1.getString("picUrl");
                         String sendCompanyContentId = object1.getString("sendCompanyContentId");
                         String sp_sendCompanyContentId = (String) SPUtil.get(GetTimeActivity.this, SEND_COMPANY_CONTENT_ID, "");
-                        if (sendCompanyContentId.equals(sp_sendCompanyContentId)){
+                        if (sendCompanyContentId.equals(sp_sendCompanyContentId)) {
                             new AlertDialog.Builder(this)
                                     .setTitle("您已经转发了本素材了,是否再转发?")
                                     .setPositiveButton("是", new DialogInterface.OnClickListener() {
@@ -236,7 +247,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                         tvResult.setText("手动转发类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                         if (type.equals("1")) {//转发图文类型的
                             sendForPhotoText(content, picUrl);
-                        }else{
+                        } else {
                             if (picUrl.indexOf(",") > 0) {
                                 String[] pictures = picUrl.split(",");
                                 picUrl = pictures[0];
@@ -251,9 +262,9 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
                     } else if (object.getString("result").equals("3001")) {
                         showToast("没有需要转发的素材!");
-                    }else {
+                    } else {
                         String content = wxId + "  手动转发失败--返回" + object.getString("result");
-                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE,"null",LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
 
                     }
                 } catch (JSONException e) {
@@ -265,6 +276,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 break;
         }
     }
+
     private void showProgressDialog() {
         progDialog = new ProgressDialog(this);
         progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -275,6 +287,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         progDialog.show();
 
     }
+
     @OnClick({R.id.tv_hand, R.id.tv_is_open, R.id.tv_version, R.id.tv_logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -346,6 +359,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
             }
         }).start();
     }
+
     private void addToList(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();

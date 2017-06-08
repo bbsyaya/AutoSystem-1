@@ -66,18 +66,19 @@ public class AddByLinkMan {
             for (AccessibilityNodeInfo nodeInfo : addBtnList) {
                 if (nodeInfo != null && nodeInfo.getText().toString().equals("添加")) {
                     nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                    sleep(2000);
+//                    sleep(2000);
+
                 }
             }
         }
         PerformClickUtils.findTextAndClick(mService, "接受");
-        sleep(2000);
+//        sleep(2000);
         AccessibilityNodeInfo lv = PerformClickUtils.getNode(mService, supportUtil.getFMesssageConversationUI_LV_ID());
         if (lv == null)
             return;
         Log.e(TAG, "addFriend: have" );
         lv.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-        sleep(500);
+//        sleep(500);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
