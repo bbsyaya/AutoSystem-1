@@ -13,7 +13,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kidney_hospital.base.config.SavePath;
+import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.constant.HttpIdentifier;
+import com.kidney_hospital.base.update.AppUpdateUtil;
+import com.kidney_hospital.base.update.UpdateCallBack;
 import com.kidney_hospital.base.util.AppUtils;
 import com.kidney_hospital.base.util.DateUtils;
 import com.kidney_hospital.base.util.FileUtils;
@@ -22,6 +25,7 @@ import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
+import com.kidney_hospital.base.util.wechat.DaysShare;
 import com.shuangyou.material.R;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
@@ -31,7 +35,6 @@ import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
 import com.shuangyou.material.util.WorkManager;
-import com.tinkerpatch.sdk.TinkerPatch;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +49,9 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
+import okhttp3.FormBody;
 
+import static com.shuangyou.material.receiver.JpushReceiver.onReceiveTimeListener;
 import static com.shuangyou.material.util.LoadResultUtil.onLoadListener;
 
 /**
@@ -74,6 +79,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
     private String wxId;//微信号
     public List<File> filePictures = new ArrayList<>();
 
+
     @Override
     protected void loadData() {
 
@@ -81,15 +87,6 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
     @Override
     protected void initViews() {
-        int patchVersion = 0;//补丁号
-        try {
-            patchVersion = TinkerPatch.with().getPatchVersion();
-        } catch (Exception e) {
-            //tinker 为 false 的情况
-            patchVersion = -1;
-            e.printStackTrace();
-        }
-        Log.e(TAG, "initViews 73:" + patchVersion);
         wxId = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_ID);
         initJpush();
         JpushReceiver.setOnReceiveTimeListener(this);
@@ -100,7 +97,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         } else {
             tvRegistrationId.setText("推送注册Id:" + registrationId);
         }
-        tvVersion.setText("版本名: " + AppUtils.getVersionCode(this) + "_" + patchVersion);
+        tvVersion.setText("版本名: " + AppUtils.getVersionCode(this) );
 
         companyId = (String) SPUtil.get(this, COMPANY_ID, "1");
         tvCompany.setText("企业码:" + companyId);
@@ -119,6 +116,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 if (i != 0) {
                     String content = "极光集成失败,错误码为:" + i;
                     tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+                    tvError.setTextColor(0xffFF4081);
                     doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
                 } else {
                     tvResult.setText("极光集成成功,等待推送...");
@@ -148,6 +146,8 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
     @Override
     public void onReceiveTime(String time) {
+        DaysShare.isRun = true;
+
         tvResult.setText(time);
     }
 
@@ -165,6 +165,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 }
                 String content = wxId + "  转发成功--" + error;
                 tvError.setText("转发成功--" + error);
+                tvError.setTextColor(0xff000000);
                 String sp_sendCompanyContentId = (String) SPUtil.get(GetTimeActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
                         flag, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
@@ -189,6 +190,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 //转发失败的回调
                 String content = wxId + "  转发失败--" + error;
                 tvError.setText("  转发失败--" + error);
+                tvError.setTextColor(0xffFF4081);
                 String sp_sendCompanyContentId = (String) SPUtil.get(GetTimeActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
 
@@ -244,7 +246,12 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                             return;
                         }
                         SPUtil.putAndApply(GetTimeActivity.this, SEND_COMPANY_CONTENT_ID, sendCompanyContentId);
-                        tvResult.setText("手动转发类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
+
+                        if (onReceiveTimeListener != null) {
+                            onReceiveTimeListener.onReceiveTime("手动转发类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
+                        }
+
+//                        tvResult.setText("手动转发类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                         if (type.equals("1")) {//转发图文类型的
                             sendForPhotoText(content, picUrl);
                         } else {
@@ -252,6 +259,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                                 String[] pictures = picUrl.split(",");
                                 picUrl = pictures[0];
                             }
+                            JpushReceiver.sContent = content;
                             ShareUtils.sendToFriendsByHand(GetTimeActivity.this,
                                     url,
                                     title,
@@ -305,10 +313,8 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 startActivity(service);
                 break;
             case R.id.tv_version:
-                showToast("补丁后台下载,不要连续点击,请稍等片刻...");
-                TinkerPatch.with().fetchPatchUpdate(true);
-                //点击更新
-//                startService(new Intent(this, CheckUpdateService.class));
+                showLongToast("新版本下载,请看通知栏,不要连续点击,请稍等片刻...");
+                checkUpdate();
                 break;
             case R.id.tv_logout:
                 new AlertDialog.Builder(this)
@@ -326,7 +332,42 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                 break;
         }
     }
+    private void checkUpdate() {
+        String versionName = AppUtils.getVersionCode(this);
+        FormBody formBody = new FormBody.Builder()
+                .add("version", versionName)
+                .add("type", "2")//1是导号,2是朋友圈
+                .build();
 
+        AppUpdateUtil updateUtil = new AppUpdateUtil(this, HttpApi.UPDATE_URL, formBody);
+
+        updateUtil.checkUpdate(new UpdateCallBack() {
+            @Override
+            public void onError() {
+//                Looper.prepare();
+//                Toast.makeText(MainActivity.this, "服务器错误!", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onError: ");
+//                Looper.loop();
+            }
+
+            @Override
+            public void isUpdate(String result) {
+//                Looper.prepare();
+                Log.e(TAG, "isUpdate: ");
+//                Toast.makeText(mContext, "正在更新,请看通知栏,不要多次点击!", Toast.LENGTH_LONG).show();
+//                Looper.loop();
+
+            }
+
+            @Override
+            public void isNoUpdate() {
+//                Looper.prepare();
+                Log.e(TAG, "isNoUpdate: ");
+//                Toast.makeText(mContext, "没有最新版本!", Toast.LENGTH_SHORT).show();
+//                Looper.loop();
+            }
+        });
+    }
     private void sendForPhotoText(final String content, final String picUrl) {
         new Thread(new Runnable() {
             @Override

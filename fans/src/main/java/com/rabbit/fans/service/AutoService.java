@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.kidney_hospital.base.util.wechat.AddByLinkMan;
+import com.kidney_hospital.base.util.wechat.PerformClickUtils;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
+import com.rabbit.fans.interfaces.KeyValue;
 
 import java.util.List;
 
@@ -18,11 +20,12 @@ import java.util.List;
  * Created by Vampire on 2017/5/27.
  */
 
-public class AutoService extends AccessibilityService {
+public class AutoService extends AccessibilityService implements KeyValue {
     private static final String TAG = "AutoService";
     private Context mContext;
     private AccessibilityService mService;
     private SupportUtil supportUtil;
+
 
     @Override
     protected void onServiceConnected() {
@@ -38,13 +41,22 @@ public class AutoService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-            String atyName = event.getClassName().toString();
+            final String atyName = event.getClassName().toString();
             Log.e(TAG, "activity  ------------ " + atyName);
-
-            AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
-            addLinkMan.startAdd(supportUtil, mService, atyName);
+            Log.e(TAG, "onAccessibilityEvent: "+AddByLinkMan.jumpRemarkNum );
+            if (AddByLinkMan.jumpRemarkNum < 11) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        PerformClickUtils.sleep(1500);
+                        AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
+                        addLinkMan.startAdd(supportUtil, mService, atyName);
+                    }
+                }).start();
+            }else{
+                AddByLinkMan.isJumpLauncherUI = false;
+            }
         }
-
     }
 
     @Override

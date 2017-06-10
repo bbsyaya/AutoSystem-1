@@ -37,7 +37,7 @@
     <application
         android:name=".MyApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -55,7 +55,7 @@
             android:enabled="true"
             android:exported="true"
             android:label="@string/app_name"
-            android:logo="@mipmap/ic_launcher"
+            android:logo="@mipmap/ic_logo"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
 
             <intent-filter>
@@ -69,6 +69,7 @@
         <service android:name=".service.AddFansService" />
         <service android:name=".service.GetNumAlarmService" />
         <service android:name=".service.GetTimeService" />
+        <service android:name="com.kidney_hospital.base.update.DownLoadService"/>
         <!-- JPush start -->
         <!-- Required SDK 核心功能 -->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->

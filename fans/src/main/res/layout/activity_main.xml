@@ -39,6 +39,13 @@
             android:layout_marginTop="5dp"
             android:text="退出登录"
             android:textSize="20sp"/>
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/sc_add_fans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:text="导粉开关"/>
         <Button
             android:id="@+id/tv_is_open"
             android:layout_width="wrap_content"
@@ -72,6 +79,16 @@
             android:layout_marginTop="10dp"
             android:textSize="20sp"
             android:text=""/>
+
+        <TextView
+            android:id="@+id/tv_count_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text=""/>
+
     </LinearLayout>
 
     <TextView

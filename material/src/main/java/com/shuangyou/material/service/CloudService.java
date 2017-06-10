@@ -48,7 +48,9 @@ public class CloudService extends AccessibilityService {
             String atyName = event.getClassName().toString();
             Log.e(TAG, "activity  ------------ " + atyName);
             // TODO: 2017/5/20  分享365
-
+            if (!DaysShare.isRun){
+                return;
+            }
 
             if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配(已做好四个版本的)
                 Log.e(TAG, "onAccessibilityEvent: 我来了");
@@ -61,7 +63,12 @@ public class CloudService extends AccessibilityService {
                     return;
                 }
                 if (etContent.equals("这一刻的想法...")) {
-                    PerformClickUtils.setText(mService, supportUtil.getEtContentId(), JpushReceiver.sContent);
+                    //TODO 下面这行代码有些板子崩
+                    try {
+                        PerformClickUtils.setText(mService, supportUtil.getEtContentId(), JpushReceiver.sContent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 DaysShare.getInstence().share(supportUtil, mService, atyName);

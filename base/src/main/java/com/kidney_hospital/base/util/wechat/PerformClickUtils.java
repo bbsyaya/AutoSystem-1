@@ -57,14 +57,14 @@ public class PerformClickUtils {
      * @param accessibilityService
      * @param id
      */
-    public static void findViewIdAndClick(AccessibilityService accessibilityService, String id) {
+    public static boolean findViewIdAndClick(AccessibilityService accessibilityService, String id) {
 
         AccessibilityNodeInfo accessibilityNodeInfo = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             accessibilityNodeInfo = accessibilityService.getRootInActiveWindow();
         }
         if (accessibilityNodeInfo == null) {
-            return;
+            return false;
         }
 
         List<AccessibilityNodeInfo> nodeInfoList = null;
@@ -78,7 +78,10 @@ public class PerformClickUtils {
                     break;
                 }
             }
+        }else{
+            return false;
         }
+        return true;
     }
 
     public static void findViewIdAndClick(AccessibilityService accessibilityService, String id, int index) {

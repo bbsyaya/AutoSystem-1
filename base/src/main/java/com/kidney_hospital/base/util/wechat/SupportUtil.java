@@ -57,6 +57,43 @@ public class SupportUtil {
     private final String snsLabelUi = "com.tencent.mm.plugin.sns.ui.SnsLabelUI";
 
 
+    //备注信息页面
+    private String contactRemarkInfoModUi = "com.tencent.mm.ui.contact.ContactRemarkInfoModUI";
+    //备注信息页面
+    private String modRemarkNameUI = "com.tencent.mm.ui.contact.ModRemarkNameUI";
+    //隐私对话框
+    private String privateDialog = "com.tencent.mm.ui.base.h";
+    //隐私对话框的确定按钮
+    private String privateDialogButtonOK = "com.tencent.mm:id/ad8";
+    //删除对话框
+    private  String deleteDialog = "com.tencent.mm.ui.base.k";
+    //删除文本框
+    private String tv_Delete = "com.tencent.mm:id/fi";
+
+    public String getTv_Delete() {
+        return tv_Delete;
+    }
+
+    public String getDeleteDialog() {
+        return deleteDialog;
+    }
+
+    public String getPrivateDialogButtonOK() {
+        return privateDialogButtonOK;
+    }
+
+    public String getPrivateDialog() {
+        return privateDialog;
+    }
+
+    public String getModRemarkNameUI() {
+        return modRemarkNameUI;
+    }
+
+    public String getContactRemarkInfoModUi() {
+        return contactRemarkInfoModUi;
+    }
+
     private String dialogHintTextId;
     private String contactInfoUiNickNameId;
     private String contactInfoUIGenderId;
@@ -73,6 +110,23 @@ public class SupportUtil {
     private String noSuchTextId;
     private String checkItemIvId;
     private String etContentId;
+
+
+    private String tv_setRemark;//设置备注和标签
+    private String tv_fillIn;//填入按钮
+    private String tv_remark_save;//备注名的保存按钮
+
+    public String getTv_remark_save() {
+        return tv_remark_save;
+    }
+
+    public String getTv_fillIn() {
+        return tv_fillIn;
+    }
+
+    public String getTv_setRemark() {
+        return tv_setRemark;
+    }
 
     public String getCreateGroup() {
         return createGroup;
@@ -97,6 +151,10 @@ public class SupportUtil {
         launcherNewFriendId = "com.tencent.mm:id/kr";
         etContentId = "com.tencent.mm:id/bo0";
 
+        tv_setRemark = "com.tencent.mm:id/c6c";
+        tv_fillIn = "com.tencent.mm:id/d3";
+        tv_remark_save = "com.tencent.mm:id/cdr";
+
     }
     private void Ver6325() {
         selectUIListViewId = "com.tencent.mm:id/bd3";
@@ -110,6 +168,8 @@ public class SupportUtil {
         createGroupLaunchBtnId = "com.tencent.mm:id/aes";
         quiteGroupBtnId = "android:id/title";
         makeSureQuiteId = "com.tencent.mm:id/dr";
+
+
     }
     private void Ver658() {
         sendRequestBtnId = "com.tencent.mm:id/gl";
@@ -118,8 +178,16 @@ public class SupportUtil {
         launcherNewFriendId = "com.tencent.mm:id/ax4";
         etContentId = "com.tencent.mm:id/cst";
 
-        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/axi";//添加按钮
+        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/axf";//添加按钮
         FMesssageConversationUI_LV_ID = "com.tencent.mm:id/axl";//通讯录 listview
+
+
+        tv_setRemark = "com.tencent.mm:id/af6";
+        tv_fillIn = "com.tencent.mm:id/agc";
+        tv_remark_save = "com.tencent.mm:id/gk";
+
+        privateDialogButtonOK = "com.tencent.mm:id/ad8";
+        tv_Delete = "com.tencent.mm:id/fi";
     }
 
     private void Ver654() {
@@ -135,13 +203,20 @@ public class SupportUtil {
         FMesssageConversationUI_LV_ID = "com.tencent.mm:id/auv";
         FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/aup"; //添加按钮 text 值添加
         whoCanSeeItemId = "com.tencent.mm:id/cok";
-        sendRequestBtnId = "com.tencent.mm:id/gd";
+        sendRequestBtnId = "com.tencent.mm:id/gd";//完成按钮
         nickNameTvId = "com.tencent.mm:id/gh";
         searchEditId = "com.tencent.mm:id/ag9";
         noSuchTextId = "com.tencent.mm:id/ez";
         checkItemIvId = "com.tencent.mm:id/cl1";
         searchItemId = "com.tencent.mm:id/axr";
         etContentId = "com.tencent.mm:id/cn4";
+
+        tv_setRemark = "com.tencent.mm:id/adl";
+        tv_fillIn = "com.tencent.mm:id/aer";
+        tv_remark_save = "com.tencent.mm:id/gc";
+
+        privateDialogButtonOK = "com.tencent.mm:id/abg";
+        tv_Delete = "com.tencent.mm:id/fa";
     }
 
     private void Ver657() {
@@ -162,6 +237,12 @@ public class SupportUtil {
         FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/avz"; //添加好友按钮
         FMesssageConversationUI_LV_ID = "com.tencent.mm:id/aw5"; //通讯录 ListView
         etContentId = "com.tencent.mm:id/cpe";
+
+
+        tv_setRemark = "com.tencent.mm:id/ae5";
+        tv_fillIn = "com.tencent.mm:id/afb";
+        tv_remark_save = "com.tencent.mm:id/gc";
+        tv_Delete = "com.tencent.mm:id/fa";
 
     }
 

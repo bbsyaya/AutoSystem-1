@@ -101,7 +101,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     Toast.makeText(mContext, "同一素材不可转发两次!", Toast.LENGTH_SHORT).show();
 
                     if (LoadResultUtil.onLoadListener!=null){
-                        LoadResultUtil.onLoadListener.onSuccess("收到第二次推送,但是第一次已经收到了!",LOG_FLAG_SUCCESS_TWICE);
+                        LoadResultUtil.onLoadListener.onSuccess("收到第二次推送,但是第一次已经收到了!",LOG_FLAG_SUCCESS_ONCE);
                     }
                     return;
                 }
@@ -165,8 +165,6 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     }
                     sContent = content;
 
-
-//                    seForUrl(context, title, url, picUrl);
                     ShareUtils.sendToFriends(mContext,
                             url,
                             title,

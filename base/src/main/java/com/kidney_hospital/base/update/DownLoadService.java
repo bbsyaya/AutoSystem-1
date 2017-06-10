@@ -62,7 +62,7 @@ public class DownLoadService extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        Log.e(TAG, "onStartCommand: 开了服务" );
         Toast.makeText(mContext, "正在下载最新apk...", Toast.LENGTH_SHORT).show();
 //        Log.i("DownloadService", "intent=" + intent.toString() + " ;           flags= " + flags + " ;    startId" + startId);
         try {
@@ -82,7 +82,7 @@ public class DownLoadService extends Service {
             }
         }.start();
 
-        return startId;
+        return super.onStartCommand(intent, flags, startId);
 
     }
 
