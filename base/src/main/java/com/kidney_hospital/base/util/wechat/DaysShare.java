@@ -1,6 +1,7 @@
 package com.kidney_hospital.base.util.wechat;
 
 import android.accessibilityservice.AccessibilityService;
+import android.util.Log;
 
 
 /**
@@ -14,11 +15,17 @@ public class DaysShare {
     public static DaysShare getInstence() {
         return instence;
     }
-    public static boolean isRun =false;//辅助功能是否要运行,以免与微信其他操作冲突
+
+    public static boolean isRun = false;//辅助功能是否要运行,以免与微信其他操作冲突
+
     public void share(SupportUtil supportUtil, AccessibilityService service, String className) {
 //        LogTool.d("share21按钮的 id"+supportUtil.getSendRequestBtnId());
-        PerformClickUtils.findViewIdAndClick(service, supportUtil.getSendRequestBtnId());
-        DaysShare.isRun =false;
+        boolean isClick = PerformClickUtils.findViewIdAndClick(service, supportUtil.getSendRequestBtnId());
+        Log.e(TAG, "share: "+isClick );
+        if (isClick) {
+            isRun = false;
+        }
+
 
     }
 }

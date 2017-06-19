@@ -69,6 +69,12 @@ public class SupportUtil {
     private  String deleteDialog = "com.tencent.mm.ui.base.k";
     //删除文本框
     private String tv_Delete = "com.tencent.mm:id/fi";
+    //还没有推荐的朋友
+    private String tv_noFans = "com.tencent.mm:id/axp";
+
+    public String getTv_noFans() {
+        return tv_noFans;
+    }
 
     public String getTv_Delete() {
         return tv_Delete;
@@ -188,6 +194,7 @@ public class SupportUtil {
 
         privateDialogButtonOK = "com.tencent.mm:id/ad8";
         tv_Delete = "com.tencent.mm:id/fi";
+        tv_noFans = "com.tencent.mm:id/axp";
     }
 
     private void Ver654() {

@@ -146,7 +146,12 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
 
     @Override
     public void onReceiveTime(String time) {
-        DaysShare.isRun = true;
+        try {
+            DaysShare.getInstence().isRun = true;
+            DaysShare.isRun = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         tvResult.setText(time);
     }

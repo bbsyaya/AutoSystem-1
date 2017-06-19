@@ -50,14 +50,14 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
 
         boolean isLogin = (boolean) SPUtil.get(this, IS_LOGIN, false);
         if (isLogin) {
-            startActivity(GetTimeActivity.class, null);
+            startActivity(MainActivity.class, null);
             finish();
         }
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_login;
+        return R.layout.activity_login_new;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue{
                         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE,"null",LOG_KIND_MATERIAL), HttpIdentifier.LOG);
                         SPUtil.putAndApply(this, IS_LOGIN, true);
                         SPUtil.putAndApply(this, COMPANY_ID, companyId);
-                        startActivity(GetTimeActivity.class, null);
+                        startActivity(MainActivity.class, null);
                         finish();
                     }else{
                         showToast(jsonObject.getString("retMessage"));

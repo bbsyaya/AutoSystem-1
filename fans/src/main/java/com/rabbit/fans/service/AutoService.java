@@ -13,6 +13,7 @@ import com.kidney_hospital.base.util.wechat.AddByLinkMan;
 import com.kidney_hospital.base.util.wechat.PerformClickUtils;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
 import com.rabbit.fans.interfaces.KeyValue;
+import com.rabbit.fans.util.RandomUtil;
 
 import java.util.List;
 
@@ -43,18 +44,22 @@ public class AutoService extends AccessibilityService implements KeyValue {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
             final String atyName = event.getClassName().toString();
             Log.e(TAG, "activity  ------------ " + atyName);
-            Log.e(TAG, "onAccessibilityEvent: "+AddByLinkMan.jumpRemarkNum );
-            if (AddByLinkMan.jumpRemarkNum < 11) {
+            try {
+                Log.e(TAG, "onAccessibilityEvent: "+AddByLinkMan.jumpRemarkNum );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (AddByLinkMan.getInstence().jumpRemarkNum < 11) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        PerformClickUtils.sleep(1500);
                         AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
                         addLinkMan.startAdd(supportUtil, mService, atyName);
+
                     }
                 }).start();
             }else{
-                AddByLinkMan.isJumpLauncherUI = false;
+                AddByLinkMan.getInstence().isJumpLauncherUI = false;
             }
         }
     }

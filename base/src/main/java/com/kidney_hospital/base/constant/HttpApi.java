@@ -12,6 +12,7 @@ public class HttpApi {
 //    public static final String BASE_URL = "http://222.223.218.50:8383/qunkong/api/";//群控的接口
 
 //    public static final String BASE_URL = "http://192.168.42.216:8066/qunkong/api/";//李聪本地的接口
+//    public static final String BASE_URL = "http://222.222.24.133:8088/qunkong/api/";//线上接口2
     public static final String BASE_URL = "http://222.222.24.131:8086/qunkong/api/";//线上的接口
 //    public static final String BASE_URL = "http://192.168.42.215:8080/qunkong/api/";//雪蕊本地的接口
 //    public static final String BASE_URL = "http://192.168.42.166/qunkong/api/";//董江宁本地的接口

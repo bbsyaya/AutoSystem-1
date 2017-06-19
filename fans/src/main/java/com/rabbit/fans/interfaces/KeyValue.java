@@ -7,6 +7,11 @@ package com.rabbit.fans.interfaces;
 public interface KeyValue {
     String IS_LOGIN = "is_login";
     String COMPANY_ID ="company_id";
+    String CITY = "city";
+    String PROVINCE = "province";
+    String COMPANY_USER_CLUB_ID = "companyuserclubId";
+    String COMPANY_CLUB_ID = "companyClubId";
+
     String SEND_IMPORT_PHONE_ID = "send_import_phone_id";
     String LOG_TYPE_LOGIN="2";//日志的登录类型
     String LOG_TYPE_SHARE="4";//日志的分享/加粉类型

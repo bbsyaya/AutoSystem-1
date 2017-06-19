@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- LinearListView -->
+    <declare-styleable name="LinearListView">
+    <attr name="android:entries" />
+    <attr name="dividerThickness" format="dimension" />
+    </declare-styleable>
+
+
+    <!-- SlidingMenu -->
+    <declare-styleable name="SlidingMenu">
+        <attr name="mode">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+        <attr name="viewAbove" format="reference" />
+        <attr name="viewBehind" format="reference" />
+        <attr name="behindOffset" format="dimension" />
+        <attr name="behindWidth" format="dimension" />
+        <attr name="behindScrollScale" format="float" />
+        <attr name="touchModeAbove">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+        </attr>
+        <attr name="touchModeBehind">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+        </attr>
+        <attr name="shadowDrawable" format="reference" />
+        <attr name="shadowWidth" format="dimension" />
+        <attr name="fadeEnabled" format="boolean" />
+        <attr name="fadeDegree" format="float" />
+        <attr name="selectorEnabled" format="boolean" />
+        <attr name="selectorDrawable" format="reference" />
+    </declare-styleable>
+
+
+
+    <!-- 步数progress -->
+    <declare-styleable name="MagicProgressCircle">
+        <attr name="mpc_percent" format="float" />
+        <attr name="mpc_stroke_width" format="dimension" />
+        <attr name="mpc_start_color" format="color" />
+        <attr name="mpc_end_color" format="color" />
+        <!-- 背景环的颜色 -->
+        <attr name="mpc_default_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="MagicProgressBar">
+        <attr name="mpb_percent" format="float" />
+        <attr name="mpb_fill_color" format="color" />
+        <attr name="mpb_background_color" format="color" />
+        <attr name="mpb_flat" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="slideswitch">
+        <attr name="themeColor" format="color"></attr>
+        <attr name="isOpen" format="boolean"></attr>
+        <attr name="shape">
+            <enum name="rect" value="1"></enum>
+            <enum name="circle" value="2"></enum>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="SwitchButton">
+        <attr name="kswOnDrawable" format="reference"/>
+        <attr name="kswOffDrawable" format="reference"/>
+        <attr name="kswThumbDrawable" format="reference"/>
+        <attr name="kswThumb_margin" format="dimension|reference"/>
+        <attr name="kswThumb_marginTop" format="dimension|reference"/>
+        <attr name="kswThumb_marginBottom" format="dimension|reference"/>
+        <attr name="kswThumb_marginLeft" format="dimension|reference"/>
+        <attr name="kswThumb_marginRight" format="dimension|reference"/>
+        <attr name="kswThumb_width" format="dimension|reference"/>
+        <attr name="kswThumb_height" format="dimension|reference"/>
+        <attr name="kswOnColor" format="color|reference"/>
+        <attr name="kswOffColor" format="color|reference"/>
+        <attr name="kswThumbColor" format="color|reference"/>
+        <attr name="kswThumbPressedColor" format="color|reference"/>
+        <attr name="kswAnimationVelocity" format="integer"/>
+        <attr name="kswRadius" format="integer"/>
+        <attr name="kswMeasureFactor" format="float"/>
+        <attr name="kswInsetLeft" format="dimension|reference"/>
+        <attr name="kswInsetRight" format="dimension|reference"/>
+        <attr name="kswInsetTop" format="dimension|reference"/>
+        <attr name="kswInsetBottom" format="dimension|reference"/>
+    </declare-styleable>
+    <declare-styleable name="HeartLayout">
+        <attr name="initX" format="dimension" />
+        <attr name="initY" format="dimension" />
+        <attr name="xRand" format="dimension" />
+        <attr name="animLengthRand" format="dimension" />
+        <attr name="xPointFactor" format="dimension" />
+        <attr name="animLength" format="dimension" />
+        <attr name="heart_width" format="dimension" />
+        <attr name="heart_height" format="dimension" />
+        <attr name="bezierFactor" format="integer" />
+        <attr name="anim_duration" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="WheelRecyclerView">
+        <attr name="itemHeight" format="dimension"/>
+        <attr name="selectTextSize" format="dimension"/>
+        <attr name="unselectTextSize" format="dimension"/>
+        <attr name="selectTextColor" format="color"/>
+        <attr name="unselectTextColor" format="color"/>
+        <attr name="wheelOffset" format="integer"/>
+        <attr name="selectWidth" format="dimension" />
+        <attr name="selectHeight" format="dimension" />
+        <attr name="selectColor" format="color" />
+    </declare-styleable>
+</resources>

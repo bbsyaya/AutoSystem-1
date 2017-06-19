@@ -16,6 +16,7 @@ import com.kidney_hospital.base.util.FileUtils;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.wechat.DaysShare;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.util.DownPIcUtils;
@@ -48,7 +49,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
     private Context mContext;
     public List<File> filePictures = new ArrayList<>();
     public static String sContent = "";
-//    private String frequency = "";
+    //    private String frequency = "";
     public static String sFrequency = "";
 
     public static void setOnReceiveTimeListener(OnReceiveTimeListener onReceiveTimeListener) {
@@ -83,10 +84,18 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 String picUrl = object.getString("picUrl");
                 String sendCompanyContentId = object.getString("sendCompanyContentId");
                 String frequency = object.getString("frequency");
-                if (frequency.equals("0")){
+
+                try {
+                    DaysShare.getInstence().isRun = true;
+                    DaysShare.isRun = true;//确保这个值为true!!!
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (frequency.equals("0")) {
                     Toast.makeText(mContext, "账号在其他设备登录!", Toast.LENGTH_SHORT).show();
                     SPUtil.putAndApply(mContext, IS_LOGIN, false);
-                    if (LoadResultUtil.onLoadListener!=null){
+                    if (LoadResultUtil.onLoadListener != null) {
                         LoadResultUtil.onLoadListener.onUpdate("");
                     }
 
@@ -100,18 +109,18 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     //素材重了  也有可能第二次推送把第一次推送失败的激活了
                     Toast.makeText(mContext, "同一素材不可转发两次!", Toast.LENGTH_SHORT).show();
 
-                    if (LoadResultUtil.onLoadListener!=null){
-                        LoadResultUtil.onLoadListener.onSuccess("收到第二次推送,但是第一次已经收到了!",LOG_FLAG_SUCCESS_ONCE);
+                    if (LoadResultUtil.onLoadListener != null) {
+                        LoadResultUtil.onLoadListener.onSuccess("收到第二次推送,但是第一次已经收到了!", LOG_FLAG_SUCCESS_ONCE);
                     }
                     return;
                 }
-                if (TextUtils.isNull(sendCompanyContentId)){
+                if (TextUtils.isNull(sendCompanyContentId)) {
                     if (onLoadListener != null) {
                         onLoadListener.onFailuer("sendCompanyContentId为空");
                     }
                     return;
                 }
-                if (TextUtils.isNull(frequency)){
+                if (TextUtils.isNull(frequency)) {
                     if (onLoadListener != null) {
                         onLoadListener.onFailuer("frequency为空");
                     }
@@ -242,10 +251,10 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 boolean isSend = ShareUtils.shareMultipleToMoments(mContext, content, filePictures);
                 if (isSend) {
                     if (onLoadListener != null) {
-                            if (sFrequency.equals("2")) {
-                                onLoadListener.onSuccess("第二次推送才成功",LOG_FLAG_SUCCESS_TWICE);
-                            } else {
-                            onLoadListener.onSuccess("一次性成功",LOG_FLAG_SUCCESS_ONCE);
+                        if (sFrequency.equals("2")) {
+                            onLoadListener.onSuccess("第二次推送才成功", LOG_FLAG_SUCCESS_TWICE);
+                        } else {
+                            onLoadListener.onSuccess("一次性成功", LOG_FLAG_SUCCESS_ONCE);
                         }
                     }
                 }

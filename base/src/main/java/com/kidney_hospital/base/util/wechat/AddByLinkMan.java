@@ -7,6 +7,8 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.kidney_hospital.base.util.RandomUtil;
+
 import java.util.List;
 
 import static com.kidney_hospital.base.util.wechat.PerformClickUtils.findViewIdAndClick;
@@ -25,6 +27,7 @@ public class AddByLinkMan {
     private boolean flagScroll = false;
     private boolean isPrivate = false;//显示出隐私对话框
     private int scrollFalseNum = 0;
+    public static boolean flagNewFriendsClick = false;
 
     private AddByLinkMan() {
     }
@@ -43,26 +46,24 @@ public class AddByLinkMan {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void startAdd(SupportUtil supportUtil, AccessibilityService mService, String atyName) {
 
-//        if (!atyName.equals(supportUtil.getLauncherUI())) {
-//            if (!isJumpLauncherUI) {
-//                PerformClickUtils.performBack(mService);
-//            }
-//        }
-//        if (jumpRemarkNum>=10){
-//            isJumpLauncherUI = false;
-//        }
 
         if (atyName.equals(supportUtil.getLauncherUI())) {
             isJumpLauncherUI = true;
             Log.e(TAG, "startAdd: 已经到这里了40");
+            if (flagNewFriendsClick) {
+                jumpRemarkNum = 11;
+                flagNewFriendsClick = false;
+            }
             launcherInfo(supportUtil, mService);
         } else if (atyName.equals(supportUtil.getFMesssageConversationUI())
                 || atyName.equals("android.widget.ListView")) {
+            PerformClickUtils.sleep(1000* RandomUtil.randomNumber(2,15));
+
             Log.e(TAG, "startAdd: 已经到这里了43");
             addFriend(supportUtil, mService);
         } else if (atyName.equals(supportUtil.getContactInfoUI())
                 || atyName.equals(supportUtil.getFMesssageConversationUI())) {
-
+            PerformClickUtils.sleep(1000* RandomUtil.randomNumber(2,5));
             //返回
 //            sleep(2000);
             if (flagRemarkSave) {
@@ -79,7 +80,7 @@ public class AddByLinkMan {
 
         } else if (atyName.equals(supportUtil.getContactRemarkInfoModUi())
                 || atyName.equals(supportUtil.getModRemarkNameUI())) {
-
+            PerformClickUtils.sleep(1000* RandomUtil.randomNumber(2,6));
             //备注信息页面
 //            sleep(2000);
             findViewIdAndClick(mService, supportUtil.getTv_fillIn());
@@ -101,7 +102,7 @@ public class AddByLinkMan {
             PerformClickUtils.findViewIdAndClick(mService, supportUtil.getTv_Delete());
 
         } else {
-            if (atyName.equals(supportUtil.getProgressDialog())){
+            if (atyName.equals(supportUtil.getProgressDialog())) {
                 return;
             }
             if (!isJumpLauncherUI) {
@@ -190,7 +191,10 @@ public class AddByLinkMan {
             //首页前滚一页
             page.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
             sleep(600);
-            findViewIdAndClick(mService, supportUtil.getLauncherNewFriendId());
+            boolean flagClick = findViewIdAndClick(mService, supportUtil.getLauncherNewFriendId());
+            if (flagClick) {
+                flagNewFriendsClick = true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

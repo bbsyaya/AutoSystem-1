@@ -19,7 +19,11 @@ public interface PhoneUrl {
      * 获取号码
      */
     @GET("phoneJson/myList")
-    Call<ResponseBody> myList(@Query("companyId") String companyId);
+    Call<ResponseBody> myList(@Query("companyId") String companyId
+            ,@Query("companyuserclubId") String companyuserclubId
+            ,@Query("province") String province
+            ,@Query("city") String city
+            ,@Query("companyClubId") String companyClubId);
 
     /**
      * 获取时间

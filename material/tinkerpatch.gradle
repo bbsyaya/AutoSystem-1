@@ -26,7 +26,7 @@ tinkerpatchSupport {
      * 是否开启加固模式，仅仅打包改变的类，只能在加固中使用。
      * 如果只在某个渠道使用了加固，可使用多flavors配置
      **/
-    protectedApp = false
+    protectedApp = true
 
     autoBackupApkPath = "${bakPath}"
 

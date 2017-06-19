@@ -65,10 +65,6 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/auto_add" />
         </service>
-        <service android:name=".service.GetFansService" />
-        <service android:name=".service.AddFansService" />
-        <service android:name=".service.GetNumAlarmService" />
-        <service android:name=".service.GetTimeService" />
         <service android:name="com.kidney_hospital.base.update.DownLoadService"/>
         <!-- JPush start -->
         <!-- Required SDK 核心功能 -->

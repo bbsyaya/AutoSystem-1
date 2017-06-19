@@ -5,12 +5,13 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
+import android.os.Process;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.kidney_hospital.base.config.SavePath;
@@ -27,6 +28,7 @@ import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
 import com.kidney_hospital.base.util.wechat.AddByLinkMan;
+import com.kidney_hospital.base.view.switchbutton.SwitchButton;
 import com.rabbit.fans.R;
 import com.rabbit.fans.interfaces.KeyValue;
 import com.rabbit.fans.interfaces.OnReceiveTimeListener;
@@ -35,6 +37,7 @@ import com.rabbit.fans.network.PhoneUrl;
 import com.rabbit.fans.receiver.JpushReceiver;
 import com.rabbit.fans.util.InsertLinkMan;
 import com.rabbit.fans.util.LoadResultUtil;
+import com.rabbit.fans.util.RandomUtil;
 import com.rabbit.fans.util.WorkManager;
 
 import org.json.JSONException;
@@ -61,29 +64,30 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     TextView tvDevice;
     @BindView(R.id.tv_error)
     TextView tvError;
-    @BindView(R.id.tv_is_open)
-    Button tvIsOpen;
     @BindView(R.id.tv_registration_id)
     TextView tvRegistrationId;
     @BindView(R.id.tv_count_time)
     TextView tvCountTime;
+    @BindView(R.id.sbtn_access)
+    SwitchButton sbtnAccess;
     private String companyId;
     private String wxId;//微信号
     private ProgressDialog progDialog = null;// 进度条
     private String frequency = "";
     private TimeCount timeCount;
     private boolean flagHand = false;//手动的
+    private String city, province, companyuserclubId;
+    private String companyClubId;
 
     @Override
     protected void loadData() {
-
+        int s = RandomUtil.randomNumber(2, 25);
+        Log.e(TAG, "loadData: " + s);
     }
 
 
     @Override
     protected void initViews() {
-//        JumpToWeChatUtil.jumpToLauncherUi();
-
 
         wxId = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_ID);
         initJpush();
@@ -98,7 +102,13 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         tvVersion.setText("版本名: " + AppUtils.getVersionCode(this));
 
         companyId = (String) SPUtil.get(this, COMPANY_ID, "1");
-        tvCompany.setText("企业码:" + companyId);
+        city = (String) SPUtil.get(this, CITY, "");
+        province = (String) SPUtil.get(this, PROVINCE, "");
+        companyuserclubId = (String) SPUtil.get(this, COMPANY_USER_CLUB_ID, "");
+        companyClubId = (String) SPUtil.get(this, COMPANY_CLUB_ID, "");
+        Log.e(TAG, "initViews: " + city + "@@" + province + "@@" + companyuserclubId + "@@" + companyClubId);
+        LogTool.d("loginInfo110--->>>"+city + "@@" + province + "@@" + companyuserclubId + "@@" + companyClubId);
+        tvCompany.setText("企业码:" + companyId + "  " + province + "  " + city );
     }
 
     private void initJpush() {
@@ -125,7 +135,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_main_new;
     }
 
     @Override
@@ -133,12 +143,9 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         super.onResume();
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
-            tvIsOpen.setText("辅助功能未开启,点击开启!");
-            tvIsOpen.setTextColor(0xffFF4081);
-
+            sbtnAccess.setChecked(false);
         } else {
-            tvIsOpen.setText("辅助功能已开启!");
-            tvIsOpen.setTextColor(0xff000000);
+            sbtnAccess.setChecked(true);
         }
     }
 
@@ -147,14 +154,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         Log.e(TAG, "onSuccess: " + type + "," + frequency);
         this.frequency = frequency;
         if (type.equals("1")) {
-            showProgressDialog();
-            doHttp(RetrofitUtils.createApi(PhoneUrl.class).myList(companyId), HttpIdentifier.GET_PHONE_NUM);
+            getNumber();
         }
         if (type.equals("-2")) {
             String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
             String content = "收到第二次推送,但是第一次已经导入成功了!";
             doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
-
         }
 
     }
@@ -168,58 +173,147 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        AddByLinkMan.jumpRemarkNum = 0;
-//                        AddByLinkMan.isJumpLauncherUI = false;
-
+                        try {
+                            AddByLinkMan.getInstence().jumpRemarkNum = 0;
+                            AddByLinkMan.jumpRemarkNum = 0;
+                            AddByLinkMan.getInstence().flagNewFriendsClick = false;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         final PhoneBean bean = JSONObject.parseObject(strReuslt, PhoneBean.class);
-                        LogTool.d("获取号码的数量" + bean.getList().size());
-                        Log.e(TAG, "获取号码的数量: " + bean.getList().size());
-                        for (int i = 0; i < bean.getList().size(); i++) {
-                            Log.e(TAG, "onResponse: " + bean.getList().get(i));
-                            final int finalI = i;
+                        if (null == bean.getResult()) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    progDialog.setMessage("正在导入" + finalI + "/" + bean.getList().size());
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
 
-                            InsertLinkMan.insert(bean.getList().get(i), "#" + bean.getList().get(i));
-
+                            return;
                         }
+                        if (bean.getResult().equals(HttpIdentifier.REQUEST_SUCCESS)) {
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showToast("导入完成!");
-                                progDialog.dismiss();
 
-                                if (frequency.equals("1")) {
-                                    String content = "一次性成功";
-                                    tvError.setText(content);
-                                    tvError.setTextColor(0xff000000);
-                                    String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
-                                    doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
-                                } else {
-                                    if (flagHand) {
-                                        flagHand = false;
-                                    } else {
-                                        String content = "二推成功";
+                            if (null == bean.getList() || bean.getList().size() == 0) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showToast("无号段");
+                                        try {
+                                            progDialog.dismiss();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+
+                                return;
+                            }
+                            LogTool.d("获取号码的数量" + bean.getList().size());
+                            Log.e(TAG, "获取号码的数量: " + bean.getList().size());
+                            for (int i = 0; i < bean.getList().size(); i++) {
+                                Log.e(TAG, "onResponse: " + bean.getList().get(i));
+                                final int finalI = i;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progDialog.setMessage("正在导入" + finalI + "/" + bean.getList().size());
+                                    }
+                                });
+
+                                InsertLinkMan.insert(bean.getList().get(i), "#" + bean.getList().get(i));
+
+                            }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("导入完成!");
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    if (frequency.equals("1")) {
+                                        String content = "一次性成功";
                                         tvError.setText(content);
                                         tvError.setTextColor(0xff000000);
                                         String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
-                                        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_TWICE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+                                        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+                                    } else {
+                                        if (flagHand) {
+                                            flagHand = false;
+                                        } else {
+                                            String content = "二推成功";
+                                            tvError.setText(content);
+                                            tvError.setTextColor(0xff000000);
+                                            String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
+                                            doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_TWICE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+                                        }
+                                    }
+
+                                    long time = Long.parseLong(bean.getTime());
+                                    Log.e(TAG, "run time: " + time);
+                                    showLongToast("跳转到微信加粉还有" + time + "分钟开始,请提前停止其他操作!");
+                                    timeCount = new TimeCount(1000 * 60 * time, 1000);
+                                    timeCount.start();
+
+                                }
+                            });
+                        } else if (bean.getResult().equals("1066")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("号码已经导完了!");
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
                                 }
-
-                                long time = Long.parseLong(bean.getTime());
-                                Log.e(TAG, "run time: " + time);
-                                showLongToast("跳转到微信加粉还有" + time + "分钟开始,请提前停止其他操作!");
-                                timeCount = new TimeCount(1000 * 60 * time, 1000);
-                                timeCount.start();
-
-                            }
-                        });
+                            });
+                        } else if (bean.getResult().equals("9993")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("设备组未设置省市、省市不可同时为空!");
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        } else if (bean.getResult().equals("1003")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("企业未设置省市!");
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        } else if (bean.getResult().equals("9996")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("企业不存在,不可导号!");
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
                     }
                 }).start();
                 break;
@@ -255,9 +349,8 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                         tvError.setTextColor(0xff000000);
                         doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, "手动成功", companyId, LOG_FLAG_SUCCESS_HAND, sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
                         if (type.equals("1")) {
-                            showProgressDialog();
                             flagHand = true;
-                            doHttp(RetrofitUtils.createApi(PhoneUrl.class).myList(companyId), HttpIdentifier.GET_PHONE_NUM);
+                            getNumber();
                         }
 
 
@@ -280,8 +373,24 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                 break;
             case ERROR:
                 showToast("服务器异常");
+                try {
+                    LogTool.d("exception377-->>" + strReuslt);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    progDialog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
+    }
+
+    private void getNumber() {
+        showProgressDialog();
+        doHttp(RetrofitUtils.createApi(PhoneUrl.class).myList(companyId, companyuserclubId, province, city, companyClubId), HttpIdentifier.GET_PHONE_NUM);
+//        doHttp(RetrofitUtils.createApi(PhoneUrl.class).myList("49", "", "", ""), HttpIdentifier.GET_PHONE_NUM);
     }
 
     private void showProgressDialog() {
@@ -312,30 +421,30 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
+        Process.killProcess(Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
 
     }
 
-    @OnClick({R.id.tv_hand, R.id.tv_is_open, R.id.tv_version, R.id.tv_logout})
+    @OnClick({R.id.btn_hand, R.id. sbtn_access, R.id.tv_update, R.id.iv_logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.tv_hand:
+            case R.id.btn_hand:
                 showProgress();
                 doHttp(RetrofitUtils.createApi(PhoneUrl.class).getLatelyDaohao(companyId, wxId), HttpIdentifier.HAND);
                 break;
-            case R.id.tv_is_open:
+            case R.id.sbtn_access:
 //                TinkerPatch.with().fetchPatchUpdate(true);
                 //打开辅助功能
                 Intent service = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
                 service.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(service);
                 break;
-            case R.id.tv_version:
-                showLongToast("新版本下载,请看通知栏,不要连续点击,请稍等片刻...");
+            case R.id.tv_update:
+//                showLongToast("新版本下载,请看通知栏,不要连续点击,请稍等片刻...");
                 checkUpdate();
 
                 break;
-            case R.id.tv_logout:
+            case R.id.iv_logout:
                 new AlertDialog.Builder(this)
                         .setTitle("确定要退出登录吗?")
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -373,6 +482,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 //                Toast.makeText(MainActivity.this, "服务器错误!", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onError: ");
 //                Looper.loop();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "服务器错误!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -381,6 +496,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                 Log.e(TAG, "isUpdate: ");
 //                Toast.makeText(mContext, "正在更新,请看通知栏,不要多次点击!", Toast.LENGTH_LONG).show();
 //                Looper.loop();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "正在更新,请看通知栏,不要多次点击!", Toast.LENGTH_LONG).show();
+                    }
+                });
 
             }
 
@@ -390,9 +511,16 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                 Log.e(TAG, "isNoUpdate: ");
 //                Toast.makeText(mContext, "没有最新版本!", Toast.LENGTH_SHORT).show();
 //                Looper.loop();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "没有最新版本!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
+
 
     class TimeCount extends CountDownTimer {
 
@@ -407,7 +535,13 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
         @Override
         public void onFinish() {
-            AddByLinkMan.jumpRemarkNum = 0;
+            try {
+                AddByLinkMan.getInstence().jumpRemarkNum = 0;
+                AddByLinkMan.jumpRemarkNum = 0;
+                AddByLinkMan.getInstence().flagNewFriendsClick = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             tvCountTime.setText("开始加粉");
             JumpToWeChatUtil.jumpToLauncherUi();
         }
