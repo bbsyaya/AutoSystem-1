@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
 
-
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -33,8 +32,8 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name= "android.permission.RESTART_PACKAGES" />
-    <uses-permission android:name="android.permission.INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
 
     <application
         android:name=".MyApp"
@@ -153,7 +152,6 @@
         <!-- JPush end -->
 
 
-
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -182,14 +180,20 @@
                 android:resource="@xml/auto_add" />
         </service>
         <service android:name=".service.CheckUpdateService" />
-        <service android:name="com.kidney_hospital.base.update.DownLoadService"/>
+        <service android:name="com.kidney_hospital.base.update.DownLoadService" />
         <service android:name=".service.SendingService" />
 
         <receiver android:name=".receiver.UpdateReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
-                <data android:scheme="package"/>
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.NetReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
     </application>

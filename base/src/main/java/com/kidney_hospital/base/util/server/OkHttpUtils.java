@@ -33,9 +33,9 @@ public class OkHttpUtils {
                 if (singleton == null) {
                     singleton = new OkHttpClient.Builder()
                             .cache(cache)
-                            .connectTimeout(30, TimeUnit.SECONDS)
-                            .readTimeout(30, TimeUnit.SECONDS)
-                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .connectTimeout(600, TimeUnit.SECONDS)
+                            .readTimeout(600, TimeUnit.SECONDS)
+                            .writeTimeout(600, TimeUnit.SECONDS)
                             .addInterceptor(mRewriteCacheControlInterceptor)
                             .addNetworkInterceptor(mRewriteCacheControlInterceptor).build();
 //                            .addInterceptor(mLoggingInterceptor).build();

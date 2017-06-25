@@ -20,5 +20,7 @@ public class LoadResultUtil {
         void onSuccess(String error,String flag);
         void onFailuer(String error);
         void onUpdate(String str);
+        void onAccess(String str);
+        void onNetChanged(boolean isNet);
     }
 }

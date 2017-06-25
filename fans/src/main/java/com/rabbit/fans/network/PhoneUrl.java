@@ -14,22 +14,33 @@ import retrofit2.http.Query;
 
 public interface PhoneUrl {
 
+    /**
+     * 退出登录
+     */
+    @FormUrlEncoded
+    @POST("companyuser/logOut")
+    Call<ResponseBody> logOut( @Field("companyPhone") String companyPhone
+            , @Field("companyId") String companyId
+            , @Field("flag") String flag
+            , @Field("sendId") String sendId
+            , @Field("kind") String kind);
 
     /**
      * 获取号码
      */
     @GET("phoneJson/myList")
     Call<ResponseBody> myList(@Query("companyId") String companyId
-            ,@Query("companyuserclubId") String companyuserclubId
-            ,@Query("province") String province
-            ,@Query("city") String city
-            ,@Query("companyClubId") String companyClubId);
+            , @Query("companyuserclubId") String companyuserclubId
+            , @Query("province") String province
+            , @Query("city") String city
+            , @Query("companyClubId") String companyClubId);
 
     /**
      * 获取时间
      */
     @GET("phoneJson/getTimeList")
     Call<ResponseBody> getTimeList(@Query("companyId") String companyId);
+
     /**
      * 登录接口
      */
@@ -40,6 +51,7 @@ public interface PhoneUrl {
             , @Field("passWord") String passWord
             , @Field("registrationId") String registrationId
             , @Field("kind") String kind);
+
     /**
      * 手动请求
      */

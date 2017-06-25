@@ -4,7 +4,9 @@ package com.rabbit.fans.activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.Process;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -33,11 +35,11 @@ import com.rabbit.fans.R;
 import com.rabbit.fans.interfaces.KeyValue;
 import com.rabbit.fans.interfaces.OnReceiveTimeListener;
 import com.rabbit.fans.model.PhoneBean;
+import com.rabbit.fans.model.UserInfo;
 import com.rabbit.fans.network.PhoneUrl;
 import com.rabbit.fans.receiver.JpushReceiver;
 import com.rabbit.fans.util.InsertLinkMan;
 import com.rabbit.fans.util.LoadResultUtil;
-import com.rabbit.fans.util.RandomUtil;
 import com.rabbit.fans.util.WorkManager;
 
 import org.json.JSONException;
@@ -54,6 +56,7 @@ import okhttp3.FormBody;
 
 public class MainActivity extends AppBaseActivity implements KeyValue, LoadResultUtil.OnLoadListener, OnReceiveTimeListener {
     private static final String TAG = "MainActivity";
+    private static final int MSG_SET_ALIAS = 1;
     @BindView(R.id.tv_result)
     TextView tvResult;
     @BindView(R.id.tv_version)
@@ -78,22 +81,101 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     private boolean flagHand = false;//手动的
     private String city, province, companyuserclubId;
     private String companyClubId;
+    private String registrationId;
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_SET_ALIAS:
+                    Log.d(TAG, "Set alias in handler.");
+                    // 调用 JPush 接口来设置别名。
+                    JPushInterface.setAliasAndTags(getApplicationContext(),
+                            (String) msg.obj,
+                            null,
+                            mAliasCallback);
+                    break;
+                default:
+                    Log.i(TAG, "Unhandled msg - " + msg.what);
+            }
+        }
+    };
+    private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
+        @Override
+        public void gotResult(int code, String alias, Set<String> tags) {
+            String logs;
+            switch (code) {
+                case 0:
+                    logs = "Set tag and alias succes";
+                    Log.e(TAG, logs);
+                    tvResult.setText("集成成功,等待推送...");
+                    // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
+                    break;
+                case 6002:
+                    logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
+                    Log.e(TAG, logs);
+                    String content1 = "集成失败,错误码为:" + code;
+                    tvError.setText(content1 + "\n请杀死软件后重新打开,多试几次!");
+                    tvError.setTextColor(0xffFF4081);
+                    // 延迟 60 秒来调用 Handler 设置别名
+                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, alias), 1000 * 60);
+                    break;
+                default:
+                    logs = "Failed with errorCode = " + code;
+                    Log.e(TAG, logs);
+                    String content = "集成失败,错误码为:" + code;
+                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+                    tvError.setTextColor(0xffFF4081);
+                    doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
+//
+                    break;
+            }
+
+        }
+    };
 
     @Override
     protected void loadData() {
-        int s = RandomUtil.randomNumber(2, 25);
-        Log.e(TAG, "loadData: " + s);
+        //自动登录,再走一遍登录接口,以防万一
+        String wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
+        doHttp(RetrofitUtils.createApi(PhoneUrl.class).login(wxId, companyId, wxPsw, registrationId, LOG_KIND_IMPORT), HttpIdentifier.LOGIN);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
+                    if (!isConnection) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                LogTool.d("material网络断开");
+                                tvResult.setText("网络断开,请检查网络!");
+                            }
+                        });
+                        break;
+                    }
+                    try {
+                        Thread.sleep(1000 * 60);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+
     }
 
 
     @Override
     protected void initViews() {
 
+
         wxId = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_ID);
         initJpush();
         JpushReceiver.setOnReceiveTimeListener(this);
         LoadResultUtil.setOnLoadListener(this);
-        String registrationId = JPushInterface.getRegistrationID(this);
+        registrationId = JPushInterface.getRegistrationID(this);
         if (TextUtils.isNull(registrationId)) {
             tvRegistrationId.setText("推送注册Id获取失败");
         } else {
@@ -107,30 +189,41 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         companyuserclubId = (String) SPUtil.get(this, COMPANY_USER_CLUB_ID, "");
         companyClubId = (String) SPUtil.get(this, COMPANY_CLUB_ID, "");
         Log.e(TAG, "initViews: " + city + "@@" + province + "@@" + companyuserclubId + "@@" + companyClubId);
-        LogTool.d("loginInfo110--->>>"+city + "@@" + province + "@@" + companyuserclubId + "@@" + companyClubId);
-        tvCompany.setText("企业码:" + companyId + "  " + province + "  " + city );
+        LogTool.d("loginInfo110--->>>" + city + "@@" + province + "@@" + companyuserclubId + "@@" + companyClubId);
+        tvCompany.setText("企业码:" + companyId + "  " + province + "  " + city);
+        SharedPreferences sp = getSharedPreferences("markypq", MODE_WORLD_READABLE);
+        SharedPreferences.Editor e = sp.edit();
+        e.putString("lat", "38.06859");  //114.314491,38.06859
+        e.putString("lon", "114.314491");
+        e.commit();
+
     }
 
     private void initJpush() {
         Log.e(TAG, "initJpush single: " + wxId);
         tvDevice.setText("微信号:" + wxId);
-        Set<String> set = new HashSet<>();
-        set.add(wxId);//手机的机器码
-        JPushInterface.setAliasAndTags(this, wxId, set, new TagAliasCallback() {
-            @Override
-            public void gotResult(int i, String s, Set<String> set) {
-                Log.e(TAG, "code==" + i);
-                LogTool.d("极光返回码------>" + i);
-                if (i != 0) {
-                    String content = "极光集成失败,错误码为:" + i;
-                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
-                    tvError.setTextColor(0xffFF4081);
-                    doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
-                } else {
-                    tvResult.setText("极光集成成功,等待推送...");
-                }
-            }
-        });
+        // 调用 Handler 来异步设置别名
+        mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, wxId));
+
+
+//        Set<String> set = new HashSet<>();
+//        set.add(wxId);//手机的机器码
+//        JPushInterface.setAliasAndTags(this, wxId, set, new TagAliasCallback() {
+//            @Override
+//            public void gotResult(int i, String s, Set<String> set) {
+//                Log.e(TAG, "code==" + i);
+//                LogTool.d("极光返回码------>" + i);
+//                if (i != 0) {
+//                    String content = "集成失败,错误码为:" + i;
+//                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+//                    tvError.setTextColor(0xffFF4081);
+//                    doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
+//                } else {
+//                    tvResult.setText("集成成功,等待推送...");
+//                }
+//            }
+//        });
+
     }
 
     @Override
@@ -141,6 +234,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     @Override
     protected void onResume() {
         super.onResume();
+//        JPushInterface.onResume(MainActivity.this);
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
             sbtnAccess.setChecked(false);
@@ -150,16 +244,25 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+//        JPushInterface.onPause(MainActivity.this);
+    }
+
+    @Override
     public void onSuccess(String type, String frequency) {
         Log.e(TAG, "onSuccess: " + type + "," + frequency);
         this.frequency = frequency;
         if (type.equals("1")) {
             getNumber();
-        }
-        if (type.equals("-2")) {
+        } else if (type.equals("-2")) {
             String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
-            String content = "收到第二次推送,但是第一次已经导入成功了!";
+            String content = "收到第二次推送,但是第一次已经推送成功了!";
             doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+        } else if (type.equals("4")) {//附近的人
+            SPUtil.putAndApply(MainActivity.this, IS_NEARBY_OPEN, true);//开启附近的人辅助功能
+            String content = "收到推送";
+            tvError.setText(content);
         }
 
     }
@@ -169,6 +272,29 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         super.onResponse(identifier, strReuslt);
         Log.e(TAG, "onResponse: " + strReuslt);
         switch (identifier) {
+            case HttpIdentifier.LOGIN:
+                UserInfo userInfo = JSONObject.parseObject(strReuslt, UserInfo.class);
+                if (userInfo.getResult() == null) {
+                    showToast("网络异常");
+                    tvResult.setText("没有网,请重新开启!");
+                    return;
+                }
+                if (userInfo.getResult().equals(HttpIdentifier.REQUEST_SUCCESS)) {
+//                    showToast("登录成功");
+                    SPUtil.putAndApply(this, IS_LOGIN, true);
+                    SPUtil.putAndApply(this, COMPANY_ID, companyId);
+                    SPUtil.putAndApply(this, CITY, userInfo.getDb().getCity());
+                    SPUtil.putAndApply(this, PROVINCE, userInfo.getDb().getProvince());
+                    SPUtil.putAndApply(this, COMPANY_USER_CLUB_ID, userInfo.getDb().getCompanyuserclubId() + "");
+                    SPUtil.putAndApply(this, COMPANY_CLUB_ID, userInfo.getDb().getCompanyClubId() + "");
+                    tvCompany.setText("企业码:" + companyId + "  " + province + "  " + city);
+                } else {
+                    showToast(userInfo.getRetMessage());
+                    SPUtil.putAndApply(MainActivity.this, IS_LOGIN, false);
+                    startActivity(LoginActivity.class, null);
+                    finish();
+                }
+                break;
             case HttpIdentifier.GET_PHONE_NUM:
                 new Thread(new Runnable() {
                     @Override
@@ -187,6 +313,8 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                 public void run() {
                                     try {
                                         progDialog.dismiss();
+                                        tvError.setText("服务器异常");
+                                        tvError.setTextColor(0xffFF4081);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -240,7 +368,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                     }
 
                                     if (frequency.equals("1")) {
-                                        String content = "一次性成功";
+                                        String content = "一次性导入成功";
                                         tvError.setText(content);
                                         tvError.setTextColor(0xff000000);
                                         String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
@@ -249,7 +377,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                         if (flagHand) {
                                             flagHand = false;
                                         } else {
-                                            String content = "二推成功";
+                                            String content = "二次导入成功";
                                             tvError.setText(content);
                                             tvError.setTextColor(0xff000000);
                                             String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
@@ -301,11 +429,36 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                     }
                                 }
                             });
+                        } else if (bean.getResult().equals("1013")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("省市已经导完!");
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                         } else if (bean.getResult().equals("9996")) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     showToast("企业不存在,不可导号!");
+                                    try {
+                                        progDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("返回错误码:" + bean.getResult());
+                                    LogTool.d("error---397" + bean.getResult());
                                     try {
                                         progDialog.dismiss();
                                     } catch (Exception e) {
@@ -344,8 +497,8 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                             return;
                         }
                         SPUtil.putAndApply(MainActivity.this, SEND_IMPORT_PHONE_ID, sendImportPhoneId);
-                        tvResult.setText("手动导号类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
-                        tvError.setText("手动成功");
+                        tvResult.setText("类型:通讯录导入号码" + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
+                        tvError.setText("手动导入成功");
                         tvError.setTextColor(0xff000000);
                         doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, "手动成功", companyId, LOG_FLAG_SUCCESS_HAND, sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
                         if (type.equals("1")) {
@@ -372,8 +525,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
                 break;
             case ERROR:
+                SPUtil.putAndApply(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
+
                 showToast("服务器异常");
                 try {
+                    tvError.setText("服务器异常");
+                    tvError.setTextColor(0xffFF4081);
                     LogTool.d("exception377-->>" + strReuslt);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -407,6 +564,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     @Override
     public void onFailuer(String error) {
+        Log.e(TAG, "onFailuer435: ");
         //转发失败的回调
         String content = wxId + "  失败--" + error;
         tvError.setText("  失败--" + error);
@@ -418,6 +576,10 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     @Override
     public void onUpdate(String str) {
+        //清除极光推送信息
+        JPushInterface.setAlias(MainActivity.this, "", null);
+        Set<String> set = new HashSet<>();
+        JPushInterface.setTags(MainActivity.this, set, null);
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -425,7 +587,24 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     }
 
-    @OnClick({R.id.btn_hand, R.id. sbtn_access, R.id.tv_update, R.id.iv_logout})
+    @Override
+    public void addedNum(int num) {
+        LogTool.d("已经加了" + num + "个好友");
+        tvCountTime.setText("已经加了" + num + "个好友");
+    }
+
+    @Override
+    public void onNetChanged(boolean isNet) {
+        Log.e(TAG, "onNetChanged: " + isNet);
+        if (!isNet) {
+            LogTool.d("material没有网,请重新开启!");
+            tvResult.setText("网络断开,请重新开启!");
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
+        }
+
+    }
+
+    @OnClick({R.id.btn_hand, R.id.sbtn_access, R.id.tv_update, R.id.iv_logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_hand:
@@ -450,6 +629,13 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+//                                showProgress();
+
+
+                                //清除极光推送信息
+                                JPushInterface.setAlias(MainActivity.this, "", null);
+                                Set<String> set = new HashSet<>();
+                                JPushInterface.setTags(MainActivity.this, set, null);
                                 SPUtil.putAndApply(MainActivity.this, IS_LOGIN, false);
                                 startActivity(LoginActivity.class, null);
                                 finish();
@@ -464,6 +650,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     @Override
     public void onReceiveTime(String time) {
         tvResult.setText(time);
+        tvError.setText("准备就绪...");
+        tvCountTime.setText("");
+        if (time.equals("网络断开连接!")){
+            Log.e(TAG, "onReceiveTime:网络断开连接 " );
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS,  wxId), 1000 * 60);
+        }
     }
 
     private void checkUpdate() {

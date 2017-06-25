@@ -10,6 +10,7 @@ public class SupportUtil {
     private final String VERSION_657 = "6.5.7";
     private final String VERSION_654 = "6.5.4";
     private final String VERSION_658 = "6.5.8";
+    private final String VERSION_653 = "6.5.3";
     private final String[] SUPPORT_VERSION = new String[]{
             VERSION_6325
     };
@@ -26,6 +27,8 @@ public class SupportUtil {
             Ver658();
         }else if (version.contains(VERSION_6313)){
             Ver6313();
+        }else if (version.contains(VERSION_653)){
+            Ver653();
         }
     }
 
@@ -196,7 +199,20 @@ public class SupportUtil {
         tv_Delete = "com.tencent.mm:id/fi";
         tv_noFans = "com.tencent.mm:id/axp";
     }
+    private void Ver653(){
+        sendRequestBtnId = "com.tencent.mm:id/g_";
+        etContentId = "com.tencent.mm:id/cio";
+        launcherPagerId = "com.tencent.mm:id/bgp";
+        launcherNewFriendId = "com.tencent.mm:id/arm";
+        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/ary";
+        FMesssageConversationUI_LV_ID = "com.tencent.mm:id/as4";
+        tv_setRemark = "com.tencent.mm:id/aby";
+        tv_fillIn = "com.tencent.mm:id/ad9";
+        tv_remark_save = "com.tencent.mm:id/g9";
 
+
+        tv_Delete = "com.tencent.mm:id/f7";
+    }
     private void Ver654() {
         dialogHintTextId = "com.tencent.mm:id/bpn";
         contactInfoUiNickNameId = "com.tencent.mm:id/la";

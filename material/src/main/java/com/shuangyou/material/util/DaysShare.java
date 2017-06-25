@@ -1,7 +1,10 @@
-package com.kidney_hospital.base.util.wechat;
+package com.shuangyou.material.util;
 
 import android.accessibilityservice.AccessibilityService;
 import android.util.Log;
+
+import com.kidney_hospital.base.util.wechat.PerformClickUtils;
+import com.kidney_hospital.base.util.wechat.SupportUtil;
 
 
 /**
@@ -23,6 +26,11 @@ public class DaysShare {
         boolean isClick = PerformClickUtils.findViewIdAndClick(service, supportUtil.getSendRequestBtnId());
         Log.e(TAG, "share: "+isClick );
         if (isClick) {
+            if (LoadResultUtil.onLoadListener!=null){
+                LoadResultUtil.onLoadListener.onAccess("");
+            }
+
+
             isRun = false;
         }
 

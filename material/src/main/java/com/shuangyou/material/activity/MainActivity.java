@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -27,13 +28,13 @@ import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
-import com.kidney_hospital.base.util.wechat.DaysShare;
 import com.kidney_hospital.base.view.switchbutton.SwitchButton;
 import com.shuangyou.material.R;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.network.GroupControlUrl;
 import com.shuangyou.material.receiver.JpushReceiver;
+import com.shuangyou.material.util.DaysShare;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
@@ -63,6 +64,7 @@ import static com.shuangyou.material.util.LoadResultUtil.onLoadListener;
 
 public class MainActivity extends AppBaseActivity implements OnReceiveTimeListener, LoadResultUtil.OnLoadListener, KeyValue {
     private static final String TAG = "MainActivity";
+    private static final int MSG_SET_ALIAS = 1;
     @BindView(R.id.tv_company)
     TextView tvCompany;
     @BindView(R.id.tv_device)
@@ -87,10 +89,87 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     private String companyId;
     private String wxId;//微信号
     public List<File> filePictures = new ArrayList<>();
+    private String registrationId;
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_SET_ALIAS:
+                    Log.d(TAG, "Set alias in handler.");
+                    // 调用 JPush 接口来设置别名。
+                    JPushInterface.setAliasAndTags(getApplicationContext(),
+                            (String) msg.obj,
+                            null,
+                            mAliasCallback);
+                    break;
+                default:
+                    Log.i(TAG, "Unhandled msg - " + msg.what);
+            }
+        }
+    };
+    private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
+        @Override
+        public void gotResult(int code, String alias, Set<String> tags) {
+            String logs;
+            switch (code) {
+                case 0:
+//                    logs = "Set tag and alias success";
+//                    Log.e(TAG, logs);
+                    tvResult.setText("集成成功,等待推送...");
+                    // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
+                    break;
+                case 6002:
+                    logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
+                    Log.e(TAG, logs);
+                    String content1 = "集成失败,错误码为:" + code;
+                    tvError.setText(content1 + "\n请杀死软件后重新打开,多试几次!");
+                    tvError.setTextColor(0xffFF4081);
+                    // 延迟 60 秒来调用 Handler 设置别名
+                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, alias), 1000 * 60);
+                    break;
+                default:
+                    logs = "Failed with errorCode = " + code;
+                    Log.e(TAG, logs);
+                    String content = "集成失败,错误码为:" + code;
+                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+                    tvError.setTextColor(0xffFF4081);
+                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+//
+                    break;
+            }
 
+        }
+    };
     @Override
     protected void loadData() {
+        String wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
+        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw,registrationId,LOG_KIND_MATERIAL), HttpIdentifier. LOGIN);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
+                    if (!isConnection){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvResult.setText("网络断开,请检查网络!");
+                                LogTool.d("material网络断开");
+                                Log.e(TAG, "run:网络断开 " );
 
+                            }
+                        });
+                        break;
+                    }
+                    try {
+                        Thread.sleep(1000*60);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -99,7 +178,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         initJpush();
         JpushReceiver.setOnReceiveTimeListener(this);
         LoadResultUtil.setOnLoadListener(this);
-        String registrationId = JPushInterface.getRegistrationID(this);
+        registrationId = JPushInterface.getRegistrationID(this);
         if (TextUtils.isNull(registrationId)) {
             tvRegistrationId.setText("推送注册Id获取失败");
         } else {
@@ -109,6 +188,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
 
         companyId = (String) SPUtil.get(this, COMPANY_ID, "1");
         tvCompany.setText("企业码:" + companyId);
+
     }
 
     @Override
@@ -119,23 +199,27 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     private void initJpush() {
         Log.e(TAG, "initJpush single: " + wxId);
         tvDevice.setText("微信号:" + wxId);
-        Set<String> set = new HashSet<>();
-        set.add(wxId);//手机的机器码
-        JPushInterface.setAliasAndTags(this, wxId, set, new TagAliasCallback() {
-            @Override
-            public void gotResult(int i, String s, Set<String> set) {
-                Log.e(TAG, "code==" + i);
-                LogTool.d("极光返回码------>" + i);
-                if (i != 0) {
-                    String content = "极光集成失败,错误码为:" + i;
-                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
-                    tvError.setTextColor(0xffFF4081);
-                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
-                } else {
-                    tvResult.setText("极光集成成功,等待推送...");
-                }
-            }
-        });
+        // 调用 Handler 来异步设置别名
+        mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, wxId));
+
+
+//        Set<String> set = new HashSet<>();
+//        set.add(wxId);//手机的机器码
+//        JPushInterface.setAliasAndTags(this, wxId, set, new TagAliasCallback() {
+//            @Override
+//            public void gotResult(int i, String s, Set<String> set) {
+//                Log.e(TAG, "code==" + i);
+//                LogTool.d("极光返回码------>" + i);
+//                if (i != 0) {
+//                    String content = "集成失败,错误码为:" + i;
+//                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+//                    tvError.setTextColor(0xffFF4081);
+//                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+//                } else {
+//                    tvResult.setText("集成成功,等待推送...");
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -174,6 +258,12 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
+                                //清除极光推送信息
+                                JPushInterface.setAlias(MainActivity.this, "", null);
+                                Set<String> set = new HashSet<>();
+                                JPushInterface.setTags(MainActivity.this, set, null);
+
                                 SPUtil.putAndApply(MainActivity.this, IS_LOGIN, false);
                                 startActivity(LoginActivity.class, null);
                                 finish();
@@ -195,11 +285,17 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         }
 
         tvResult.setText(time);
+        tvError.setText("准备就绪...");
+        if (time.equals("网络断开连接!")){
+            Log.e(TAG, "onReceiveTime:网络断开连接 " );
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS,  wxId), 1000 * 60);
+        }
+
     }
 
     @Override
     public void onSuccess(final String error, final String flag) {
-//转发成功的回调
+        //转发成功的回调
 
         runOnUiThread(new Runnable() {
             @Override
@@ -209,14 +305,12 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String content = wxId + "  转发成功--" + error;
-                tvError.setText("转发成功--" + error);
+                String content = wxId + "  推送成功--" + error;
+                tvError.setText("推送成功--" + error);
                 tvError.setTextColor(0xff999999);
                 String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
                         flag, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
-
-
             }
         });
     }
@@ -233,8 +327,8 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 }
 
                 //转发失败的回调
-                String content = wxId + "  转发失败--" + error;
-                tvError.setText("  转发失败--" + error);
+                String content = wxId + "  失败--" + error;
+                tvError.setText("  失败--" + error);
                 tvError.setTextColor(0xffFF4081);
                 String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
@@ -247,6 +341,10 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     public void onUpdate(String str) {
         Log.e(TAG, "onUpdate: " + str);
         LogTool.d("onUpdate----->" + str);
+        //清除极光推送信息
+        JPushInterface.setAlias(MainActivity.this, "", null);
+        Set<String> set = new HashSet<>();
+        JPushInterface.setTags(MainActivity.this, set, null);
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -254,10 +352,48 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     }
 
     @Override
+    public void onAccess(String str) {
+        tvError.setText("点击发送成功!");
+        String content = wxId + "  点击发送成功";
+        String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
+        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
+                LOG_FLAG_OTHER, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+    }
+
+    @Override
+    public void onNetChanged(boolean isNet) {
+        Log.e(TAG, "onNetChanged: "+isNet );
+        if (!isNet){
+            LogTool.d("import没有网,请重新开启!");
+            tvResult.setText("网络断开,请重新开启!");
+        }
+
+    }
+
+    @Override
     public void onResponse(int identifier, String strReuslt) {
         super.onResponse(identifier, strReuslt);
         Log.e(TAG, "onResponse: " + strReuslt);
         switch (identifier) {
+            case HttpIdentifier.LOGIN:
+                try {
+                    JSONObject jsonObject = new JSONObject(strReuslt);
+                    String result = jsonObject.getString("result");
+                    if (result.equals("0000")){
+//                        showToast("登录成功");
+                        SPUtil.putAndApply(this, IS_LOGIN, true);
+                        SPUtil.putAndApply(this, COMPANY_ID, companyId);
+                        tvCompany.setText("企业码:" + companyId);
+                    }else{
+                        showToast(jsonObject.getString("retMessage"));
+                        SPUtil.putAndApply(MainActivity.this, IS_LOGIN, false);
+                        startActivity(LoginActivity.class, null);
+                        finish();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case HttpIdentifier.HAND:
                 LogTool.d("手动转发 json" + strReuslt);
                 try {

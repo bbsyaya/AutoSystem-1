@@ -10,8 +10,6 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 
-import com.kidney_hospital.base.util.wechat.AddByLinkMan;
-import com.kidney_hospital.base.util.wechat.DaysShare;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
 
 import java.util.List;

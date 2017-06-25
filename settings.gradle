@@ -1,1 +1,1 @@
-include ':app', ':base', ':fans', ':material', ':jpush', ':response'
+include ':app', ':base', ':fans', ':material', ':jpush', ':response', ':autofans'

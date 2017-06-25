@@ -16,9 +16,9 @@ import com.kidney_hospital.base.util.FileUtils;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
-import com.kidney_hospital.base.util.wechat.DaysShare;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
+import com.shuangyou.material.util.DaysShare;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
@@ -71,6 +71,17 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             Log.e(TAG, "onReceive: message" + message);
             Log.e(TAG, "onReceive: extra" + extras);
             LogTool.d("onReceive: extra47----" + extras);
+//            try {
+//                AppManger.getInstance().isAddActivity(MainActivity.class);
+//            } catch (Exception e) {
+//                Intent in = new Intent(mContext, MainActivity.class);
+//                in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                mContext.startActivity(in);
+//                e.printStackTrace();
+//                return;
+//            }
+
+
 //            if (true){
 //                return;
 //            }
@@ -204,7 +215,17 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             Log.e(TAG, "onReceive: message" + message);
             Log.e(TAG, "onReceive: extra" + extras);
 
+        }else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
+            boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
+            Log.e(TAG, "[MyReceiver]" + intent.getAction() + " connected:" + connected);
+            if (!connected) {
+                if (onReceiveTimeListener != null) {
+                    onReceiveTimeListener.onReceiveTime("网络断开连接!");
+                }
+            }
+
         }
+
 
     }
 

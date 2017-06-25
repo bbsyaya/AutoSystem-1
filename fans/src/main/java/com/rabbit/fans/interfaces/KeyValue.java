@@ -28,4 +28,7 @@ public interface KeyValue {
     String LOG_KIND_IMPORT = "1";
 
 
+    String IS_NEARBY_OPEN= "is_nearby_open";//附近的人
+
+
 }

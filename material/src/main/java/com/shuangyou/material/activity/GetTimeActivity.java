@@ -25,12 +25,12 @@ import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.server.RetrofitUtils;
-import com.kidney_hospital.base.util.wechat.DaysShare;
 import com.shuangyou.material.R;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.network.GroupControlUrl;
 import com.shuangyou.material.receiver.JpushReceiver;
+import com.shuangyou.material.util.DaysShare;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
@@ -212,6 +212,16 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
+    }
+
+    @Override
+    public void onAccess(String str) {
+
+    }
+
+    @Override
+    public void onNetChanged(boolean isNet) {
+
     }
 
     @Override

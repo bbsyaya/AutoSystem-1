@@ -1,5 +1,6 @@
 package com.rabbit.fans.activity;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -38,7 +39,11 @@ public class LoginActivity extends AppBaseActivity implements KeyValue {
 
     @Override
     protected void loadData() {
-
+        SharedPreferences sp = getSharedPreferences("markypq", MODE_WORLD_READABLE);
+        SharedPreferences.Editor e = sp.edit();
+        e.putString("lat", "37.943782");  //114.470225,37.943782
+        e.putString("lon", "114.470225");
+        e.commit();
     }
 
     @Override
@@ -67,22 +72,26 @@ public class LoginActivity extends AppBaseActivity implements KeyValue {
         Log.e(TAG, "onResponse: " + strReuslt);
         switch (identifier) {
             case HttpIdentifier.LOGIN:
-                UserInfo userInfo = JSONObject.parseObject(strReuslt,UserInfo.class);
-                if (userInfo.getResult().equals(HttpIdentifier.REQUEST_SUCCESS)){
+                UserInfo userInfo = JSONObject.parseObject(strReuslt, UserInfo.class);
+                if (userInfo.getResult() == null) {
+                    showToast("网络异常");
+                    return;
+                }
+                if (userInfo.getResult().equals(HttpIdentifier.REQUEST_SUCCESS)) {
                     showToast("登录成功");
-                    String content = wxId + "  注册成功";
+                    String content = wxId + "  登录成功";
                     doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
                     SPUtil.putAndApply(this, IS_LOGIN, true);
                     SPUtil.putAndApply(this, COMPANY_ID, companyId);
-                    SPUtil.putAndApply(this,CITY,userInfo.getDb().getCity());
-                    SPUtil.putAndApply(this,PROVINCE,userInfo.getDb().getProvince());
-                    SPUtil.putAndApply(this,COMPANY_USER_CLUB_ID,userInfo.getDb().getCompanyuserclubId()+"");
-                    SPUtil.putAndApply(this,COMPANY_CLUB_ID,userInfo.getDb().getCompanyClubId()+"");
+                    SPUtil.putAndApply(this, CITY, userInfo.getDb().getCity());
+                    SPUtil.putAndApply(this, PROVINCE, userInfo.getDb().getProvince());
+                    SPUtil.putAndApply(this, COMPANY_USER_CLUB_ID, userInfo.getDb().getCompanyuserclubId() + "");
+                    SPUtil.putAndApply(this, COMPANY_CLUB_ID, userInfo.getDb().getCompanyClubId() + "");
                     startActivity(MainActivity.class, null);
                     finish();
-                }else{
+                } else {
                     showToast(userInfo.getRetMessage());
-                    String content = wxId+"  注册失败--返回-" + userInfo.getResult();
+                    String content = wxId + "  登录失败--返回-" + userInfo.getResult();
                     doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
                 }
 
@@ -91,7 +100,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue {
 //                    String result = jsonObject.getString("result");
 //                    if (result.equals("0000")) {
 //                        showToast("登录成功");
-//                        String content = wxId + "  注册成功";
+//                        String content = wxId + "  登录成功";
 //                        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_SUCCESS_ONCE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
 //                        SPUtil.putAndApply(this, IS_LOGIN, true);
 //                        SPUtil.putAndApply(this, COMPANY_ID, companyId);
@@ -100,7 +109,7 @@ public class LoginActivity extends AppBaseActivity implements KeyValue {
 //                    } else {
 //                        showToast(jsonObject.getString("retMessage"));
 //                        if (result.equals("9999") || result.equals("10000")) {
-//                            String content = wxId + "  注册失败--返回-" + result;
+//                            String content = wxId + "  登录失败--返回-" + result;
 //                            doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_LOGIN, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
 //                        }
 //                    }

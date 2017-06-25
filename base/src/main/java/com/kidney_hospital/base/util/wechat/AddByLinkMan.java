@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kidney_hospital.base.util.RandomUtil;
+import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 
 import java.util.List;
 
@@ -51,7 +52,8 @@ public class AddByLinkMan {
             isJumpLauncherUI = true;
             Log.e(TAG, "startAdd: 已经到这里了40");
             if (flagNewFriendsClick) {
-                jumpRemarkNum = 11;
+                jumpRemarkNum = 100;
+                LogTool.d("jumpRemarkNum56--->>"+jumpRemarkNum);
                 flagNewFriendsClick = false;
             }
             launcherInfo(supportUtil, mService);
@@ -167,13 +169,13 @@ public class AddByLinkMan {
             flagScroll = true;
         } else {
             if (flagScroll) {
-                jumpRemarkNum = 11;
+//                jumpRemarkNum = 11;
                 flagScroll = false;
             }
 
             scrollFalseNum++;
             if (scrollFalseNum > 2) {
-                jumpRemarkNum = 11;
+//                jumpRemarkNum = 11;
                 scrollFalseNum = 0;
             }
 
