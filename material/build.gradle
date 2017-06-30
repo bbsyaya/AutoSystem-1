@@ -9,12 +9,12 @@ android {
         applicationId "com.shuangyou.material"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 20170624
-        versionName "1.2.4"
+        versionCode 20170628
+        versionName "1.2.7"
 
 
     }
-    //签名配置c
+    //签名配置
     signingConfigs {
         debugConfig {
             keyAlias "androiddebugkey"

@@ -1,6 +1,9 @@
 package com.shuangyou.material.service;
 
 import android.accessibilityservice.AccessibilityService;
+import android.annotation.TargetApi;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -8,6 +11,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
@@ -76,7 +80,8 @@ public class CloudService extends AccessibilityService {
                     if (etContent.equals("这一刻的想法...")) {
                         //TODO 下面这行代码有些板子崩
                         try {
-                            PerformClickUtils.setText(mService, supportUtil.getEtContentId(), JpushReceiver.sContent);
+//                            PerformClickUtils.setText(mService, supportUtil.getEtContentId(), JpushReceiver.sContent);
+                            inputHello(JpushReceiver.sContent);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -84,7 +89,7 @@ public class CloudService extends AccessibilityService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                PerformClickUtils.sleep(1200);
                 DaysShare.getInstence().share(supportUtil, mService, atyName);
 
 
@@ -99,7 +104,23 @@ public class CloudService extends AccessibilityService {
     public void onInterrupt() {
 
     }
-
+    //自动输入打招呼内容
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void inputHello(String hello) {
+        AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
+        //找到当前获取焦点的view
+        AccessibilityNodeInfo target = nodeInfo.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+        if (target == null) {
+            Log.d(TAG, "inputHello: null");
+            return;
+        }
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("label", hello);
+        clipboard.setPrimaryClip(clip);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            target.performAction(AccessibilityNodeInfo.ACTION_PASTE);
+        }
+    }
     /**
      * 获取微信的版本号
      *

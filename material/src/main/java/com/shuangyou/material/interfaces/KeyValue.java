@@ -23,6 +23,7 @@ public interface KeyValue {
     String LOG_FLAG_SUCCESS_ONCE_BAD = "6";//以logo形式转发的情况
     String LOG_FLAG_SUCCESS_TWICE_BAD =  "7";
     String LOG_FLAG_OTHER = "8";
+    String LOG_FLAG_JAM = "9";
 
     String LOG_KIND_MATERIAL = "0";
 

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -46,12 +45,11 @@ public class AutoService extends AccessibilityService implements KeyValue {
         supportUtil = new SupportUtil(version);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
             String atyName = event.getClassName().toString();
-            Log.e(TAG, "activity  ------------ " + atyName);
+            Log.e(TAG,     "activity  ------------ " + atyName);
             handleImportNum(atyName);
 
 //            handleNearby(atyName);
@@ -151,9 +149,6 @@ public class AutoService extends AccessibilityService implements KeyValue {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
         if (AddByLinkMan.getInstence().jumpRemarkNum < 11) {
 
             if (LoadResultUtil.onLoadListener!=null){
@@ -170,7 +165,7 @@ public class AutoService extends AccessibilityService implements KeyValue {
                 }
             }).start();
         } else {
-            AddByLinkMan.getInstence().isJumpLauncherUI = false;
+//            AddByLinkMan.getInstence().isJumpLauncherUI = false;
         }
     }
 

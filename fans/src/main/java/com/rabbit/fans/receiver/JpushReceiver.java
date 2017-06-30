@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kidney_hospital.base.util.DateUtils;
+import com.kidney_hospital.base.util.JumpToWeChatUtil;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
@@ -44,19 +45,29 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             Log.e(TAG, "onReceive: message" + message);
             Log.e(TAG, "onReceive: extra" + extras);
             LogTool.d("onReceive: extra-fans----" + extras);
-//            try {
-//                AppManger.getInstance().isAddActivity(MainActivity.class);
-//            } catch (Exception e) {
-//                Intent in = new Intent(mContext, MainActivity.class);
-//                in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                mContext.startActivity(in);
-//                e.printStackTrace();
-//                return;
-//            }
             Log.e(TAG, "onReceive: 58");
+            boolean isLogin = (boolean) SPUtil.get(mContext, IS_LOGIN, true);
+            if (!isLogin) {
+                return;
+            }
+            try {
+                JumpToWeChatUtil.jumpToFansMainActivity();
+            } catch (Exception e) {
+                e.printStackTrace();
+                LogTool.d("fans---Jpush52>>"+e.toString());
+                Log.e(TAG, "eeeeee57: "+e.toString() );
+            }
+
 
             try {
                 JSONObject object = new JSONObject(extras);
+                String sendTime = object.getString("sendTime");
+                long pushTime = DateUtils.stringToStamp(sendTime);
+                long currentTime = System.currentTimeMillis();
+                Log.e(TAG, "pushTime: " + pushTime);
+                Log.e(TAG, "currentTime: " + currentTime);
+
+
                 String sendImportPhoneId = object.getString("sendImportPhoneId");
                 String frequency = object.getString("frequency");
                 if (frequency.equals("0")) {
@@ -82,6 +93,14 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     return;
                 }
                 SPUtil.putAndApply(mContext, SEND_IMPORT_PHONE_ID, sendImportPhoneId);
+                if (currentTime - pushTime > 1000 * 60 * 30) {
+                    LogTool.d("fans推送信息超时!");
+                    Toast.makeText(mContext, "推送信息超时!", Toast.LENGTH_SHORT).show();
+                    if (LoadResultUtil.onLoadListener != null) {
+                        LoadResultUtil.onLoadListener.onSuccess("-3", "-1");
+                    }
+                    return;
+                }
                 if (onReceiveTimeListener != null) {
                     onReceiveTimeListener.onReceiveTime("类型:通讯录导入号码" + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                 }

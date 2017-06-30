@@ -1,5 +1,6 @@
 package com.kidney_hospital.base.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,6 +10,20 @@ import java.util.Date;
  */
 
 public class DateUtils {
+    /*
+     * 将String 转成时间戳
+     */
+    public static long stringToStamp(String s) {
+        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date= null;
+        try {
+            date = simpleDateFormat.parse(s);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long timeStemp = date.getTime();
+        return timeStemp;
+    }
     /**
      * 得到日期   HH:mm
      *

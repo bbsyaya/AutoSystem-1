@@ -45,7 +45,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -126,7 +125,15 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                     tvError.setText(content1 + "\n请杀死软件后重新打开,多试几次!");
                     tvError.setTextColor(0xffFF4081);
                     // 延迟 60 秒来调用 Handler 设置别名
-                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, alias), 1000 * 60);
+                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
+                    break;
+                case 6003:
+                    logs = "Failed with errorCode = " + code;
+                    Log.e(TAG, logs);
+                    String content2 = "集成失败,错误码为:" + code;
+                    tvError.setText(content2 + "\n包含非法字符,请联系开发人员!");
+                    tvError.setTextColor(0xffFF4081);
+                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content2, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
                     break;
                 default:
                     logs = "Failed with errorCode = " + code;
@@ -135,35 +142,35 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                     tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
                     tvError.setTextColor(0xffFF4081);
                     doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
-//
                     break;
             }
 
         }
     };
+
     @Override
     protected void loadData() {
         String wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
-        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw,registrationId,LOG_KIND_MATERIAL), HttpIdentifier. LOGIN);
+        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw, registrationId, LOG_KIND_MATERIAL), HttpIdentifier.LOGIN);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
+                while (true) {
                     boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
-                    if (!isConnection){
+                    if (!isConnection) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 tvResult.setText("网络断开,请检查网络!");
                                 LogTool.d("material网络断开");
-                                Log.e(TAG, "run:网络断开 " );
-
+                                Log.e(TAG, "run:网络断开 ");
+                                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
                             }
                         });
-                        break;
+
                     }
                     try {
-                        Thread.sleep(1000*60);
+                        Thread.sleep(1000 * 60);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -174,6 +181,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
 
     @Override
     protected void initViews() {
+        LogTool.d("material--开始onCreate");
         wxId = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_ID);
         initJpush();
         JpushReceiver.setOnReceiveTimeListener(this);
@@ -194,6 +202,12 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     @Override
     public int getLayoutId() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LogTool.d("material杀死了ondestory");
     }
 
     private void initJpush() {
@@ -260,9 +274,9 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                             public void onClick(DialogInterface dialog, int which) {
 
                                 //清除极光推送信息
-                                JPushInterface.setAlias(MainActivity.this, "", null);
-                                Set<String> set = new HashSet<>();
-                                JPushInterface.setTags(MainActivity.this, set, null);
+//                                JPushInterface.setAlias(MainActivity.this, "", null);
+//                                Set<String> set = new HashSet<>();
+//                                JPushInterface.setTags(MainActivity.this, set, null);
 
                                 SPUtil.putAndApply(MainActivity.this, IS_LOGIN, false);
                                 startActivity(LoginActivity.class, null);
@@ -286,9 +300,9 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
 
         tvResult.setText(time);
         tvError.setText("准备就绪...");
-        if (time.equals("网络断开连接!")){
-            Log.e(TAG, "onReceiveTime:网络断开连接 " );
-            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS,  wxId), 1000 * 60);
+        if (time.equals("网络断开连接!")) {
+            Log.e(TAG, "onReceiveTime:网络断开连接 ");
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
         }
 
     }
@@ -342,9 +356,9 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         Log.e(TAG, "onUpdate: " + str);
         LogTool.d("onUpdate----->" + str);
         //清除极光推送信息
-        JPushInterface.setAlias(MainActivity.this, "", null);
-        Set<String> set = new HashSet<>();
-        JPushInterface.setTags(MainActivity.this, set, null);
+//        JPushInterface.setAlias(MainActivity.this, "", null);
+//        Set<String> set = new HashSet<>();
+//        JPushInterface.setTags(MainActivity.this, set, null);
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -353,19 +367,29 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
 
     @Override
     public void onAccess(String str) {
-        tvError.setText("点击发送成功!");
-        String content = wxId + "  点击发送成功";
-        String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
-        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
-                LOG_FLAG_OTHER, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+        if (str.equals("-3")) {
+            String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
+            String content = wxId + "-->因为极光阻塞,推送信息超时!";
+            tvError.setText("因为极光阻塞,推送信息超时!");
+            doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_JAM, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+
+        } else {
+            tvError.setText("点击发送成功!");
+            String content = wxId + "  点击发送成功";
+            String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
+            doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
+                    LOG_FLAG_OTHER, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+        }
     }
 
     @Override
     public void onNetChanged(boolean isNet) {
-        Log.e(TAG, "onNetChanged: "+isNet );
-        if (!isNet){
+        Log.e(TAG, "onNetChanged: " + isNet);
+        if (!isNet) {
             LogTool.d("import没有网,请重新开启!");
             tvResult.setText("网络断开,请重新开启!");
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
+
         }
 
     }
@@ -375,16 +399,19 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         super.onResponse(identifier, strReuslt);
         Log.e(TAG, "onResponse: " + strReuslt);
         switch (identifier) {
+            case HttpIdentifier.LOG:
+                LogTool.d("material_log381--->>" + strReuslt);
+                break;
             case HttpIdentifier.LOGIN:
                 try {
                     JSONObject jsonObject = new JSONObject(strReuslt);
                     String result = jsonObject.getString("result");
-                    if (result.equals("0000")){
+                    if (result.equals("0000")) {
 //                        showToast("登录成功");
                         SPUtil.putAndApply(this, IS_LOGIN, true);
                         SPUtil.putAndApply(this, COMPANY_ID, companyId);
                         tvCompany.setText("企业码:" + companyId);
-                    }else{
+                    } else {
                         showToast(jsonObject.getString("retMessage"));
                         SPUtil.putAndApply(MainActivity.this, IS_LOGIN, false);
                         startActivity(LoginActivity.class, null);
@@ -460,7 +487,11 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 }
                 break;
             case ERROR:
-                progDialog.dismiss();
+                try {
+                    progDialog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }

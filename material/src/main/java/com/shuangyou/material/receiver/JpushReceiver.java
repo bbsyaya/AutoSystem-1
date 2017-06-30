@@ -13,6 +13,7 @@ import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.constant.HttpApi;
 import com.kidney_hospital.base.util.DateUtils;
 import com.kidney_hospital.base.util.FileUtils;
+import com.kidney_hospital.base.util.JumpToWeChatUtil;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
@@ -70,7 +71,20 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
             Log.e(TAG, "onReceive: message" + message);
             Log.e(TAG, "onReceive: extra" + extras);
-            LogTool.d("onReceive: extra47----" + extras);
+            LogTool.d("onReceive: extra-material47----" + extras);
+            boolean isLogin = (boolean) SPUtil.get(mContext, IS_LOGIN, true);
+            if (!isLogin) {
+                return;
+            }
+
+            try {
+                JumpToWeChatUtil.jumpToMaterialMainActivity();
+            } catch (Exception e) {
+                e.printStackTrace();
+                LogTool.d("material---Jpush52>>"+e.toString());
+                Log.e(TAG, "eeeeee57: "+e.toString() );
+            }
+
 //            try {
 //                AppManger.getInstance().isAddActivity(MainActivity.class);
 //            } catch (Exception e) {
@@ -88,6 +102,9 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
 
             try {
                 JSONObject object = new JSONObject(extras);
+                String sendTime = object.getString("sendTime");
+                long pushTime = DateUtils.stringToStamp(sendTime);
+                long currentTime = System.currentTimeMillis();
                 String title = object.getString("title");
                 String content = object.getString("content");
                 String url = object.getString("url");
@@ -166,7 +183,14 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     }
                     return;
                 }
-
+                if (currentTime-pushTime>1000*60*30){
+                    LogTool.d("material推送信息超时!");
+                    Toast.makeText(mContext, "推送信息超时!", Toast.LENGTH_SHORT).show();
+                    if (LoadResultUtil.onLoadListener != null) {
+                        LoadResultUtil.onLoadListener.onAccess("-3");
+                    }
+                    return;
+                }
                 if (onReceiveTimeListener != null) {
                     onReceiveTimeListener.onReceiveTime("类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                 }
@@ -215,7 +239,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             Log.e(TAG, "onReceive: message" + message);
             Log.e(TAG, "onReceive: extra" + extras);
 
-        }else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
+        } else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
             boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
             Log.e(TAG, "[MyReceiver]" + intent.getAction() + " connected:" + connected);
             if (!connected) {

@@ -3,228 +3,138 @@
 
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/Downloads/change/sdk/extras/android/m2repository/com/android/support/support-annotations/24.1.1/support-annotations-24.1.1.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/support-compat/25.3.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="3af19f153122737b372622fa6c81dd11a1c6b999">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/support-annotations-24.1.1_efc79e448207c3ff9d4a113f62fd9917204bea17.jar" />
+        revision="25.0.2"
+        sha1="da27a32db6af8954ee8061537c7d476fcb1df46f">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-support-compat-25.3.1_74e2885997ee0f6a574cf8644a5e295aa63d75e5.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.tinkerpatch.tinker/tinker-android-lib/1.7.11/jars/classes.jar"
+        jar="/Users/kaifa1111/Downloads/change/sdk/extras/android/m2repository/com/android/support/support-annotations/25.3.1/support-annotations-25.3.1.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="ff99fda7f80c5850184701ba401b86cda8b9f8a0">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.tinkerpatch.tinker-tinker-android-lib-1.7.11_7025dc189fa0aba3d3d9e5e7a3b60f360d581248.jar" />
+        revision="25.0.2"
+        sha1="bf8841d29fa39e077730e7a91222c2ce269fa7c9">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/support-annotations-25.3.1_caf76cbbb4d714d7e3f7fd2178bb39395791d766.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/jp.wasabeef/glide-transformations/2.0.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="dca7a60bcc49fedf852b01a28826329c330ba977">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/jp.wasabeef-glide-transformations-2.0.0_5de8d1f6f5c7d77e7a0de1d5cdfc81d1abda5310.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.3.1/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="45f697922e6f072daa12f8a2995dc77ab03c11da">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-support-media-compat-25.3.1_1d2da563bdf22a1a4228d62dd36afe3701c1bb42.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.3.1/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="efb8cb62d47d157c29d1521daac7eefd4cb881ee">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-support-vector-drawable-25.3.1_4b6beea854d325957a4150105455c3074cedcfd4.jar" />
     </item>
     <item
         is-multidex="false"
         jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.github.bumptech.glide/glide/3.7.0/9e9eeaf9948ee4d6c3ab354e8dc14368f16994a4/glide-3.7.0.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
+        revision="25.0.2"
         sha1="9e9eeaf9948ee4d6c3ab354e8dc14368f16994a4">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/glide-3.7.0_519f3d48af9b5cebcb83a985ebd0a9f85cf1181a.jar" />
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/glide-3.7.0_519f3d48af9b5cebcb83a985ebd0a9f85cf1181a.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.tinkerpatch.tinker/bsdiff-util/1.7.11/5ddcbddaf504f82293af24f0e1a95737306e7f94/bsdiff-util-1.7.11.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support.constraint/constraint-layout/1.0.2/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="5ddcbddaf504f82293af24f0e1a95737306e7f94">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/bsdiff-util-1.7.11_ac7e8b4fb7a06d886aa1e06f9ae6dcf23732cc92.jar" />
+        revision="25.0.2"
+        sha1="44ee06abb66da30f5855e6bf54574e64cdcd982a">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support.constraint-constraint-layout-1.0.2_24ad90823e1ac4f40814926cfcf318947c4b07b6.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.4.0/jars/classes.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.3.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="a07818a1ecabdb149998823429cce555af4b9cba">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.jakewharton-butterknife-8.4.0_a18beacab669ee5612941c36272e06d7cb7a10f7.jar" />
+        revision="25.0.2"
+        sha1="6ef31f1555bb4cc513ec8d52711365a8b89f3600">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-support-core-utils-25.3.1_90a50ece694d986e54f2252e15a481630d2ef038.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.alibaba/fastjson/1.2.7/a5c721e8ea1e18854272879d6ed2770d25feb342/fastjson-1.2.7.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/support-v4/25.3.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="a5c721e8ea1e18854272879d6ed2770d25feb342">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/fastjson-1.2.7_178416050e8b53164ae533161b122663697f8643.jar" />
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-support-v4-25.3.1_3752f16bcda2de195d837787d778aa81f35d5127.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.3.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="043eeae0b9fb087bb3194ba59ab63a38a32fbf3e">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/retrofit-2.0.2_90e9b5d1d9a1e19ac05a9caf7051e35d9e4ea23c.jar" />
+        revision="25.0.2"
+        sha1="052f5f840f21174a3ecf6544130194e2652cbb73">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-support-core-ui-25.3.1_bbdeb79322ce96a53d13814dffb6e99e18a6965d.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/24.0.0/jars/classes.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.3.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="894922f67adeaaef51f077a29e315da21a3382d3">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.android.support-recyclerview-v7-24.0.0_c0841250d85751fe1309e7c07ec51b2643fc8dc2.jar" />
+        revision="25.0.2"
+        sha1="150252b33b00274cc868578ade018fda0d43a3eb">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-25.3.1_8502afb5fdb872054883d4991809fc67e978743a.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.1.1/jars/classes.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.3.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="1256c10604bb098490eab070d76754ac5ceab35c">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-24.1.1_75aefc15b9ab41f16492b06a4fac5c4f3c9834da.jar" />
+        revision="25.0.2"
+        sha1="47635644d0d5c103c1dd8360549eb9ba3225c7d3">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-animated-vector-drawable-25.3.1_059b19a7b90a798eeadc85159eb202e96a08336a.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.android.support/support-v4/24.1.1/jars/libs/internal_impl-24.1.1.jar"
+        jar="/Users/kaifa1111/Downloads/change/sdk/extras/m2repository/com/android/support/constraint/constraint-layout-solver/1.0.2/constraint-layout-solver-1.0.2.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="f78c2f395cb096f9dc1dc07e729922b8fcd3c4f5">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/internal_impl-24.1.1_c27e290950c188fd225cd019fe856906ffd2645f.jar" />
+        revision="25.0.2"
+        sha1="b9cd8fc6bd15cb915735d34535db30ece0c44603">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/constraint-layout-solver-1.0.2_d77705be257e878c7897e22f7cacc0309df22579.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.tinkerpatch.tinker/tinker-commons/1.7.11/c7889f327bfc6538afc690c3ff608fb92738e710/tinker-commons-1.7.11.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/exploded-aar/com.android.support/support-fragment/25.3.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="c7889f327bfc6538afc690c3ff608fb92738e710">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/tinker-commons-1.7.11_47093fd9ee3f34e181aaf6fc5eb92a56bd0f0848.jar" />
+        revision="25.0.2"
+        sha1="4a26a1154d053ab11aaf4c3967c42a4d66390991">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/com.android.support-support-fragment-25.3.1_ef49c477778fef743f8ff8ff8b8acbb28f2de025.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/AutoSystem/base/unspecified/jars/classes.jar"
+        jar="/Users/kaifa1111/AutoSystem/keyedemo/libs/libammsdk.jar"
         jumboMode="false"
         optimize="true"
-        revision="24.0.2"
-        sha1="f9d9bae88f166ac3b609f44fee65ad96ec4126b5">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/AutoSystem-base-unspecified_ef4b3f9662e20c0024aa989e6b7a826a7d269d51.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.tinkerpatch.tinker/tinker-android-loader/1.7.11/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="1750a668a653d639c770a84f15e277c85b63357e">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.tinkerpatch.tinker-tinker-android-loader-1.7.11_630957d73e2fb7557384d220b2d28211e32553da.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.4.1/c7c4f9e35c2fd5900da24f9872e3971801f08ce0/okhttp-3.4.1.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="c7c4f9e35c2fd5900da24f9872e3971801f08ce0">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/okhttp-3.4.1_f68ea09d36a7bb72e0323dab57f7d4970d2ff665.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.1.1/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="c936c1bd42f0c018c18920c7bec619ef056b24f8">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.android.support-animated-vector-drawable-24.1.1_64ed915a9ffb92961635ee5c3f58bf5292dff6f0.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.9.0/f824591a0016efbaeddb8300bee54832a1398cfa/okio-1.9.0.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="f824591a0016efbaeddb8300bee54832a1398cfa">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/okio-1.9.0_b40200d3eceac0462247fcd7a81d7bc9d1b509dd.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.android.support/design/24.0.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="fc29308a7a8f6d4407b34634eb48fb8b817f9b23">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.android.support-design-24.0.0_430a5f3eba3ba184bbea6b08dba40dabbc2bab37.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.7/751f548c85fa49f330cecbb1875893f971b33c4e/gson-2.7.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="751f548c85fa49f330cecbb1875893f971b33c4e">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/gson-2.7_097e21655b605d1133e7c273a132094a994b88eb.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/org.litepal.android/core/1.3.2/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="9a24b1b000b211eabfa13b5834c059818bc98fd5">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/org.litepal.android-core-1.3.2_7fa5d62cf3ea2683930507b51cce740273163c87.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.4.0/ea392375cf9ff59234a82e7928a204215ccc98cd/butterknife-annotations-8.4.0.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="ea392375cf9ff59234a82e7928a204215ccc98cd">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/butterknife-annotations-8.4.0_0fb9551e74410768af60615c14006ece235ea153.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.android.support/support-v4/24.1.1/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="6d7d803871e3203465f71a163e7af104f807b446">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.android.support-support-v4-24.1.1_985c3f8e79b1f486871221b2d7bce622708625c1.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/jp.wasabeef/glide-transformations/2.0.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="dca7a60bcc49fedf852b01a28826329c330ba977">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/jp.wasabeef-glide-transformations-2.0.0_e11069705b18b2bd4fe4e81a89b55b0f4ca20ce7.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.tinkerpatch.sdk/tinkerpatch-android-sdk/1.1.7/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="6cdfd947b3f98098c258ded2ea2283a8f55e8673">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.tinkerpatch.sdk-tinkerpatch-android-sdk-1.1.7_cdff78ff06b8f1c3541095e2c02512191e654dda.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/AutoSystem/response/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.1.1/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="f62e763609f65e47dc6c498760a4accf02776788">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/com.android.support-support-vector-drawable-24.1.1_ef89faad272cf235d89402731f778db6d69c78a2.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/kaifa1111/.gradle/caches/modules-2/files-2.1/com.tinkerpatch.tinker/aosp-dexutils/1.7.11/1da20bb9435314a6c0ea309e40d5ebb276ab57c0/aosp-dexutils-1.7.11.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.2"
-        sha1="1da20bb9435314a6c0ea309e40d5ebb276ab57c0">
-        <dex dex="/Users/kaifa1111/AutoSystem/response/build/intermediates/pre-dexed/debug/aosp-dexutils-1.7.11_9371cebf47dbcaf2cc50c0cc7968e689d646eda0.jar" />
+        revision="25.0.2"
+        sha1="d7c2f29c05b35e8c8713be2b81c41cf18f98b64a">
+        <dex dex="/Users/kaifa1111/AutoSystem/keyedemo/build/intermediates/pre-dexed/debug/libammsdk_c54727b7e6b418fe20861bd487792c2b838db0ac.jar" />
     </item>
 
 </items>

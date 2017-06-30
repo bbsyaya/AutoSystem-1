@@ -3,7 +3,6 @@ package com.kidney_hospital.base.util.wechat;
 import android.accessibilityservice.AccessibilityService;
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -13,7 +12,6 @@ import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import java.util.List;
 
 import static com.kidney_hospital.base.util.wechat.PerformClickUtils.findViewIdAndClick;
-import static com.kidney_hospital.base.util.wechat.PerformClickUtils.sleep;
 
 /**
  * Created by Vampire on 2017/4/28.
@@ -24,11 +22,11 @@ public class AddByLinkMan {
     private static AddByLinkMan instence;
     private boolean flagRemarkSave = false;//判断是否备注保存了
     public static int jumpRemarkNum = 11;//TODO  记得改成11
-    public static boolean isJumpLauncherUI = false;//判断是否跳转到了主页
+//    public static boolean isJumpLauncherUI = false;//判断是否跳转到了主页
     private boolean flagScroll = false;
     private boolean isPrivate = false;//显示出隐私对话框
     private int scrollFalseNum = 0;
-    public static boolean flagNewFriendsClick = false;
+//    public static boolean flagNewFriendsClick = false;
 
     private AddByLinkMan() {
     }
@@ -44,18 +42,17 @@ public class AddByLinkMan {
         return instence;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void startAdd(SupportUtil supportUtil, AccessibilityService mService, String atyName) {
 
 
         if (atyName.equals(supportUtil.getLauncherUI())) {
-            isJumpLauncherUI = true;
+//            isJumpLauncherUI = true;
             Log.e(TAG, "startAdd: 已经到这里了40");
-            if (flagNewFriendsClick) {
-                jumpRemarkNum = 100;
-                LogTool.d("jumpRemarkNum56--->>"+jumpRemarkNum);
-                flagNewFriendsClick = false;
-            }
+//            if (flagNewFriendsClick) {
+//                jumpRemarkNum = 100;
+//                LogTool.d("jumpRemarkNum56--->>"+jumpRemarkNum);
+//                flagNewFriendsClick = false;
+//            }
             launcherInfo(supportUtil, mService);
         } else if (atyName.equals(supportUtil.getFMesssageConversationUI())
                 || atyName.equals("android.widget.ListView")) {
@@ -107,16 +104,15 @@ public class AddByLinkMan {
             if (atyName.equals(supportUtil.getProgressDialog())) {
                 return;
             }
-            if (!isJumpLauncherUI) {
+//            if (!isJumpLauncherUI) {
                 PerformClickUtils.performBack(mService);
-            }
+//            }
         }
 
 
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void addFriend(SupportUtil supportUtil, AccessibilityService mService) {
         AccessibilityNodeInfo rootInActiveWindow = mService.getRootInActiveWindow();
         if (rootInActiveWindow == null) {
@@ -185,20 +181,40 @@ public class AddByLinkMan {
 //        sleep(500);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void launcherInfo(SupportUtil supportUtil, AccessibilityService mService) {
         try {
             AccessibilityNodeInfo page = PerformClickUtils.getNode(mService, supportUtil.getLauncherPagerId());
-            sleep(200);
             //首页前滚一页
-            page.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-            sleep(600);
+//            page.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+            openNext("通讯录",mService);
+
+
             boolean flagClick = findViewIdAndClick(mService, supportUtil.getLauncherNewFriendId());
             if (flagClick) {
-                flagNewFriendsClick = true;
+//                flagNewFriendsClick = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 点击匹配的nodeInfo
+     *
+     * @param str text关键字
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void openNext(String str, AccessibilityService mService) {
+        AccessibilityNodeInfo nodeInfo = mService.getRootInActiveWindow();
+        if (nodeInfo == null) {
+            Log.d(TAG, "rootWindow为空");
+            return;
+        }
+        List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText(str);
+        if (list != null && list.size() > 0) {
+            list.get(list.size() - 1).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            list.get(list.size() - 1).getParent().performAction(AccessibilityNodeInfo.ACTION_CLICK);
+        } else {
         }
     }
 

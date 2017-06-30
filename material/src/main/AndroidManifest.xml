@@ -160,7 +160,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.GetTimeActivity" />
-        <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.MainActivity"
+            android:launchMode="singleTask"/>
         <!--<activity android:name=".activity.GroupSendingActivity" />-->
         <!--<activity android:name=".activity.GroupControlActivity" />-->
 
@@ -196,6 +197,9 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+        <activity
+            android:name="com.shuangyou.material.wxapi.WXEntryActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
