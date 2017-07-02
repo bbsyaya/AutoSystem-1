@@ -11,6 +11,7 @@ public interface KeyValue {
     String PROVINCE = "province";
     String COMPANY_USER_CLUB_ID = "companyuserclubId";
     String COMPANY_CLUB_ID = "companyClubId";
+    String IS_ON = "is_on";//app 是否打开
 
     String SEND_IMPORT_PHONE_ID = "send_import_phone_id";
     String LOG_TYPE_LOGIN="2";//日志的登录类型

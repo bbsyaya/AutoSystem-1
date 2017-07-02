@@ -115,6 +115,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 case 0:
 //                    logs = "Set tag and alias success";
 //                    Log.e(TAG, logs);
+                    LogTool.d("集成成功 material--alias--"+alias);
                     tvResult.setText("集成成功,等待推送...");
                     // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
                     break;
@@ -139,7 +140,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                     logs = "Failed with errorCode = " + code;
                     Log.e(TAG, logs);
                     String content = "集成失败,错误码为:" + code;
-                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+                    tvError.setText(content + "\n请联系开发人员!");
                     tvError.setTextColor(0xffFF4081);
                     doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
                     break;
@@ -152,31 +153,31 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     protected void loadData() {
         String wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw, registrationId, LOG_KIND_MATERIAL), HttpIdentifier.LOGIN);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
-                    if (!isConnection) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tvResult.setText("网络断开,请检查网络!");
-                                LogTool.d("material网络断开");
-                                Log.e(TAG, "run:网络断开 ");
-                                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
-                            }
-                        });
-
-                    }
-                    try {
-                        Thread.sleep(1000 * 60);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
+//                    if (!isConnection) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                tvResult.setText("网络断开,请检查网络!");
+//                                LogTool.d("material网络断开");
+//                                Log.e(TAG, "run:网络断开 ");
+//                                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
+//                            }
+//                        });
+//
+//                    }
+//                    try {
+//                        Thread.sleep(1000 * 60);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     @Override
@@ -302,6 +303,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         tvError.setText("准备就绪...");
         if (time.equals("网络断开连接!")) {
             Log.e(TAG, "onReceiveTime:网络断开连接 ");
+            LogTool.d("material-->网络断开连接");
             mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
         }
 
@@ -386,9 +388,9 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     public void onNetChanged(boolean isNet) {
         Log.e(TAG, "onNetChanged: " + isNet);
         if (!isNet) {
-            LogTool.d("import没有网,请重新开启!");
+            LogTool.d("material没有网,请重新开启!");
             tvResult.setText("网络断开,请重新开启!");
-            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
+//            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
 
         }
 
@@ -476,8 +478,18 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                         }
 
                     } else if (object.getString("result").equals("3001")) {
+                        try {
+                            progDialog.dismiss();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         showToast("没有需要转发的素材!");
                     } else {
+                        try {
+                            progDialog.dismiss();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         String content = wxId + "  手动转发失败--返回" + object.getString("result");
                         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
 

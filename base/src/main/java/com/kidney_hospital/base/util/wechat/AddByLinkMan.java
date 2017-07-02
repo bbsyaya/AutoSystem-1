@@ -22,11 +22,12 @@ public class AddByLinkMan {
     private static AddByLinkMan instence;
     private boolean flagRemarkSave = false;//判断是否备注保存了
     public static int jumpRemarkNum = 11;//TODO  记得改成11
-//    public static boolean isJumpLauncherUI = false;//判断是否跳转到了主页
+    //    public static boolean isJumpLauncherUI = false;//判断是否跳转到了主页
     private boolean flagScroll = false;
     private boolean isPrivate = false;//显示出隐私对话框
     private int scrollFalseNum = 0;
-//    public static boolean flagNewFriendsClick = false;
+    //    public static boolean flagNewFriendsClick = false;
+//    private boolean isHaveNewFriend = false;
 
     private AddByLinkMan() {
     }
@@ -56,13 +57,13 @@ public class AddByLinkMan {
             launcherInfo(supportUtil, mService);
         } else if (atyName.equals(supportUtil.getFMesssageConversationUI())
                 || atyName.equals("android.widget.ListView")) {
-            PerformClickUtils.sleep(1000* RandomUtil.randomNumber(2,15));
+            PerformClickUtils.sleep(1000 * RandomUtil.randomNumber(2, 15));
 
             Log.e(TAG, "startAdd: 已经到这里了43");
             addFriend(supportUtil, mService);
         } else if (atyName.equals(supportUtil.getContactInfoUI())
                 || atyName.equals(supportUtil.getFMesssageConversationUI())) {
-            PerformClickUtils.sleep(1000* RandomUtil.randomNumber(2,5));
+            PerformClickUtils.sleep(1000 * RandomUtil.randomNumber(2, 5));
             //返回
 //            sleep(2000);
             if (flagRemarkSave) {
@@ -79,7 +80,7 @@ public class AddByLinkMan {
 
         } else if (atyName.equals(supportUtil.getContactRemarkInfoModUi())
                 || atyName.equals(supportUtil.getModRemarkNameUI())) {
-            PerformClickUtils.sleep(1000* RandomUtil.randomNumber(2,6));
+            PerformClickUtils.sleep(1000 * RandomUtil.randomNumber(2, 6));
             //备注信息页面
 //            sleep(2000);
             findViewIdAndClick(mService, supportUtil.getTv_fillIn());
@@ -100,12 +101,14 @@ public class AddByLinkMan {
         } else if (atyName.equals(supportUtil.getDeleteDialog())) {
             PerformClickUtils.findViewIdAndClick(mService, supportUtil.getTv_Delete());
 
+        } else if (supportUtil.getSnsUploadUi().equals(atyName)) {// TODO 避免和转发朋友圈的冲突
+
         } else {
             if (atyName.equals(supportUtil.getProgressDialog())) {
                 return;
             }
 //            if (!isJumpLauncherUI) {
-                PerformClickUtils.performBack(mService);
+            PerformClickUtils.performBack(mService);
 //            }
         }
 
@@ -121,16 +124,19 @@ public class AddByLinkMan {
         }
         List<AccessibilityNodeInfo> addBtnList = rootInActiveWindow.findAccessibilityNodeInfosByViewId(supportUtil.getFMesssageConversationUI_ADD_BTN_ID());
         Log.e(TAG, "addFriend: " + addBtnList.size());
+        //TODO
+        LogTool.d("微信当前页面识别的新好友数--->>"+addBtnList.size());
         if (!addBtnList.isEmpty()) {
             for (AccessibilityNodeInfo nodeInfo : addBtnList) {
 
                 if (nodeInfo != null && nodeInfo.getText().toString().equals("添加")) {
                     Log.e(TAG, "addFriend: 我到了");
-
+                    LogTool.d("添加按钮132!!");
 
                     if (isPrivate) {
                         try {
                             nodeInfo.getParent().performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+                            LogTool.d("隐私----");
                             isPrivate = false;
                             Log.e(TAG, "addFriend: 我到了隐私22222");
                         } catch (Exception e) {
@@ -141,6 +147,7 @@ public class AddByLinkMan {
                         try {
                             nodeInfo.getParent().performAction(AccessibilityNodeInfo.ACTION_CLICK);
                             Log.e(TAG, "addFriend: 我到了22222");
+                            LogTool.d("普通点击149--->>>>");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -186,7 +193,7 @@ public class AddByLinkMan {
             AccessibilityNodeInfo page = PerformClickUtils.getNode(mService, supportUtil.getLauncherPagerId());
             //首页前滚一页
 //            page.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-            openNext("通讯录",mService);
+            openNext("通讯录", mService);
 
 
             boolean flagClick = findViewIdAndClick(mService, supportUtil.getLauncherNewFriendId());

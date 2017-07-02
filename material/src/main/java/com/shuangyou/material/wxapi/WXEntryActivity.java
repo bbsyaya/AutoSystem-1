@@ -73,6 +73,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                 }
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
+                LogTool.d("链接的代码到这里就说明转发错误了"+resp.errCode);
                 if (LoadResultUtil.onLoadListener != null) {
                     LoadResultUtil.onLoadListener.onFailuer("错误码:" + resp.errCode);
                 }

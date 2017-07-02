@@ -10,8 +10,8 @@ android {
         applicationId "com.rabbit.fans"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 20170627
-        versionName "1.2.7"
+        versionCode 20170702
+        versionName "1.2.8"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

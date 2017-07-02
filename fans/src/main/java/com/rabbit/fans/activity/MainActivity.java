@@ -110,6 +110,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                 case 0:
                     logs = "Set tag and alias succes";
                     Log.e(TAG, logs);
+                    LogTool.d("集成成功, alias-->>"+alias);
                     tvResult.setText("集成成功,等待推送...");
                     // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
                     break;
@@ -134,7 +135,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                     logs = "Failed with errorCode = " + code;
                     Log.e(TAG, logs);
                     String content = "集成失败,错误码为:" + code;
-                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
+                    tvError.setText(content + "\n请联系开发人员!");
                     tvError.setTextColor(0xffFF4081);
                     doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
 //
@@ -146,33 +147,41 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     @Override
     protected void loadData() {
+        boolean isOn = (boolean) SPUtil.get(MainActivity.this,IS_ON,false);
+        if (isOn){
+            frequency = "1";
+            getNumber();
+            SPUtil.putAndApply(MainActivity.this,IS_ON,false);
+        }
+
+
         //自动登录,再走一遍登录接口,以防万一
         String wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
         doHttp(RetrofitUtils.createApi(PhoneUrl.class).login(wxId, companyId, wxPsw, registrationId, LOG_KIND_IMPORT), HttpIdentifier.LOGIN);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
-                    if (!isConnection) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                LogTool.d("fans网络断开");
-                                tvResult.setText("网络断开,请检查网络!");
-                                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
-                            }
-                        });
-
-                    }
-                    try {
-                        Thread.sleep(1000 * 60);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
+//                    if (!isConnection) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                LogTool.d("fans网络断开");
+//                                tvResult.setText("网络断开,请检查网络!");
+//                                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
+//                            }
+//                        });
+//
+//                    }
+//                    try {
+//                        Thread.sleep(1000 * 60);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }).start();
 
 
     }
@@ -254,9 +263,9 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         Log.e(TAG, "onResume:");
 //        if (TextUtils.isNull(tvCountEnd.getText().toString().trim())) {
         if (tvCountEnd.getText().toString().trim().contains("加粉结束")
-                ||TextUtils.isNull(tvCountEnd.getText().toString().trim())){
+                || TextUtils.isNull(tvCountEnd.getText().toString().trim())) {
             LogTool.d("fans--onResume 加粉结束");
-            Log.e(TAG, "onResume: 加粉结束" );
+            Log.e(TAG, "onResume: 加粉结束");
             try {
                 AddByLinkMan.getInstence().jumpRemarkNum = 100;
                 AddByLinkMan.jumpRemarkNum = 100;
@@ -264,6 +273,10 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if (tvCountEnd.getText().toString().trim().contains("正在加粉")) {
+
+            //TODO 开一个线程睡眠
+//            JumpToWeChatUtil.jumpToLauncherUi();
         }
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
@@ -400,6 +413,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                 public void run() {
                                     showToast("导入完成!");
                                     try {
+                                        JumpToWeChatUtil.jumpToFansMainActivity();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    try {
                                         progDialog.dismiss();
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -428,7 +447,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                                     long time = Long.parseLong(bean.getTime());
                                     Log.e(TAG, "run time: " + time);
                                     showLongToast("跳转到微信加粉还有" + time + "分钟开始,请提前停止其他操作!");
-                                    timeCount = new TimeCount(1000 * 60 * time, 1000);
+                                    timeCount = new TimeCount(1000 * 60*time, 1000);//TODO 提交的时候需要更改
                                     timeCount.start();
 
                                 }
@@ -639,7 +658,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         if (!isNet) {
             LogTool.d("fans没有网,请重新开启!");
             tvResult.setText("网络断开,请重新开启!");
-            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
+//            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
         }
 
     }
@@ -691,6 +710,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 //        tvCountTime.setText("");
         if (time.equals("网络断开连接!")) {
             Log.e(TAG, "onReceiveTime:网络断开连接 ");
+            LogTool.d("fans-->网络断开连接");
             mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
         }
     }
@@ -755,6 +775,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
         public TimeCount(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
+
         }
 
         @Override
@@ -793,16 +814,16 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
         @Override
         public void onFinish() {
-            try {
-                AddByLinkMan.getInstence().jumpRemarkNum = 100;
-                AddByLinkMan.jumpRemarkNum = 100;
-//                AddByLinkMan.getInstence().flagNewFriendsClick = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                AddByLinkMan.getInstence().jumpRemarkNum = 100;
+//                AddByLinkMan.jumpRemarkNum = 100;
+////                AddByLinkMan.getInstence().flagNewFriendsClick = false;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             LogTool.d("fans--结束加粉");
             JumpToWeChatUtil.jumpToFansMainActivity();
-            tvCountEnd.setText(DateUtils.formatDate(System.currentTimeMillis())+"  加粉结束");
+            tvCountEnd.setText(DateUtils.formatDate(System.currentTimeMillis()) + "  加粉结束");
 
         }
     }

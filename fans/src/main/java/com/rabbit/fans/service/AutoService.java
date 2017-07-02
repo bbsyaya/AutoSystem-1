@@ -14,6 +14,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import com.kidney_hospital.base.util.SPUtil;
+import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.kidney_hospital.base.util.wechat.AddByLinkMan;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
 import com.rabbit.fans.interfaces.KeyValue;
@@ -150,7 +151,7 @@ public class AutoService extends AccessibilityService implements KeyValue {
             e.printStackTrace();
         }
         if (AddByLinkMan.getInstence().jumpRemarkNum < 11) {
-
+            LogTool.d("辅助功能好友数-->>"+AddByLinkMan.getInstence().jumpRemarkNum);
             if (LoadResultUtil.onLoadListener!=null){
                 LoadResultUtil.onLoadListener.addedNum(AddByLinkMan.getInstence().jumpRemarkNum);
             }

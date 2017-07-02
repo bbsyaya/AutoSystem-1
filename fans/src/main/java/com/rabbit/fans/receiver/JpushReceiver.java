@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.kidney_hospital.base.util.AppManger;
 import com.kidney_hospital.base.util.DateUtils;
 import com.kidney_hospital.base.util.JumpToWeChatUtil;
 import com.kidney_hospital.base.util.SPUtil;
@@ -37,6 +38,17 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
     public void onReceive(Context context, Intent intent) {
         this.mContext = context;
         Bundle bundle = intent.getExtras();
+//        Log.e(TAG, "onReceive: "+ AppManger.getInstance().isOpenActivity());
+        //TODO 提交的时候需要更改
+//        try {
+//            JumpToWeChatUtil.jumpToFansMainActivity();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            LogTool.d("fans---Jpush52>>"+e.toString());
+//            Log.e(TAG, "eeeeee57: "+e.toString() );
+//        }
+
+
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
 
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
@@ -56,6 +68,11 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 e.printStackTrace();
                 LogTool.d("fans---Jpush52>>"+e.toString());
                 Log.e(TAG, "eeeeee57: "+e.toString() );
+            }
+            if (!AppManger.getInstance().isOpenActivity()){
+                Log.e(TAG, "onReceive: 没打开着 app" );
+                LogTool.d("JpushReceiver74--->>>没打开着 app");
+                SPUtil.putAndApply(mContext, IS_ON,true);
             }
 
 
@@ -84,6 +101,11 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 if (sendImportPhoneId.equals(sp_sendImportPhoneId)) {
                     if (LoadResultUtil.onLoadListener != null) {
                         LoadResultUtil.onLoadListener.onSuccess("-2", "-1");
+                    }
+                    try {
+                        JumpToWeChatUtil.jumpToLauncherUi();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     //素材重了  也有可能第二次推送把第一次推送失败的激活了
                     Toast.makeText(mContext, "已经收到了第一次推送!", Toast.LENGTH_SHORT).show();
