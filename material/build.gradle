@@ -9,8 +9,8 @@ android {
         applicationId "com.shuangyou.material"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 20170702
-        versionName "1.2.8"
+        versionCode 20170705
+        versionName "1.2.11"
 
 
     }

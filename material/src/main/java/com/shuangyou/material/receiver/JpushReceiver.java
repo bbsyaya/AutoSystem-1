@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.constant.HttpApi;
+import com.kidney_hospital.base.util.AppManger;
 import com.kidney_hospital.base.util.DateUtils;
 import com.kidney_hospital.base.util.FileUtils;
 import com.kidney_hospital.base.util.JumpToWeChatUtil;
@@ -29,6 +30,7 @@ import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -48,6 +50,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
     private static final String TAG = "JpushReceiver";
     public static OnReceiveTimeListener onReceiveTimeListener;
     private Context mContext;
+    private String overTime = "";
     public List<File> filePictures = new ArrayList<>();
     public static String sContent = "";
     //    private String frequency = "";
@@ -77,12 +80,18 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 return;
             }
 
-            try {
-                JumpToWeChatUtil.jumpToMaterialMainActivity();
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogTool.d("material---Jpush52>>"+e.toString());
-                Log.e(TAG, "eeeeee57: "+e.toString() );
+
+            if (!AppManger.getInstance().isOpenActivity()){
+
+                try {
+                    JumpToWeChatUtil.jumpToMaterialMainActivity();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    LogTool.d("material---Jpush52>>"+e.toString());
+                    Log.e(TAG, "eeeeee57: "+e.toString() );
+                }
+                Log.e(TAG, "onReceive: 没打开着 app" );
+                LogTool.d("JpushReceiver92--->>>material-没打开着 app");
             }
 
 //            try {
@@ -112,7 +121,12 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 String picUrl = object.getString("picUrl");
                 String sendCompanyContentId = object.getString("sendCompanyContentId");
                 String frequency = object.getString("frequency");
-
+                try {
+                    overTime = object.getString("overTime");
+                } catch (JSONException e) {
+                    overTime = "30";
+                    e.printStackTrace();
+                }
                 try {
                     DaysShare.getInstence().isRun = true;
                     DaysShare.isRun = true;//确保这个值为true!!!
@@ -183,7 +197,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     }
                     return;
                 }
-                if (currentTime-pushTime>1000*60*30){
+                if (currentTime-pushTime>Integer.parseInt(overTime)*60*1000){
                     LogTool.d("material推送信息超时!");
                     Toast.makeText(mContext, "推送信息超时!", Toast.LENGTH_SHORT).show();
                     if (LoadResultUtil.onLoadListener != null) {
@@ -192,7 +206,17 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     return;
                 }
                 if (onReceiveTimeListener != null) {
-                    onReceiveTimeListener.onReceiveTime("类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
+                    String mType = "";
+                    if (type.equals("1")){
+                        mType = "图文";
+                    }else if (type.equals("2")){
+                        mType = "文章";
+                    }else if (type.equals("3")){
+                        mType = "视频";
+                    }else if (type.equals("4")){
+                        mType  ="电台";
+                    }
+                    onReceiveTimeListener.onReceiveTime("类型:" + mType + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                 }
 
 
@@ -242,9 +266,14 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
         } else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
             boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
             Log.e(TAG, "[MyReceiver]" + intent.getAction() + " connected:" + connected);
+            LogTool.d("material网络-->>"+connected);
             if (!connected) {
                 if (onReceiveTimeListener != null) {
                     onReceiveTimeListener.onReceiveTime("网络断开连接!");
+                }
+            }else{
+                if (onReceiveTimeListener != null) {
+                    onReceiveTimeListener.onReceiveTime("网络又连上了!");
                 }
             }
 
@@ -297,9 +326,9 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 if (isSend) {
                     if (onLoadListener != null) {
                         if (sFrequency.equals("2")) {
-                            onLoadListener.onSuccess("第二次推送才成功", LOG_FLAG_SUCCESS_TWICE);
+                            onLoadListener.onSuccess("接收推送成功,待转发2", LOG_FLAG_SUCCESS_TWICE);
                         } else {
-                            onLoadListener.onSuccess("一次性成功", LOG_FLAG_SUCCESS_ONCE);
+                            onLoadListener.onSuccess("接收推送成功,待转发1", LOG_FLAG_SUCCESS_ONCE);
                         }
                     }
                 }

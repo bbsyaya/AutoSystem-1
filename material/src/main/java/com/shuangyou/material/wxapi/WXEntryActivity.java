@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kidney_hospital.base.constant.HttpApi;
+import com.kidney_hospital.base.util.JumpToWeChatUtil;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.tencent.mm.sdk.modelbase.BaseReq;
@@ -47,7 +48,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
         Bundle bundle = new Bundle();
         Log.e("errCode 42", resp.errCode + "");
-        LogTool.d("errCode 49" + resp.errCode);
+        LogTool.d("errCode49---->>>" + resp.errCode);
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
                 // 分享收藏的回调方法
@@ -57,7 +58,9 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 //				startActivity(intent);
                     LogTool.d("链接的代码到这里就说明转发成功了");
                     Toast.makeText(this, " 转发成功!", Toast.LENGTH_SHORT).show();
+                    JumpToWeChatUtil.jumpToLauncherUi();
                     finish();
+
 
                 } else {
                     // 微信第三方登录的回调方法
@@ -77,8 +80,9 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                 if (LoadResultUtil.onLoadListener != null) {
                     LoadResultUtil.onLoadListener.onFailuer("错误码:" + resp.errCode);
                 }
-
+                JumpToWeChatUtil.jumpToLauncherUi();
                 finish();
+
                 break;
 
             default:

@@ -26,6 +26,7 @@ public interface KeyValue {
     String LOG_FLAG_SUCCESS_TWICE_BAD =  "7";
     String LOG_FLAG_OTHER = "8";
     String LOG_FLAG_JAM = "9";
+    String LOG_FLAG_ACCESS_OFF = "10";//辅助功能未开启
 
     String LOG_KIND_IMPORT = "1";
 

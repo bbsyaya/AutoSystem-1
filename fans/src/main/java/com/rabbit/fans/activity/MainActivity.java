@@ -56,6 +56,7 @@ import okhttp3.FormBody;
 public class MainActivity extends AppBaseActivity implements KeyValue, LoadResultUtil.OnLoadListener, OnReceiveTimeListener {
     private static final String TAG = "MainActivity";
     private static final int MSG_SET_ALIAS = 1;
+    private static final int MSG_SET_FANS = 2;
     @BindView(R.id.tv_result)
     TextView tvResult;
     @BindView(R.id.tv_version)
@@ -97,6 +98,15 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                             null,
                             mAliasCallback);
                     break;
+                case MSG_SET_FANS:
+                    try {
+//                        AddByLinkMan.jumpRemarkNum = 0;
+//                AddByLinkMan.getInstence().flagNewFriendsClick = false;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    JumpToWeChatUtil.jumpToLauncherUi();
+                    break;
                 default:
                     Log.i(TAG, "Unhandled msg - " + msg.what);
             }
@@ -110,7 +120,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                 case 0:
                     logs = "Set tag and alias succes";
                     Log.e(TAG, logs);
-                    LogTool.d("集成成功, alias-->>"+alias);
+                    LogTool.d("fans--集成成功, alias-->>" + alias);
                     tvResult.setText("集成成功,等待推送...");
                     // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
                     break;
@@ -147,11 +157,12 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     @Override
     protected void loadData() {
-        boolean isOn = (boolean) SPUtil.get(MainActivity.this,IS_ON,false);
-        if (isOn){
+        boolean isOn = (boolean) SPUtil.get(MainActivity.this, IS_ON, false);
+        if (isOn) {
+            LogTool.d("ison的情况");
             frequency = "1";
             getNumber();
-            SPUtil.putAndApply(MainActivity.this,IS_ON,false);
+            SPUtil.putAndApply(MainActivity.this, IS_ON, false);
         }
 
 
@@ -190,6 +201,13 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     protected void onDestroy() {
         super.onDestroy();
         LogTool.d("fans杀死了ondestroy");
+        try {
+            AddByLinkMan.getInstence().jumpRemarkNum = 100;
+            AddByLinkMan.jumpRemarkNum = 100;
+//                AddByLinkMan.getInstence().flagNewFriendsClick = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -261,22 +279,40 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         super.onResume();
 //        JPushInterface.onResume(MainActivity.this);
         Log.e(TAG, "onResume:");
-//        if (TextUtils.isNull(tvCountEnd.getText().toString().trim())) {
-        if (tvCountEnd.getText().toString().trim().contains("加粉结束")
-                || TextUtils.isNull(tvCountEnd.getText().toString().trim())) {
+        LogTool.d("fans--onResume--数量--" + AddByLinkMan.getInstence().jumpRemarkNum);
+//        if (AddByLinkMan.getInstence().jumpRemarkNum < 11) {
+//            LogTool.d("fans--就是--正在加粉");
+//            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_FANS), 1000 * 10);
+//        }
+        if (tvCountEnd.getText().toString().trim().contains("加粉结束")) {
             LogTool.d("fans--onResume 加粉结束");
             Log.e(TAG, "onResume: 加粉结束");
             try {
                 AddByLinkMan.getInstence().jumpRemarkNum = 100;
                 AddByLinkMan.jumpRemarkNum = 100;
-//                AddByLinkMan.getInstence().flagNewFriendsClick = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (tvCountEnd.getText().toString().trim().contains("正在加粉")) {
+//            try {
+//                AddByLinkMan.getInstence().jumpRemarkNum = 0;
+//                AddByLinkMan.jumpRemarkNum = 0;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
 
-            //TODO 开一个线程睡眠
-//            JumpToWeChatUtil.jumpToLauncherUi();
+            Log.e(TAG, "onResume: 正在加粉");
+            LogTool.d("fans--正在加粉");
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_FANS), 1000 * 10);
+//            //TODO 开一个线程睡眠
+        }else if (TextUtils.isNull(tvError.getText().toString().trim())){
+            LogTool.d("杀死后清空页面的情况!");
+            try {
+                AddByLinkMan.getInstence().jumpRemarkNum = 100;
+                AddByLinkMan.jumpRemarkNum = 100;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
@@ -446,8 +482,9 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
                                     long time = Long.parseLong(bean.getTime());
                                     Log.e(TAG, "run time: " + time);
+                                    LogTool.d("代码运行到倒计时这里了--->>" + time);
                                     showLongToast("跳转到微信加粉还有" + time + "分钟开始,请提前停止其他操作!");
-                                    timeCount = new TimeCount(1000 * 60*time, 1000);//TODO 提交的时候需要更改
+                                    timeCount = new TimeCount(1000 * 60 * time, 1000);//TODO 提交的时候需要更改
                                     timeCount.start();
 
                                 }
@@ -707,11 +744,15 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
     public void onReceiveTime(String time) {
         tvResult.setText(time);
         tvError.setText("准备就绪...");
+        tvError.setTextColor(0xff000000);
 //        tvCountTime.setText("");
         if (time.equals("网络断开连接!")) {
             Log.e(TAG, "onReceiveTime:网络断开连接 ");
             LogTool.d("fans-->网络断开连接");
-            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
+//            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
+        } else if (time.equals("网络又连上了!")) {
+            mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, wxId));
+
         }
     }
 
@@ -780,6 +821,13 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
         @Override
         public void onTick(long millisUntilFinished) {
+//            try {
+//                AddByLinkMan.getInstence().jumpRemarkNum = 0;
+//                AddByLinkMan.jumpRemarkNum = 0;
+////                AddByLinkMan.getInstence().flagNewFriendsClick = false;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             tvCountTime.setText(millisUntilFinished / 1000 + " 秒后微信自动开启加粉");
         }
 
@@ -792,7 +840,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            LogTool.d("fans--开始加粉");
+            LogTool.d("fans--开始加粉---判断辅助功能数" + AddByLinkMan.getInstence().jumpRemarkNum);
             tvCountTime.setText("开始加粉");
             timeWxCount = new TimeWxCount(1000 * 60 * 11, 1000);//TODO
             timeWxCount.start();
@@ -821,7 +869,13 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 //            } catch (Exception e) {
 //                e.printStackTrace();
 //            }
-            LogTool.d("fans--结束加粉");
+            if (tvCountTime.getText().toString().trim().equals("开始加粉")) {
+                LogTool.d("fans--辅助功能假开启");
+                tvCountTime.setText("辅助功能未开启!");
+                String sp_sendImportPhoneId = (String) SPUtil.get(MainActivity.this, SEND_IMPORT_PHONE_ID, "");
+                doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, "辅助功能未开启", companyId, LOG_FLAG_ACCESS_OFF, sp_sendImportPhoneId, LOG_KIND_IMPORT), HttpIdentifier.LOG);
+            }
+            LogTool.d("fans--结束加粉--判断辅助功能数" + AddByLinkMan.getInstence().jumpRemarkNum);
             JumpToWeChatUtil.jumpToFansMainActivity();
             tvCountEnd.setText(DateUtils.formatDate(System.currentTimeMillis()) + "  加粉结束");
 

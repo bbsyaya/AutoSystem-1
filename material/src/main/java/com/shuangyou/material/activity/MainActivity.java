@@ -84,6 +84,8 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     LinearLayout linearLayout;
     @BindView(R.id.btn_hand)
     Button btnHand;
+    @BindView(R.id.tv_success)
+    TextView tvSuccess;
     private ProgressDialog progDialog = null;// 进度条
     private String companyId;
     private String wxId;//微信号
@@ -240,6 +242,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     @Override
     protected void onResume() {
         super.onResume();
+        LogTool.d("material--onResume");
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
             sbtnAccess.setChecked(false);
@@ -300,11 +303,14 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         }
 
         tvResult.setText(time);
-        tvError.setText("准备就绪...");
+        tvError.setTextColor(0xff999999);
+        tvError.setText("");
         if (time.equals("网络断开连接!")) {
             Log.e(TAG, "onReceiveTime:网络断开连接 ");
             LogTool.d("material-->网络断开连接");
-            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
+//            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
+        } else if (time.equals("网络又连上了!")){
+            mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, wxId));
         }
 
     }
@@ -321,12 +327,19 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String content = wxId + "  推送成功--" + error;
-                tvError.setText("推送成功--" + error);
-                tvError.setTextColor(0xff999999);
+                String content = wxId + "---" + error;
+                tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n" + error);
+//                tvError.setTextColor(0xff999999);
                 String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
                         flag, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+
+                boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
+                if (!flag){
+                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, "辅助功能未开启", companyId,
+                            LOG_FLAG_ACCESS_OFF, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+                }
+
             }
         });
     }
@@ -344,8 +357,8 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
 
                 //转发失败的回调
                 String content = wxId + "  失败--" + error;
-                tvError.setText("  失败--" + error);
-                tvError.setTextColor(0xffFF4081);
+                tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n失败--" + error);
+//                tvError.setTextColor(0xffFF4081);
                 String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
 
@@ -372,12 +385,12 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         if (str.equals("-3")) {
             String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
             String content = wxId + "-->因为极光阻塞,推送信息超时!";
-            tvError.setText("因为极光阻塞,推送信息超时!");
+            tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n因为极光阻塞,推送信息超时!");
             doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_JAM, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
 
         } else {
-            tvError.setText("点击发送成功!");
-            String content = wxId + "  点击发送成功";
+            tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n转发成功!");
+            String content = wxId + "   转发成功";
             String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
             doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
                     LOG_FLAG_OTHER, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
@@ -457,7 +470,17 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                         SPUtil.putAndApply(MainActivity.this, SEND_COMPANY_CONTENT_ID, sendCompanyContentId);
 
                         if (onReceiveTimeListener != null) {
-                            onReceiveTimeListener.onReceiveTime("手动转发类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
+                            String mType = "";
+                            if (type.equals("1")){
+                                mType = "图文";
+                            }else if (type.equals("2")){
+                                mType = "文章";
+                            }else if (type.equals("3")){
+                                mType = "视频";
+                            }else if (type.equals("4")){
+                                mType  ="电台";
+                            }
+                            onReceiveTimeListener.onReceiveTime("手动转发类型:" + mType + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                         }
 
 //                        tvResult.setText("手动转发类型:" + type + "\n" + DateUtils.formatDate(System.currentTimeMillis()));

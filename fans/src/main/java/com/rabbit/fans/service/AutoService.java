@@ -55,6 +55,18 @@ public class AutoService extends AccessibilityService implements KeyValue {
 
 //            handleNearby(atyName);
 
+        }else if (event.getEventType()==AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED){
+            try {
+                String toastMsg = (String) event.getText().get(0);
+                Log.e(TAG, "toastMsg: "+toastMsg );
+                if (toastMsg.contains("黑名单")){
+                    LogTool.d("有黑名单");
+
+                }
+            } catch (Exception e) {
+                LogTool.d("有黑名单崩了"+e.toString());
+                e.printStackTrace();
+            }
         }
     }
 

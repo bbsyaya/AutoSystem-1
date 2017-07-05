@@ -65,6 +65,7 @@ public class CloudService extends AccessibilityService {
 //            }
 
             if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配(已做好四个版本的)
+                LogTool.d("material-- 辅助功能开了");
                 Log.e(TAG, "onAccessibilityEvent: 我来了");
                 String etContent = PerformClickUtils.getText(mService, supportUtil.getEtContentId());
                 Log.e(TAG, "onAccessibilityEvent52: "+etContent );
@@ -72,7 +73,7 @@ public class CloudService extends AccessibilityService {
                     if (LoadResultUtil.onLoadListener!=null){
                         LoadResultUtil.onLoadListener.onFailuer("微信不兼容");
                     }
-                    return;
+//                    return;
                 }
 
 
@@ -83,13 +84,15 @@ public class CloudService extends AccessibilityService {
 //                            PerformClickUtils.setText(mService, supportUtil.getEtContentId(), JpushReceiver.sContent);
                             inputHello(JpushReceiver.sContent);
                         } catch (Exception e) {
+                            LogTool.d("错了--->>"+e.toString());
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
+
                     e.printStackTrace();
                 }
-                PerformClickUtils.sleep(1200);
+                PerformClickUtils.sleep(800);
                 DaysShare.getInstence().share(supportUtil, mService, atyName);
 
 

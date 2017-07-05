@@ -24,7 +24,7 @@ public class AddByLinkMan {
     public static int jumpRemarkNum = 11;//TODO  记得改成11
     //    public static boolean isJumpLauncherUI = false;//判断是否跳转到了主页
     private boolean flagScroll = false;
-    private boolean isPrivate = false;//显示出隐私对话框
+    public boolean isPrivate = false;//显示出隐私对话框
     private int scrollFalseNum = 0;
     //    public static boolean flagNewFriendsClick = false;
 //    private boolean isHaveNewFriend = false;
@@ -102,7 +102,7 @@ public class AddByLinkMan {
             PerformClickUtils.findViewIdAndClick(mService, supportUtil.getTv_Delete());
 
         } else if (supportUtil.getSnsUploadUi().equals(atyName)) {// TODO 避免和转发朋友圈的冲突
-
+            LogTool.d("fans导号与朋友圈辅助功能冲突!");
         } else {
             if (atyName.equals(supportUtil.getProgressDialog())) {
                 return;

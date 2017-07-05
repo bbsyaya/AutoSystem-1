@@ -17,6 +17,7 @@ import com.rabbit.fans.interfaces.KeyValue;
 import com.rabbit.fans.interfaces.OnReceiveTimeListener;
 import com.rabbit.fans.util.LoadResultUtil;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.jpush.android.api.JPushInterface;
@@ -28,6 +29,7 @@ import cn.jpush.android.api.JPushInterface;
 public class JpushReceiver extends BroadcastReceiver implements KeyValue {
     private static final String TAG = "JpushReceiver";
     private Context mContext;
+    private String overTime = "";
     public static OnReceiveTimeListener onReceiveTimeListener;
 
     public static void setOnReceiveTimeListener(OnReceiveTimeListener onReceiveTimeListener) {
@@ -71,7 +73,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             }
             if (!AppManger.getInstance().isOpenActivity()){
                 Log.e(TAG, "onReceive: 没打开着 app" );
-                LogTool.d("JpushReceiver74--->>>没打开着 app");
+                LogTool.d("JpushReceiver74--->>>fans-没打开着 app");
                 SPUtil.putAndApply(mContext, IS_ON,true);
             }
 
@@ -87,6 +89,12 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
 
                 String sendImportPhoneId = object.getString("sendImportPhoneId");
                 String frequency = object.getString("frequency");
+                try {
+                    overTime = object.getString("overTime");
+                } catch (JSONException e) {
+                    overTime = "30";
+                    e.printStackTrace();
+                }
                 if (frequency.equals("0")) {
                     Toast.makeText(mContext, "账号在其他设备登录!", Toast.LENGTH_SHORT).show();
                     SPUtil.putAndApply(mContext, IS_LOGIN, false);
@@ -115,7 +123,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     return;
                 }
                 SPUtil.putAndApply(mContext, SEND_IMPORT_PHONE_ID, sendImportPhoneId);
-                if (currentTime - pushTime > 1000 * 60 * 30) {
+                if (currentTime - pushTime > Integer.parseInt(overTime)*60*1000) {
                     LogTool.d("fans推送信息超时!");
                     Toast.makeText(mContext, "推送信息超时!", Toast.LENGTH_SHORT).show();
                     if (LoadResultUtil.onLoadListener != null) {
@@ -145,9 +153,14 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
         } else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
             boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
             Log.e(TAG, "[MyReceiver]" + intent.getAction() + " connected:" + connected);
+            LogTool.d("fans网络-->>"+connected);
             if (!connected) {
                 if (onReceiveTimeListener != null) {
                     onReceiveTimeListener.onReceiveTime("网络断开连接!");
+                }
+            }else {
+                if (onReceiveTimeListener != null) {
+                    onReceiveTimeListener.onReceiveTime("网络又连上了!");
                 }
             }
 
