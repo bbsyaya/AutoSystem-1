@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.thread.ThreadPool;
 import com.kidney_hospital.base.util.wechat.AddByLinkMan;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
 import com.rabbit.fans.interfaces.KeyValue;
@@ -167,16 +168,20 @@ public class AutoService extends AccessibilityService implements KeyValue {
             if (LoadResultUtil.onLoadListener!=null){
                 LoadResultUtil.onLoadListener.addedNum(AddByLinkMan.getInstence().jumpRemarkNum);
             }
-
-            new Thread(new Runnable() {
-                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            ThreadPool.thredP.execute(new Runnable() {
                 @Override
                 public void run() {
                     AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
                     addLinkMan.startAdd(supportUtil, mService, atyName);
-
                 }
-            }).start();
+            });
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
+//                    addLinkMan.startAdd(supportUtil, mService, atyName);
+//                }
+//            }).start();
         } else {
 //            AddByLinkMan.getInstence().isJumpLauncherUI = false;
         }

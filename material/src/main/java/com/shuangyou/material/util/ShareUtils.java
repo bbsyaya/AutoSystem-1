@@ -179,9 +179,9 @@ public class ShareUtils implements KeyValue{
                 api.sendReq(req);
                 if (onLoadListener != null) {
                     if (JpushReceiver.sFrequency.equals("2")) {
-                        onLoadListener.onSuccess("第二次推送才成功,但是图片加载错误,以logo为图片发送",LOG_FLAG_SUCCESS_TWICE_BAD);
+                        onLoadListener.onSuccess("第二次推送成功,但是图片加载错误,以logo为图片发送",LOG_FLAG_SUCCESS_TWICE_BAD);
                     }else{
-                        onLoadListener.onSuccess("一次性成功,但是图片加载错误,以logo为图片发送",LOG_FLAG_SUCCESS_ONCE_BAD);
+                        onLoadListener.onSuccess("一次性推送成功,但是图片加载错误,以logo为图片发送",LOG_FLAG_SUCCESS_ONCE_BAD);
                     }
                 }
                 Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_LONG).show();
@@ -217,7 +217,7 @@ public class ShareUtils implements KeyValue{
                 api.sendReq(req);
 
                 if (onLoadListener != null) {
-                        onLoadListener.onSuccess("手动转发成功", LOG_FLAG_SUCCESS_HAND);
+                        onLoadListener.onSuccess("手动请求成功", LOG_FLAG_SUCCESS_HAND);
                 }
 
                 return;
@@ -235,7 +235,7 @@ public class ShareUtils implements KeyValue{
                 req.scene = SendMessageToWX.Req.WXSceneTimeline;
                 api.sendReq(req);
                 if (onLoadListener != null) {
-                        onLoadListener.onSuccess("手动转发成功,但是图片加载错误,以logo形式转发", LOG_FLAG_FAILURE_HAND);
+                        onLoadListener.onSuccess("手动请求成功,但是图片加载错误,以logo形式转发", LOG_FLAG_FAILURE_HAND);
                 }
                 Toast.makeText(context, "图片加载错误！~", Toast.LENGTH_LONG).show();
 

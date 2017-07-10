@@ -34,7 +34,6 @@ import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.network.GroupControlUrl;
 import com.shuangyou.material.receiver.JpushReceiver;
-import com.shuangyou.material.util.DaysShare;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
@@ -64,6 +63,7 @@ import static com.shuangyou.material.util.LoadResultUtil.onLoadListener;
 public class MainActivity extends AppBaseActivity implements OnReceiveTimeListener, LoadResultUtil.OnLoadListener, KeyValue {
     private static final String TAG = "MainActivity";
     private static final int MSG_SET_ALIAS = 1;
+    private static final int MSG_ACCESS =2;
     @BindView(R.id.tv_company)
     TextView tvCompany;
     @BindView(R.id.tv_device)
@@ -103,6 +103,16 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                             (String) msg.obj,
                             null,
                             mAliasCallback);
+                    break;
+                case MSG_ACCESS:
+                    Log.e(TAG, "errorlaile" );
+                    if (!tvSuccess.getText().toString().trim().contains("转发成功")){
+                        Log.e(TAG, "errorlaile1111" );
+                        String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
+                        doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, "辅助功能未开启", companyId,
+                                LOG_FLAG_ACCESS_OFF, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+                        tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n辅助功能未开启!");
+                    }
                     break;
                 default:
                     Log.i(TAG, "Unhandled msg - " + msg.what);
@@ -296,8 +306,8 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     @Override
     public void onReceiveTime(String time) {
         try {
-            DaysShare.getInstence().isRun = true;
-            DaysShare.isRun = true;
+//            DaysShare.getInstence().isRun = true;
+//            DaysShare.isRun = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -327,6 +337,12 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                if (error.contains("推送成功")|| error.contains("手动")){//以下是判断辅助功能假开的代码
+                    Log.e(TAG, "error337: "+error );
+                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_ACCESS), 1000 * 15);
+                }
+
+
                 String content = wxId + "---" + error;
                 tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n" + error);
 //                tvError.setTextColor(0xff999999);
@@ -334,11 +350,11 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
                         flag, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
 
-                boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
-                if (!flag){
-                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, "辅助功能未开启", companyId,
-                            LOG_FLAG_ACCESS_OFF, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
-                }
+//                boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
+//                if (!flag){
+//                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, "辅助功能未开启", companyId,
+//                            LOG_FLAG_ACCESS_OFF, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
+//                }
 
             }
         });
@@ -621,7 +637,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 boolean isSend = ShareUtils.shareMultipleToMoments(MainActivity.this, content, filePictures);
                 if (isSend) {
                     if (onLoadListener != null) {
-                        onLoadListener.onSuccess("手动转发成功", LOG_FLAG_SUCCESS_HAND);
+                        onLoadListener.onSuccess("手动请求成功", LOG_FLAG_SUCCESS_HAND);
                     }
                 }
 

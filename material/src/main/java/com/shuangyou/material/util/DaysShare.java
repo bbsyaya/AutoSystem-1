@@ -19,7 +19,7 @@ public class DaysShare {
         return instence;
     }
 
-    public static boolean isRun = false;//辅助功能是否要运行,以免与微信其他操作冲突
+//    public static boolean isRun = false;//辅助功能是否要运行,以免与微信其他操作冲突
 
     public void share(SupportUtil supportUtil, AccessibilityService service, String className) {
 //        LogTool.d("share21按钮的 id"+supportUtil.getSendRequestBtnId());
@@ -31,7 +31,7 @@ public class DaysShare {
             }
 
 
-            isRun = false;
+//            isRun = false;
         }
 
 

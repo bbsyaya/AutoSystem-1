@@ -20,7 +20,6 @@ import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
-import com.shuangyou.material.util.DaysShare;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
@@ -128,8 +127,8 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     e.printStackTrace();
                 }
                 try {
-                    DaysShare.getInstence().isRun = true;
-                    DaysShare.isRun = true;//确保这个值为true!!!
+//                    DaysShare.getInstence().isRun = true;
+//                    DaysShare.isRun = true;//确保这个值为true!!!
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

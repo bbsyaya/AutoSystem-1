@@ -45,7 +45,6 @@ public class CloudService extends AccessibilityService {
         supportUtil = new SupportUtil(version);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
@@ -92,7 +91,7 @@ public class CloudService extends AccessibilityService {
 
                     e.printStackTrace();
                 }
-                PerformClickUtils.sleep(800);
+//                PerformClickUtils.sleep(800);
                 DaysShare.getInstence().share(supportUtil, mService, atyName);
 
 
@@ -108,7 +107,6 @@ public class CloudService extends AccessibilityService {
 
     }
     //自动输入打招呼内容
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void inputHello(String hello) {
         AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
         //找到当前获取焦点的view

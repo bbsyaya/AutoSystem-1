@@ -49,6 +49,7 @@ public class AddByLinkMan {
         if (atyName.equals(supportUtil.getLauncherUI())) {
 //            isJumpLauncherUI = true;
             Log.e(TAG, "startAdd: 已经到这里了40");
+            LogTool.d("fans--代码已经到了这里,说明辅助功能真的开了");
 //            if (flagNewFriendsClick) {
 //                jumpRemarkNum = 100;
 //                LogTool.d("jumpRemarkNum56--->>"+jumpRemarkNum);
@@ -103,6 +104,7 @@ public class AddByLinkMan {
 
         } else if (supportUtil.getSnsUploadUi().equals(atyName)) {// TODO 避免和转发朋友圈的冲突
             LogTool.d("fans导号与朋友圈辅助功能冲突!");
+
         } else {
             if (atyName.equals(supportUtil.getProgressDialog())) {
                 return;
