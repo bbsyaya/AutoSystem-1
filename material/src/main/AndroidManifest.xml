@@ -165,21 +165,21 @@
         <!--<activity android:name=".activity.GroupSendingActivity" />-->
         <!--<activity android:name=".activity.GroupControlActivity" />-->
 
-        <service
-            android:name=".service.CloudService"
-            android:enabled="true"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:logo="@mipmap/ic_logo"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+        <!--<service-->
+            <!--android:name=".service.CloudService"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true"-->
+            <!--android:label="@string/app_name"-->
+            <!--android:logo="@mipmap/ic_logo"-->
+            <!--android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">-->
 
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/auto_add" />
-        </service>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.accessibilityservice.AccessibilityService" />-->
+            <!--</intent-filter>-->
+            <!--<meta-data-->
+                <!--android:name="android.accessibilityservice"-->
+                <!--android:resource="@xml/auto_add" />-->
+        <!--</service>-->
         <service android:name=".service.CheckUpdateService" />
         <service android:name="com.kidney_hospital.base.update.DownLoadService" />
         <service android:name=".service.SendingService" />

@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".AddToDoActivity">
+
+
+
+
+    <item
+        android:id="@+id/clear"
+        android:title="立刻清理日志"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/refresh"
+        android:title="重新载入"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/top"
+        android:title="滚动页面至顶部"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/bottom"
+        android:title="滚动页面至底部"
+        app:showAsAction="never"/>
+
+
+</menu>

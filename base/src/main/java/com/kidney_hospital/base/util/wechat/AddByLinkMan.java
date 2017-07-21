@@ -43,7 +43,7 @@ public class AddByLinkMan {
         return instence;
     }
 
-    public void startAdd(SupportUtil supportUtil, AccessibilityService mService, String atyName) {
+    public void startAdd(SupportUtil supportUtil, AccessibilityService mService, String atyName) throws Exception{
 
 
         if (atyName.equals(supportUtil.getLauncherUI())) {
@@ -192,7 +192,7 @@ public class AddByLinkMan {
 
     private void launcherInfo(SupportUtil supportUtil, AccessibilityService mService) {
         try {
-            AccessibilityNodeInfo page = PerformClickUtils.getNode(mService, supportUtil.getLauncherPagerId());
+//            AccessibilityNodeInfo page = PerformClickUtils.getNode(mService, supportUtil.getLauncherPagerId());
             //首页前滚一页
 //            page.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
             openNext("通讯录", mService);

@@ -32,7 +32,7 @@ public class JumpToWeChatUtil {
 
     public static void jumpToFansMainActivity() {
         Intent intnet = new Intent();
-        intnet.setComponent(new ComponentName("com.rabbit.fans", "com.rabbit.fans.activity.MainActivity"));
+        intnet.setComponent(new ComponentName("com.shuangyou.material", "com.shuangyou.material.activity.MainActivity"));
         intnet.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         BaseApp.getContext().startActivity(intnet);
     }

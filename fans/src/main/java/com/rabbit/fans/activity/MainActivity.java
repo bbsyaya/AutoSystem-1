@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Process;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -40,6 +39,7 @@ import com.rabbit.fans.network.PhoneUrl;
 import com.rabbit.fans.receiver.JpushReceiver;
 import com.rabbit.fans.util.InsertLinkMan;
 import com.rabbit.fans.util.LoadResultUtil;
+import com.rabbit.fans.util.ShellUtils;
 import com.rabbit.fans.util.WorkManager;
 
 import org.json.JSONException;
@@ -169,30 +169,6 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         //自动登录,再走一遍登录接口,以防万一
         String wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
         doHttp(RetrofitUtils.createApi(PhoneUrl.class).login(wxId, companyId, wxPsw, registrationId, LOG_KIND_IMPORT), HttpIdentifier.LOGIN);
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
-//                    if (!isConnection) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                LogTool.d("fans网络断开");
-//                                tvResult.setText("网络断开,请检查网络!");
-//                                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
-//                            }
-//                        });
-//
-//                    }
-//                    try {
-//                        Thread.sleep(1000 * 60);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }).start();
 
 
     }
@@ -249,24 +225,6 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
         mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, wxId));
 
 
-//        Set<String> set = new HashSet<>();
-//        set.add(wxId);//手机的机器码
-//        JPushInterface.setAliasAndTags(this, wxId, set, new TagAliasCallback() {
-//            @Override
-//            public void gotResult(int i, String s, Set<String> set) {
-//                Log.e(TAG, "code==" + i);
-//                LogTool.d("极光返回码------>" + i);
-//                if (i != 0) {
-//                    String content = "集成失败,错误码为:" + i;
-//                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
-//                    tvError.setTextColor(0xffFF4081);
-//                    doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_IMPORT), HttpIdentifier.LOG);
-//                } else {
-//                    tvResult.setText("集成成功,等待推送...");
-//                }
-//            }
-//        });
-
     }
 
     @Override
@@ -305,7 +263,7 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
             LogTool.d("fans--正在加粉");
             mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_FANS), 1000 * 10);
 //            //TODO 开一个线程睡眠
-        }else if (TextUtils.isNull(tvError.getText().toString().trim())){
+        } else if (TextUtils.isNull(tvError.getText().toString().trim())) {
             LogTool.d("杀死后清空页面的情况!");
             try {
                 AddByLinkMan.getInstence().jumpRemarkNum = 100;
@@ -672,14 +630,10 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     @Override
     public void onUpdate(String str) {
-        //清除极光推送信息
-//        JPushInterface.setAlias(MainActivity.this, "", null);
-//        Set<String> set = new HashSet<>();
-//        JPushInterface.setTags(MainActivity.this, set, null);
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        Process.killProcess(Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
+//        Intent intent = new Intent(this, LoginActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
+//        Process.killProcess(Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
 
     }
 
@@ -700,19 +654,44 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
 
     }
 
-    @OnClick({R.id.btn_hand, R.id.sbtn_access, R.id.tv_update, R.id.iv_logout})
+    @Override
+    public void onMaterialSuccess() {
+        LogTool.d("material-->>朋友圈转发成功了");
+        String content = wxId + "   转发成功";
+//        String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
+        doHttp(RetrofitUtils.createApi(PhoneUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
+                LOG_FLAG_OTHER, "123456", "0"), HttpIdentifier.LOG);
+    }
+
+    @OnClick({R.id.tv_access, R.id.btn_hand, R.id.sbtn_access, R.id.tv_update, R.id.iv_logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+
+            case R.id.tv_access:
+                //打开辅助功能
+                Intent service = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                service.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(service);
+
+                break;
             case R.id.btn_hand:
                 showProgress();
                 doHttp(RetrofitUtils.createApi(PhoneUrl.class).getLatelyDaohao(companyId, wxId), HttpIdentifier.HAND);
                 break;
             case R.id.sbtn_access:
-//                TinkerPatch.with().fetchPatchUpdate(true);
-                //打开辅助功能
-                Intent service = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                service.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(service);
+                Log.e(TAG, "onViewClicked:777 ");
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+                showToast("请稍等,不要连续点击...");
+                if (!sbtnAccess.isChecked()) {
+                    setAccessOn();
+                } else {
+                    setAccessOff();
+                }
+//                    }
+//                }).start();
+
                 break;
             case R.id.tv_update:
 //                showLongToast("新版本下载,请看通知栏,不要连续点击,请稍等片刻...");
@@ -737,6 +716,45 @@ public class MainActivity extends AppBaseActivity implements KeyValue, LoadResul
                         .setNegativeButton("取消", null)
                         .show();
                 break;
+        }
+    }
+
+    private void setAccessOn() {
+
+
+        String[] shell = new String[]{"settings put secure enabled_accessibility_services com.rabbit.fans/com.rabbit.fans.service.AutoService"
+                , "settings put secure accessibility_enabled 1"};
+        int result = ShellUtils.execCommand(shell, true).result;
+        Log.e(TAG, "onViewClicked: resulton-->" + result);
+        if (result == 0) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                    hideProgress();
+                    sbtnAccess.setChecked(true);
+                }
+            });
+
+        } else {
+            setAccessOn();
+        }
+    }
+
+    private void setAccessOff() {
+        String[] shell = new String[]{"settings put secure enabled_accessibility_services com.rabbit.fans/com.rabbit.fans.service.AutoService"
+                , "settings put secure accessibility_enabled 0"};
+        int result = ShellUtils.execCommand(shell, true).result;
+        Log.e(TAG, "onViewClicked: resultoff-->" + result);
+        if (result == 0) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                    hideProgress();
+                    sbtnAccess.setChecked(false);
+                }
+            });
+        } else {
+            setAccessOff();
         }
     }
 

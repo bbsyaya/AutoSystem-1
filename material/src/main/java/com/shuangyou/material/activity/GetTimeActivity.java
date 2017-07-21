@@ -30,7 +30,6 @@ import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.network.GroupControlUrl;
 import com.shuangyou.material.receiver.JpushReceiver;
-import com.shuangyou.material.util.DaysShare;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
@@ -274,7 +273,7 @@ public class GetTimeActivity extends AppBaseActivity implements OnReceiveTimeLis
                                 String[] pictures = picUrl.split(",");
                                 picUrl = pictures[0];
                             }
-                            JpushReceiver.sContent = content;
+//                            JpushReceiver.sContent = content;
                             ShareUtils.sendToFriendsByHand(GetTimeActivity.this,
                                     url,
                                     title,

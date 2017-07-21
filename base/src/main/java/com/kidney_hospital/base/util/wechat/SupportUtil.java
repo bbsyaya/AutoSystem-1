@@ -11,6 +11,7 @@ public class SupportUtil {
     private final String VERSION_654 = "6.5.4";
     private final String VERSION_658 = "6.5.8";
     private final String VERSION_653 = "6.5.3";
+    private final String VERSION_6510 = "6.5.10";
     private final String[] SUPPORT_VERSION = new String[]{
             VERSION_6325
     };
@@ -29,6 +30,8 @@ public class SupportUtil {
             Ver6313();
         }else if (version.contains(VERSION_653)){
             Ver653();
+        }else if (version.contains(VERSION_6510)){
+            Ver6510();
         }
     }
 
@@ -199,6 +202,33 @@ public class SupportUtil {
         tv_Delete = "com.tencent.mm:id/fi";
         tv_noFans = "com.tencent.mm:id/axp";
     }
+
+    private void Ver6510() {
+        sendRequestBtnId = "com.tencent.mm:id/go";//分享页面发送按钮
+        snsUploadUi = "com.tencent.mm.plugin.sns.ui.En_c4f742e5";//分享页面
+//        launcherPagerId = "com.tencent.mm:id/asa";
+
+        launcherNewFriendId = "com.tencent.mm:id/ay_";//新的朋友按钮
+        etContentId = "com.tencent.mm:id/cvm";//这一刻的想法...
+
+        FMesssageConversationUI_ADD_BTN_ID = "com.tencent.mm:id/ayl";//添加按钮
+        FMesssageConversationUI_LV_ID = "com.tencent.mm:id/ayr";//通讯录 listview
+
+
+        tv_setRemark = "com.tencent.mm:id/agr";
+        tv_fillIn = "com.tencent.mm:id/ahx";
+        tv_remark_save = "com.tencent.mm:id/gn";
+
+        tv_Delete = "com.tencent.mm:id/fl";
+
+
+//        privateDialogButtonOK = "com.tencent.mm:id/ad8";
+
+//        tv_noFans = "com.tencent.mm:id/axp";
+    }
+
+
+
     private void Ver653(){
         sendRequestBtnId = "com.tencent.mm:id/g_";
         etContentId = "com.tencent.mm:id/cio";

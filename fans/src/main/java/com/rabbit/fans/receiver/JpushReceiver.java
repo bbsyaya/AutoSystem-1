@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import com.kidney_hospital.base.util.JumpToWeChatUtil;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.rabbit.fans.activity.LoginActivity;
 import com.rabbit.fans.interfaces.KeyValue;
 import com.rabbit.fans.interfaces.OnReceiveTimeListener;
 import com.rabbit.fans.util.LoadResultUtil;
@@ -64,18 +66,6 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             if (!isLogin) {
                 return;
             }
-            try {
-                JumpToWeChatUtil.jumpToFansMainActivity();
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogTool.d("fans---Jpush52>>"+e.toString());
-                Log.e(TAG, "eeeeee57: "+e.toString() );
-            }
-            if (!AppManger.getInstance().isOpenActivity()){
-                Log.e(TAG, "onReceive: 没打开着 app" );
-                LogTool.d("JpushReceiver74--->>>fans-没打开着 app");
-                SPUtil.putAndApply(mContext, IS_ON,true);
-            }
 
 
             try {
@@ -98,24 +88,46 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 if (frequency.equals("0")) {
                     Toast.makeText(mContext, "账号在其他设备登录!", Toast.LENGTH_SHORT).show();
                     SPUtil.putAndApply(mContext, IS_LOGIN, false);
-                    if (LoadResultUtil.onLoadListener != null) {
-                        LoadResultUtil.onLoadListener.onUpdate("");
-                    }
+//                    if (LoadResultUtil.onLoadListener != null) {
+//                        LoadResultUtil.onLoadListener.onUpdate("");
+//                    }
 
+                    Intent i = new Intent(mContext, LoginActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(i);
+                    Process.killProcess(Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
                     return;
                 }
+
+                if (!AppManger.getInstance().isOpenActivity()) {
+                    try {
+                        JumpToWeChatUtil.jumpToFansMainActivity();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        LogTool.d("fans---Jpush52>>" + e.toString());
+                        Log.e(TAG, "eeeeee57: " + e.toString());
+                    }
+                    if (!AppManger.getInstance().isOpenActivity()) {
+                        Log.e(TAG, "onReceive: 没打开着 app");
+                        LogTool.d("JpushReceiver74--->>>fans-没打开着 app");
+                        SPUtil.putAndApply(mContext, IS_ON, true);
+                    }
+                }
+
+
                 String type = object.getString("type");//现在只考虑类型为1的情况
                 String sp_sendImportPhoneId = (String) SPUtil.get(mContext, SEND_IMPORT_PHONE_ID, "");
                 if (sendImportPhoneId.equals(sp_sendImportPhoneId)) {
                     if (LoadResultUtil.onLoadListener != null) {
                         LoadResultUtil.onLoadListener.onSuccess("-2", "-1");
                     }
-                    try {
-                        JumpToWeChatUtil.jumpToLauncherUi();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+//                    try {//TODO  ????
+//                        JumpToWeChatUtil.jumpToLauncherUi();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
                     //素材重了  也有可能第二次推送把第一次推送失败的激活了
+                    LogTool.d("素材重了 也有可能第二次推送把第一次推送失败的激活了");
                     Toast.makeText(mContext, "已经收到了第一次推送!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -123,7 +135,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                     return;
                 }
                 SPUtil.putAndApply(mContext, SEND_IMPORT_PHONE_ID, sendImportPhoneId);
-                if (currentTime - pushTime > Integer.parseInt(overTime)*60*1000) {
+                if (currentTime - pushTime > Integer.parseInt(overTime) * 60 * 1000) {
                     LogTool.d("fans推送信息超时!");
                     Toast.makeText(mContext, "推送信息超时!", Toast.LENGTH_SHORT).show();
                     if (LoadResultUtil.onLoadListener != null) {
@@ -153,12 +165,12 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
         } else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
             boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
             Log.e(TAG, "[MyReceiver]" + intent.getAction() + " connected:" + connected);
-            LogTool.d("fans网络-->>"+connected);
+            LogTool.d("fans网络-->>" + connected);
             if (!connected) {
                 if (onReceiveTimeListener != null) {
                     onReceiveTimeListener.onReceiveTime("网络断开连接!");
                 }
-            }else {
+            } else {
                 if (onReceiveTimeListener != null) {
                     onReceiveTimeListener.onReceiveTime("网络又连上了!");
                 }

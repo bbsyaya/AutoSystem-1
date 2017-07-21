@@ -157,9 +157,11 @@ public class ShareUtils implements KeyValue{
 
                 if (onLoadListener != null) {
                     if (JpushReceiver.sFrequency.equals("2")) {
-                        onLoadListener.onSuccess("接收推送成功,待转发2",LOG_FLAG_SUCCESS_TWICE);
+//                        onLoadListener.onSuccess("接收推送成功,待转发2",LOG_FLAG_SUCCESS_TWICE);
+                        onLoadListener.onSuccess("成功2",LOG_FLAG_SUCCESS_TWICE);
                     }else{
-                        onLoadListener.onSuccess("接收推送成功,待转发1",LOG_FLAG_SUCCESS_ONCE);
+//                        onLoadListener.onSuccess("接收推送成功,待转发1",LOG_FLAG_SUCCESS_ONCE);
+                        onLoadListener.onSuccess("成功1",LOG_FLAG_SUCCESS_ONCE);
                     }
                 }
 

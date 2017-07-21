@@ -7,11 +7,13 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * created by Vampire
@@ -126,7 +128,7 @@ public class WriteFileUtil {
         try {
             File fullFile = new File(fileName);
             //第二个参数意义是说是否以append方式添加内容
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fullFile, true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fullFile, false));
             bw.write(info);
             bw.flush();
             Log.d(TAG, "写入成功");
@@ -134,6 +136,27 @@ public class WriteFileUtil {
             e.printStackTrace();
             Log.d(TAG, "e:" + e);
         }
+    }
+    public static String readeTXT(String fileName) {
+        String content = null;
+        try {
+            FileInputStream inStream = new FileInputStream(fileName);//只需传文件名
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();//输出到内存
+
+            int len = 0;
+            byte[] buffer = new byte[1024];
+            while ((len = inStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, len);//
+            }
+
+            byte[] content_byte = outStream.toByteArray();
+            if (content_byte != null) {
+                content = new String(content_byte);
+            }
+        } catch (IOException e) {
+
+        }
+        return content;
     }
 
 

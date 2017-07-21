@@ -13,12 +13,17 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.util.SPUtil;
+import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.thread.ThreadPool;
 import com.kidney_hospital.base.util.wechat.AddByLinkMan;
+import com.kidney_hospital.base.util.wechat.PerformClickUtils;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
 import com.rabbit.fans.interfaces.KeyValue;
+import com.rabbit.fans.util.DaysShare;
 import com.rabbit.fans.util.LoadResultUtil;
 
 import java.util.List;
@@ -51,23 +56,69 @@ public class AutoService extends AccessibilityService implements KeyValue {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
             String atyName = event.getClassName().toString();
-            Log.e(TAG,     "activity  ------------ " + atyName);
-            handleImportNum(atyName);
+            Log.e(TAG, "activity  ------------ " + atyName);
+            try {
+                handleImportNum(atyName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            handleMaterial(atyName);
+
 
 //            handleNearby(atyName);
 
-        }else if (event.getEventType()==AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED){
-            try {
-                String toastMsg = (String) event.getText().get(0);
-                Log.e(TAG, "toastMsg: "+toastMsg );
-                if (toastMsg.contains("黑名单")){
-                    LogTool.d("有黑名单");
+        } else if (event.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
+            if (AddByLinkMan.getInstence().jumpRemarkNum < 11) {
+                try {
+                    String toastMsg = (String) event.getText().get(0);
+                    Log.e(TAG, "toastMsg: " + toastMsg);
+                    if (toastMsg.contains("黑名单")) {
+                        LogTool.d("有黑名单");
 
+                    }
+                } catch (Exception e) {
+                    LogTool.d("有黑名单崩了" + e.toString());
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void handleMaterial(String atyName) {
+        if (supportUtil.getSnsUploadUi().equals(atyName)) {//后期要做好适配(已做好四个版本的)
+            LogTool.d("material-- 辅助功能开了");
+            Log.e(TAG, "onAccessibilityEvent: 我来了");
+            String etContent = PerformClickUtils.getText(mService, supportUtil.getEtContentId());
+            Log.e(TAG, "onAccessibilityEvent52: " + etContent);
+            if (TextUtils.isNull(supportUtil.getEtContentId())) {
+                if (LoadResultUtil.onLoadListener != null) {
+                    LoadResultUtil.onLoadListener.onFailuer("微信不兼容");
+                }
+//                    return;
+            }
+
+
+            try {
+                if (etContent.equals("这一刻的想法...")) {
+                    //TODO 下面这行代码有些板子崩
+                    try {
+                        String content  = WriteFileUtil.readeTXT(SavePath.SAVE_HTTP_CONTENT);
+
+                        inputHello(content);
+                    } catch (Exception e) {
+                        LogTool.d("错了--->>" + e.toString());
+                        e.printStackTrace();
+                    }
                 }
             } catch (Exception e) {
-                LogTool.d("有黑名单崩了"+e.toString());
+
                 e.printStackTrace();
             }
+//                PerformClickUtils.sleep(800);
+            DaysShare.getInstence().share(supportUtil, mService, atyName);
+
+
         }
     }
 
@@ -164,15 +215,20 @@ public class AutoService extends AccessibilityService implements KeyValue {
             e.printStackTrace();
         }
         if (AddByLinkMan.getInstence().jumpRemarkNum < 11) {
-            LogTool.d("辅助功能好友数-->>"+AddByLinkMan.getInstence().jumpRemarkNum);
-            if (LoadResultUtil.onLoadListener!=null){
+            LogTool.d("辅助功能好友数-->>" + AddByLinkMan.getInstence().jumpRemarkNum);
+            if (LoadResultUtil.onLoadListener != null) {
                 LoadResultUtil.onLoadListener.addedNum(AddByLinkMan.getInstence().jumpRemarkNum);
             }
             ThreadPool.thredP.execute(new Runnable() {
                 @Override
                 public void run() {
                     AddByLinkMan addLinkMan = AddByLinkMan.getInstence();
-                    addLinkMan.startAdd(supportUtil, mService, atyName);
+                    try {
+                        addLinkMan.startAdd(supportUtil, mService, atyName);
+                    } catch (Exception e) {
+                        LogTool.d("加好友的时候崩了-->"+e.toString());
+                        e.printStackTrace();
+                    }
                 }
             });
 //            new Thread(new Runnable() {

@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.kidney_hospital.base.config.SavePath;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
 import com.kidney_hospital.base.util.wechat.PerformClickUtils;
 import com.kidney_hospital.base.util.wechat.SupportUtil;
 import com.shuangyou.material.receiver.JpushReceiver;
@@ -49,7 +51,7 @@ public class CloudService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
             String atyName = event.getClassName().toString();
-            Log.e(TAG, "activity  ------------ " + atyName);
+            Log.e(TAG, "materialactivity  ------------ " + atyName);
             // TODO: 2017/5/20  分享365
 
 //            try {
@@ -67,9 +69,9 @@ public class CloudService extends AccessibilityService {
                 LogTool.d("material-- 辅助功能开了");
                 Log.e(TAG, "onAccessibilityEvent: 我来了");
                 String etContent = PerformClickUtils.getText(mService, supportUtil.getEtContentId());
-                Log.e(TAG, "onAccessibilityEvent52: "+etContent );
-                if (TextUtils.isNull(supportUtil.getEtContentId())){
-                    if (LoadResultUtil.onLoadListener!=null){
+                Log.e(TAG, "onAccessibilityEvent52: " + etContent);
+                if (TextUtils.isNull(supportUtil.getEtContentId())) {
+                    if (LoadResultUtil.onLoadListener != null) {
                         LoadResultUtil.onLoadListener.onFailuer("微信不兼容");
                     }
 //                    return;
@@ -80,10 +82,11 @@ public class CloudService extends AccessibilityService {
                     if (etContent.equals("这一刻的想法...")) {
                         //TODO 下面这行代码有些板子崩
                         try {
-//                            PerformClickUtils.setText(mService, supportUtil.getEtContentId(), JpushReceiver.sContent);
-                            inputHello(JpushReceiver.sContent);
+                           String content  = WriteFileUtil.readeTXT(SavePath.SAVE_HTTP_CONTENT);
+
+                            inputHello(content);
                         } catch (Exception e) {
-                            LogTool.d("错了--->>"+e.toString());
+                            LogTool.d("错了--->>" + e.toString());
                             e.printStackTrace();
                         }
                     }
@@ -106,6 +109,7 @@ public class CloudService extends AccessibilityService {
     public void onInterrupt() {
 
     }
+
     //自动输入打招呼内容
     private void inputHello(String hello) {
         AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
@@ -122,6 +126,7 @@ public class CloudService extends AccessibilityService {
             target.performAction(AccessibilityNodeInfo.ACTION_PASTE);
         }
     }
+
     /**
      * 获取微信的版本号
      *

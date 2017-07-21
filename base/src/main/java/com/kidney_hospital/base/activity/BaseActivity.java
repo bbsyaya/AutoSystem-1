@@ -47,7 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRespon
      */
     protected Dialog onCreateProgressDialog() {
         ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("正在努力加载......");
+        dialog.setMessage("请稍等......");
         //设置进度条是否可以按退回键取消  
         dialog.setCancelable(true);
         //设置点击进度对话框外的区域对话框不消失

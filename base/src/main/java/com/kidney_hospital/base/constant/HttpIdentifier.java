@@ -19,4 +19,8 @@ public class HttpIdentifier {
     public static final int LOGIN = 20;//登录
     public static final int GET_PHONE_NUM = 21;//获取号码
     public static final int HAND = 22;//手动
+    public static final int HAND_MATERIAL = 23;//朋友圈手动
+    public static final int HAND_FANS = 24;//导号手动
+    public static final int HAND_FANS_ONLY = 25;//只导号手动
+    public static final int GET_PHONE_NUM_ONLY = 26;//只获取号码
 }

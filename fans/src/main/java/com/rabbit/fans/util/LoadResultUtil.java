@@ -22,5 +22,6 @@ public class LoadResultUtil {
         void onUpdate(String str);
         void addedNum(int num);
         void onNetChanged(boolean isNet);
+        void onMaterialSuccess();
     }
 }

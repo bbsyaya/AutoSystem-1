@@ -37,6 +37,7 @@ import com.shuangyou.material.receiver.JpushReceiver;
 import com.shuangyou.material.util.DownPIcUtils;
 import com.shuangyou.material.util.LoadResultUtil;
 import com.shuangyou.material.util.ShareUtils;
+import com.shuangyou.material.util.ShellUtils;
 import com.shuangyou.material.util.WorkManager;
 
 import org.json.JSONException;
@@ -63,7 +64,7 @@ import static com.shuangyou.material.util.LoadResultUtil.onLoadListener;
 public class MainActivity extends AppBaseActivity implements OnReceiveTimeListener, LoadResultUtil.OnLoadListener, KeyValue {
     private static final String TAG = "MainActivity";
     private static final int MSG_SET_ALIAS = 1;
-    private static final int MSG_ACCESS =2;
+    private static final int MSG_ACCESS = 2;
     @BindView(R.id.tv_company)
     TextView tvCompany;
     @BindView(R.id.tv_device)
@@ -105,13 +106,13 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                             mAliasCallback);
                     break;
                 case MSG_ACCESS:
-                    Log.e(TAG, "errorlaile" );
-                    if (!tvSuccess.getText().toString().trim().contains("转发成功")){
-                        Log.e(TAG, "errorlaile1111" );
+                    Log.e(TAG, "errorlaile");
+                    if (!tvSuccess.getText().toString().trim().contains("转发成功")) {
+                        Log.e(TAG, "errorlaile1111");
                         String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
                         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, "辅助功能未开启", companyId,
                                 LOG_FLAG_ACCESS_OFF, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
-                        tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n辅助功能未开启!");
+                        tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis()) + "\n辅助功能未开启!");
                     }
                     break;
                 default:
@@ -127,7 +128,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 case 0:
 //                    logs = "Set tag and alias success";
 //                    Log.e(TAG, logs);
-                    LogTool.d("集成成功 material--alias--"+alias);
+                    LogTool.d("集成成功 material--alias--" + alias);
                     tvResult.setText("集成成功,等待推送...");
                     // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
                     break;
@@ -165,31 +166,6 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     protected void loadData() {
         String wxPsw = WriteFileUtil.readFileByBufferReader(SavePath.SAVE_WX_PSW);
         doHttp(RetrofitUtils.createApi(GroupControlUrl.class).login(wxId, companyId, wxPsw, registrationId, LOG_KIND_MATERIAL), HttpIdentifier.LOGIN);
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    boolean isConnection = JPushInterface.getConnectionState(MainActivity.this);
-//                    if (!isConnection) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                tvResult.setText("网络断开,请检查网络!");
-//                                LogTool.d("material网络断开");
-//                                Log.e(TAG, "run:网络断开 ");
-//                                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 90);
-//                            }
-//                        });
-//
-//                    }
-//                    try {
-//                        Thread.sleep(1000 * 60);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }).start();
     }
 
     @Override
@@ -229,48 +205,67 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         // 调用 Handler 来异步设置别名
         mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, wxId));
 
-
-//        Set<String> set = new HashSet<>();
-//        set.add(wxId);//手机的机器码
-//        JPushInterface.setAliasAndTags(this, wxId, set, new TagAliasCallback() {
-//            @Override
-//            public void gotResult(int i, String s, Set<String> set) {
-//                Log.e(TAG, "code==" + i);
-//                LogTool.d("极光返回码------>" + i);
-//                if (i != 0) {
-//                    String content = "集成失败,错误码为:" + i;
-//                    tvError.setText(content + "\n请杀死软件后重新打开,多试几次!");
-//                    tvError.setTextColor(0xffFF4081);
-//                    doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, "null", LOG_KIND_MATERIAL), HttpIdentifier.LOG);
-//                } else {
-//                    tvResult.setText("集成成功,等待推送...");
-//                }
-//            }
-//        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         LogTool.d("material--onResume");
+        Log.e(TAG, "onResume:88 ");
         boolean flag = WorkManager.getInstance().isAccessibilitySettingsOn();
         if (!flag) {
+
             sbtnAccess.setChecked(false);
+
+
         } else {
             sbtnAccess.setChecked(true);
         }
     }
+    private void setAccessOn() {
 
-    @OnClick({R.id.sbtn_access, R.id.tv_update, R.id.btn_hand, R.id.iv_logout})
+
+        String[] shell = new String[]{"settings put secure enabled_accessibility_services com.rabbit.fans/com.rabbit.fans.service.AutoService"
+                , "settings put secure accessibility_enabled 1"};
+        int result = ShellUtils.execCommand(shell, true).result;
+        Log.e(TAG, "onViewClicked: resulton-->" + result);
+        if (result == 0) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                    hideProgress();
+                    sbtnAccess.setChecked(true);
+                }
+            });
+
+        } else {
+            setAccessOn();
+        }
+    }
+    @OnClick({R.id.tv_access, R.id.sbtn_access, R.id.tv_update, R.id.btn_hand, R.id.iv_logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.sbtn_access:
+            case R.id.tv_access:
+
+
                 //打开辅助功能
                 Intent service = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
                 service.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(service);
+
+                break;
+            case R.id.sbtn_access:
+                Log.e(TAG, "onViewClicked: 444");
+//                if (!sbtnAccess.isChecked()) {
+//                    setAccessOn();
+//                } else {
+//                    setAccessOff();
+//                }
+
                 break;
             case R.id.btn_hand:
+                //TODO 测试
+//                setAccessOn();
                 //手动转发
                 showProgressDialog();
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).getLatelyArticle(companyId, wxId), HttpIdentifier.HAND);
@@ -303,6 +298,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         }
     }
 
+
     @Override
     public void onReceiveTime(String time) {
         try {
@@ -319,7 +315,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
             Log.e(TAG, "onReceiveTime:网络断开连接 ");
             LogTool.d("material-->网络断开连接");
 //            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, wxId), 1000 * 60);
-        } else if (time.equals("网络又连上了!")){
+        } else if (time.equals("网络又连上了!")) {
             mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, wxId));
         }
 
@@ -337,14 +333,14 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (error.contains("推送成功")|| error.contains("手动")){//以下是判断辅助功能假开的代码
-                    Log.e(TAG, "error337: "+error );
+                if (error.contains("推送成功11") || error.contains("手动11")) {//以下是判断辅助功能假开的代码
+                    Log.e(TAG, "error337: " + error);
                     mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_ACCESS), 1000 * 15);
                 }
 
 
                 String content = wxId + "---" + error;
-                tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n" + error);
+                tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis()) + "\n" + error);
 //                tvError.setTextColor(0xff999999);
                 String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
@@ -373,7 +369,7 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
 
                 //转发失败的回调
                 String content = wxId + "  失败--" + error;
-                tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n失败--" + error);
+                tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis()) + "\n失败--" + error);
 //                tvError.setTextColor(0xffFF4081);
                 String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
                 doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_FAILURE, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
@@ -386,14 +382,10 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     public void onUpdate(String str) {
         Log.e(TAG, "onUpdate: " + str);
         LogTool.d("onUpdate----->" + str);
-        //清除极光推送信息
-//        JPushInterface.setAlias(MainActivity.this, "", null);
-//        Set<String> set = new HashSet<>();
-//        JPushInterface.setTags(MainActivity.this, set, null);
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
+//        Intent intent = new Intent(this, LoginActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
+//        android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
     }
 
     @Override
@@ -401,11 +393,11 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
         if (str.equals("-3")) {
             String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
             String content = wxId + "-->因为极光阻塞,推送信息超时!";
-            tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n因为极光阻塞,推送信息超时!");
+            tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis()) + "\n因为极光阻塞,推送信息超时!");
             doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId, LOG_FLAG_JAM, sp_sendCompanyContentId, LOG_KIND_MATERIAL), HttpIdentifier.LOG);
 
         } else {
-            tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis())+"\n转发成功!");
+            tvSuccess.setText(DateUtils.formatDate(System.currentTimeMillis()) + "\n转发成功!");
             String content = wxId + "   转发成功";
             String sp_sendCompanyContentId = (String) SPUtil.get(MainActivity.this, SEND_COMPANY_CONTENT_ID, "");
             doHttp(RetrofitUtils.createApi(GroupControlUrl.class).save(LOG_TYPE_SHARE, wxId, content, companyId,
@@ -429,6 +421,8 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
     public void onResponse(int identifier, String strReuslt) {
         super.onResponse(identifier, strReuslt);
         Log.e(TAG, "onResponse: " + strReuslt);
+
+
         switch (identifier) {
             case HttpIdentifier.LOG:
                 LogTool.d("material_log381--->>" + strReuslt);
@@ -487,14 +481,14 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
 
                         if (onReceiveTimeListener != null) {
                             String mType = "";
-                            if (type.equals("1")){
+                            if (type.equals("1")) {
                                 mType = "图文";
-                            }else if (type.equals("2")){
+                            } else if (type.equals("2")) {
                                 mType = "文章";
-                            }else if (type.equals("3")){
+                            } else if (type.equals("3")) {
                                 mType = "视频";
-                            }else if (type.equals("4")){
-                                mType  ="电台";
+                            } else if (type.equals("4")) {
+                                mType = "电台";
                             }
                             onReceiveTimeListener.onReceiveTime("手动转发类型:" + mType + "\n" + DateUtils.formatDate(System.currentTimeMillis()));
                         }
@@ -507,7 +501,8 @@ public class MainActivity extends AppBaseActivity implements OnReceiveTimeListen
                                 String[] pictures = picUrl.split(",");
                                 picUrl = pictures[0];
                             }
-                            JpushReceiver.sContent = content;
+//                            JpushReceiver.sContent = content;
+                            WriteFileUtil.wrieFileUserIdByBufferedWriter(content,SavePath.SAVE_HTTP_CONTENT);
                             ShareUtils.sendToFriendsByHand(MainActivity.this,
                                     url,
                                     title,

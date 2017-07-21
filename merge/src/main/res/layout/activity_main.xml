@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="21dp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/iv_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/ic_main_logout" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_company"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="5dp"
+        android:textColor="#999999"
+        android:textSize="14sp"
+        tools:text="企业号:1    北京 北京" />
+    <TextView
+        android:id="@+id/tv_group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="5dp"
+        android:textColor="#999999"
+        android:textSize="14sp"
+        tools:text="企业号:1    北京 北京" />
+
+    <TextView
+        android:id="@+id/tv_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="5dp"
+        android:textColor="#999999"
+        android:textSize="14sp"
+        tools:text="微信号: yinghuahua106" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginTop="5dp"
+        android:background="#f2f2f2" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_access"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="辅助功能"
+            android:textColor="#222222"
+            android:textSize="18sp" />
+
+        <com.kidney_hospital.base.view.switchbutton.SwitchButton
+            android:id="@+id/sbtn_access"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_main_log"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="日志提醒"
+            android:textColor="#222222"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:drawablePadding="5dp"
+            android:drawableRight="@mipmap/ic_log_more"
+            android:text="全部日志"
+            android:textColor="#2f87eb"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="328dp"
+        android:layout_height="201dp"
+        android:layout_gravity="center_horizontal"
+        android:background="#f6f6f6"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:drawablePadding="5dp"
+                android:drawableTop="@mipmap/ic_main_material"
+                android:gravity="center"
+                android:text="朋友圈"
+                android:textColor="#999999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_material_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="#222222"
+                android:textSize="18sp"
+                tools:text="收到第一次推送,但是小小小惺惺惜惺惺" />
+
+            <TextView
+                android:id="@+id/tv_material_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:textColor="#999999"
+                android:textSize="14sp"
+                tools:text="7/12 15:46" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="300dp"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#dcdcdc" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:drawablePadding="5dp"
+                android:drawableTop="@mipmap/ic_main_import"
+                android:gravity="center"
+                android:text="导号"
+                android:textColor="#999999"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_fans_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="#222222"
+                    android:textSize="18sp"
+                    tools:text="导入成功" />
+
+                <TextView
+                    android:id="@+id/tv_fans_clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#999999"
+                    android:textSize="14sp"
+                    tools:text="50秒后开始添加好友" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_fans_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:textColor="#999999"
+                android:textSize="14sp"
+                tools:text="7/12 15:46" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_main_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        tools:text="连接超时,请检查网络..."
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        tools:visibility="visible"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@+id/ll"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp">
+
+            <RelativeLayout
+                android:id="@+id/btn_hand_num_only"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/shp_btn_hand_import">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:drawableLeft="@mipmap/ic_main_num_only"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:text="导号"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_hand_add_only"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/shp_btn_hand_import">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="加好友"
+                    android:drawableLeft="@mipmap/ic_main_add_only"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@+id/linearLayout"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp">
+
+            <RelativeLayout
+                android:id="@+id/btn_hand_fans"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/shp_btn_blue">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:drawableLeft="@mipmap/ic_main_add_num"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:text="导号 + 好友"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_hand_material"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/shp_btn_green">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="朋友圈"
+                    android:drawableLeft="@mipmap/ic_main_friends"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                tools:text="版本名:1.1.20" />
+
+            <TextView
+                android:id="@+id/tv_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="更新版本"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

@@ -18,6 +18,8 @@ import com.kidney_hospital.base.util.JumpToWeChatUtil;
 import com.kidney_hospital.base.util.SPUtil;
 import com.kidney_hospital.base.util.TextUtils;
 import com.kidney_hospital.base.util.exceptioncatch.LogTool;
+import com.kidney_hospital.base.util.exceptioncatch.WriteFileUtil;
+import com.shuangyou.material.activity.LoginActivity;
 import com.shuangyou.material.interfaces.KeyValue;
 import com.shuangyou.material.interfaces.OnReceiveTimeListener;
 import com.shuangyou.material.util.DownPIcUtils;
@@ -51,7 +53,7 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
     private Context mContext;
     private String overTime = "";
     public List<File> filePictures = new ArrayList<>();
-    public static String sContent = "";
+//    public static String sContent = "";
     //    private String frequency = "";
     public static String sFrequency = "";
 
@@ -64,6 +66,19 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
         this.mContext = context;
         Bundle bundle = intent.getExtras();
         Log.e(TAG, "onReceive: 有推送");
+//        File file_wxId = new File(SavePath.SAVE_WX_CHAT_ID);
+//        if (file_wxId.exists()) {
+//            file_wxId.delete();
+//        }
+//        File file_wxPsw = new File(SavePath.SAVE_WX_CHAT_CONTENT);
+//        if (file_wxPsw.exists()){
+//            file_wxPsw.delete();
+//        }
+//        //wxid_b5k58sv0i7v622 为绚丽的id
+//        //wxid_zj2sz9d34zuz22 为美人自醉的 id
+//        WriteFileUtil.wrieFileUserIdByBufferedWriter("wxid_zj2sz9d34zuz22", SavePath.SAVE_WX_CHAT_ID);
+//        WriteFileUtil.wrieFileUserIdByBufferedWriter("我是剧京测试的是\n考我虑到是看到楼上的拉开了打卡了打卡拉斯凯迪拉克打了卡来得快阿拉山口达拉斯看到啦"+Math.random()*1000,SavePath.SAVE_WX_CHAT_CONTENT);
+
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
 
 
@@ -80,33 +95,8 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
             }
 
 
-            if (!AppManger.getInstance().isOpenActivity()){
-
-                try {
-                    JumpToWeChatUtil.jumpToMaterialMainActivity();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    LogTool.d("material---Jpush52>>"+e.toString());
-                    Log.e(TAG, "eeeeee57: "+e.toString() );
-                }
-                Log.e(TAG, "onReceive: 没打开着 app" );
-                LogTool.d("JpushReceiver92--->>>material-没打开着 app");
-            }
-
-//            try {
-//                AppManger.getInstance().isAddActivity(MainActivity.class);
-//            } catch (Exception e) {
-//                Intent in = new Intent(mContext, MainActivity.class);
-//                in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                mContext.startActivity(in);
-//                e.printStackTrace();
-//                return;
-//            }
 
 
-//            if (true){
-//                return;
-//            }
 
             try {
                 JSONObject object = new JSONObject(extras);
@@ -136,11 +126,27 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 if (frequency.equals("0")) {
                     Toast.makeText(mContext, "账号在其他设备登录!", Toast.LENGTH_SHORT).show();
                     SPUtil.putAndApply(mContext, IS_LOGIN, false);
-                    if (LoadResultUtil.onLoadListener != null) {
-                        LoadResultUtil.onLoadListener.onUpdate("");
-                    }
-
+//                    if (LoadResultUtil.onLoadListener != null) {
+//                        LoadResultUtil.onLoadListener.onUpdate("");
+//                    }
+                    Intent i = new Intent(mContext, LoginActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(i);
+                    android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
                     return;
+                }
+
+                if (!AppManger.getInstance().isOpenActivity()){
+
+                    try {
+                        JumpToWeChatUtil.jumpToMaterialMainActivity();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        LogTool.d("material---Jpush52>>"+e.toString());
+                        Log.e(TAG, "eeeeee57: "+e.toString() );
+                    }
+                    Log.e(TAG, "onReceive: 没打开着 app" );
+                    LogTool.d("JpushReceiver92--->>>material-没打开着 app");
                 }
 
 
@@ -230,8 +236,8 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                         String[] pictures = picUrl.split(",");
                         picUrl = pictures[0];
                     }
-                    sContent = content;
-
+//                    sContent = content;
+                    WriteFileUtil.wrieFileUserIdByBufferedWriter(content,SavePath.SAVE_HTTP_CONTENT);
                     ShareUtils.sendToFriends(mContext,
                             url,
                             title,
@@ -325,9 +331,11 @@ public class JpushReceiver extends BroadcastReceiver implements KeyValue {
                 if (isSend) {
                     if (onLoadListener != null) {
                         if (sFrequency.equals("2")) {
-                            onLoadListener.onSuccess("接收推送成功,待转发2", LOG_FLAG_SUCCESS_TWICE);
+//                            onLoadListener.onSuccess("接收推送成功,待转发2", LOG_FLAG_SUCCESS_TWICE);
+                            onLoadListener.onSuccess("成功2", LOG_FLAG_SUCCESS_TWICE);
                         } else {
-                            onLoadListener.onSuccess("接收推送成功,待转发1", LOG_FLAG_SUCCESS_ONCE);
+//                            onLoadListener.onSuccess("接收推送成功,待转发1", LOG_FLAG_SUCCESS_ONCE);
+                            onLoadListener.onSuccess("成功1", LOG_FLAG_SUCCESS_ONCE);
                         }
                     }
                 }
